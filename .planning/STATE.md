@@ -3,18 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-27T21:30:39.877Z"
+stopped_at: Completed 01-02-documentation-PLAN.md
+last_updated: "2026-05-27T21:34:17Z"
+last_activity: 2026-05-28
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
 # STATE — oplya (Claude Code Plugin Marketplace + zapili)
 
-**Last updated:** 2026-05-28 (Phase 01 Plan 01 — manifests complete)
+**Last updated:** 2026-05-28 (Phase 01 Plan 02 — documentation complete)
 
 ## Project Reference
 
@@ -31,14 +33,14 @@ progress:
 ## Current Position
 
 Phase: 01 (marketplace-plugin-skeleton) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 
 - **Phase:** 1 — Marketplace + plugin skeleton
-- **Plan:** 01-02-documentation-PLAN.md (next)
+- **Plan:** 01-03-hygiene-PLAN.md (next)
 - **Status:** Ready to execute
 - **Last Activity:** 2026-05-28
-- **Progress:** [██░░░░░░░░] 20%
-- **Progress bar:** `[██░░░░░░░░░░░░░░░░░░] 20%` (1 of 5 plans in Phase 01 complete)
+- **Progress:** [████░░░░░░] 40%
+- **Progress bar:** `[████░░░░░░░░░░░░░░░░] 40%` (2 of 5 plans in Phase 01 complete)
 
 ## Phase Map
 
@@ -56,11 +58,12 @@ Plan: 2 of 5
 - **Phases complete:** 0 / 6
 - **Requirements complete:** 4 / 43 (MKT-01, MKT-02, MKT-03, ZAP-03)
 - **Open blockers:** none
-- **Iterations / retries:** Plan 01-01 executed first-pass clean (0 retries, 0 deviations)
+- **Iterations / retries:** Plan 01-01 first-pass clean (0 retries, 0 deviations); Plan 01-02 first-pass with one Rule 3 auto-fix (literal `/plugin install` added to plugin README to satisfy automated gate)
 
 | Phase / Plan | Duration | Tasks | Files |
 |--------------|----------|-------|-------|
 | Phase 01 P01 (manifests) | 1 min | 2 tasks | 2 files |
+| Phase 01 P02 (documentation) | 2 min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -87,6 +90,8 @@ Plan: 2 of 5
 - **[Phase 01 P01]** Pinned canonical `$schema` URLs (Anthropic marketplace schema + JSON Schema Store plugin schema) — editor-experience win; loader ignores `$schema` at load time.
 - **[Phase 01 P01]** Applied RESEARCH drift fixes: dropped `owner.url` from marketplace.json (documented schema is `{name, email}` only); omitted `category` from plugin.json (category is a marketplace `plugins[]`-entry field only, not a plugin-manifest field).
 - **[Phase 01 P01]** Zero component keys (`commands`/`agents`/`hooks`/`mcpServers`) in plugin.json — Phase 2+ default-folder auto-discovery picks up populated folders without manifest edits (D-10/D-23/D-24).
+- **[Phase 01 P02]** Augmented plugin README's Install section with the literal `/plugin install zapili@oplya` text alongside the D-26 cross-link — required because Task 2's automated acceptance gate greps for the literal string which a pure cross-link would not produce. D-26 cross-link to `../../README.md#install` preserved verbatim.
+- **[Phase 01 P02]** Top-level README's Local development section includes `claude plugin validate . --strict` as a clearly-optional supplementary check (per RESEARCH Open Question Q3) — framed so contributors without the `claude` CLI are not gated.
 
 ### Open Todos (from roadmap)
 
@@ -112,7 +117,7 @@ None.
 
 ### Next Action
 
-Execute Plan 01-02 (Documentation) — author the top-level `README.md` and `plugins/zapili/README.md` per CONTEXT decisions D-25/D-26/D-27.
+Execute Plan 01-03 (Hygiene) — author `LICENSE` (MIT), `.gitignore`, and `.gitattributes` per CONTEXT decisions D-20/D-21/D-22 (sequence `.gitattributes` first to avoid CRLF-on-future-`.sh` per RESEARCH Pitfall 11).
 
 ### How to Resume
 
@@ -124,10 +129,11 @@ Execute Plan 01-02 (Documentation) — author the top-level `README.md` and `plu
 
 ### Last Session Summary
 
+- 2026-05-28 — Completed Plan 01-02-documentation-PLAN.md. Wrote `README.md` (commit `aef99ea`, 37 lines) and `plugins/zapili/README.md` (commit `73b7ae3`, 32 lines). All plan acceptance criteria + plan-level `<verification>` block pass. One Rule 3 auto-fix: literal `/plugin install zapili@oplya` text appended to the plugin README's Install cross-link to satisfy the plan's automated grep gate. English-only verified (zero Cyrillic), no badges/screenshots/TOC, plugin tree leaf count still exactly 2 (MKT-08/D-23 preserved). MKT-03 and ZAP-03 confirmed complete (already marked under P01). Ready for Plan 01-03 (Hygiene).
 - 2026-05-28 — Completed Plan 01-01-manifests-PLAN.md. Wrote `.claude-plugin/marketplace.json` (commit `fd0d573`) and `plugins/zapili/.claude-plugin/plugin.json` (commit `c2d070b`). All plan acceptance criteria + `<verification>` block passed first-pass; zero deviations. Marketplace catalog now discoverable; plugin manifest now resolvable via `metadata.pluginRoot` → `./plugins/zapili`. RESEARCH drift fixes applied (no `owner.url`, no `category` on plugin.json). 4 requirements completed (MKT-01, MKT-02, MKT-03, ZAP-03). Ready for Plan 01-02 (Documentation).
 - 2026-05-27 — Project initialized. PROJECT.md, REQUIREMENTS.md (43 v1 reqs), and the four research streams (STACK / FEATURES / ARCHITECTURE / PITFALLS) authored, then synthesized into research/SUMMARY.md. Roadmap (6 phases, horizontal-layers structure, 100% coverage) approved and persisted. Ready to plan Phase 1.
-- **Stopped at:** Completed 01-01-manifests-PLAN.md
+- **Stopped at:** Completed 01-02-documentation-PLAN.md
 - **Resume file:** None
 
 ---
-*State file initialized: 2026-05-27 · Phase 01 Plan 01 complete: 2026-05-28*
+*State file initialized: 2026-05-27 · Phase 01 Plan 02 complete: 2026-05-28*
