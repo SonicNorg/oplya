@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "oplya",
+  "description": "Personal plugin marketplace — multi-agent dev workflows",
+  "owner": {
+    "name": "Pavel",
+    "email": "pavel.proger@gmail.com"
+  },
+  "metadata": {
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "zapili",
+      "source": "./plugins/zapili",
+      "displayName": "zapili",
+      "description": "Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review",
+      "category": "workflow",
+      "repository": "https://github.com/nepavel/oplya"
+    }
+  ]
+}
