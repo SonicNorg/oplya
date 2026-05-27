@@ -125,54 +125,54 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MKT-01 | TBD | Pending |
-| MKT-02 | TBD | Pending |
-| MKT-03 | TBD | Pending |
-| MKT-04 | TBD | Pending |
-| MKT-05 | TBD | Pending |
-| MKT-06 | TBD | Pending |
-| MKT-07 | TBD | Pending |
-| MKT-08 | TBD | Pending |
-| ZAP-01 | TBD | Pending |
-| ZAP-02 | TBD | Pending |
-| ZAP-03 | TBD | Pending |
-| ZAP-04 | TBD | Pending |
-| ZAP-05 | TBD | Pending |
-| ZAP-10 | TBD | Pending |
-| ZAP-11 | TBD | Pending |
-| ZAP-12 | TBD | Pending |
-| ZAP-13 | TBD | Pending |
-| ZAP-14 | TBD | Pending |
-| ZAP-15 | TBD | Pending |
-| ZAP-20 | TBD | Pending |
-| ZAP-21 | TBD | Pending |
-| ZAP-22 | TBD | Pending |
-| ZAP-23 | TBD | Pending |
-| ZAP-24 | TBD | Pending |
-| ZAP-30 | TBD | Pending |
-| ZAP-31 | TBD | Pending |
-| ZAP-32 | TBD | Pending |
-| ZAP-33 | TBD | Pending |
-| ZAP-34 | TBD | Pending |
-| ZAP-35 | TBD | Pending |
-| ZAP-40 | TBD | Pending |
-| ZAP-41 | TBD | Pending |
-| ZAP-42 | TBD | Pending |
-| ZAP-43 | TBD | Pending |
-| ZAP-44 | TBD | Pending |
-| ZAP-45 | TBD | Pending |
-| ZAP-46 | TBD | Pending |
-| ZAP-47 | TBD | Pending |
-| ZAP-50 | TBD | Pending |
-| ZAP-51 | TBD | Pending |
-| ZAP-52 | TBD | Pending |
-| ZAP-53 | TBD | Pending |
-| ZAP-54 | TBD | Pending |
+| MKT-01 | 1 | Pending |
+| MKT-02 | 1 | Pending |
+| MKT-03 | 1 | Pending |
+| MKT-04 | 1 | Pending |
+| MKT-05 | 1 | Pending |
+| MKT-06 | 1 | Pending |
+| MKT-07 | 1 | Pending |
+| MKT-08 | 1 | Pending |
+| ZAP-01 | 2 | Pending |
+| ZAP-02 | 2 | Pending |
+| ZAP-03 | 1 | Pending |
+| ZAP-04 | 2 | Pending |
+| ZAP-05 | 2 | Pending |
+| ZAP-10 | 3 | Pending |
+| ZAP-11 | 3 | Pending |
+| ZAP-12 | 3 | Pending |
+| ZAP-13 | 3 | Pending |
+| ZAP-14 | 3 | Pending |
+| ZAP-15 | 3 | Pending |
+| ZAP-20 | 4 | Pending |
+| ZAP-21 | 4 | Pending |
+| ZAP-22 | 4 | Pending |
+| ZAP-23 | 4 | Pending |
+| ZAP-24 | 4 | Pending |
+| ZAP-30 | 4 | Pending |
+| ZAP-31 | 4 | Pending |
+| ZAP-32 | 4 | Pending |
+| ZAP-33 | 4 | Pending |
+| ZAP-34 | 4 | Pending |
+| ZAP-35 | 4 | Pending |
+| ZAP-40 | 5 | Pending |
+| ZAP-41 | 6 | Pending |
+| ZAP-42 | 6 | Pending |
+| ZAP-43 | 5 | Pending |
+| ZAP-44 | 5 | Pending |
+| ZAP-45 | 5 | Pending |
+| ZAP-46 | 6 | Pending |
+| ZAP-47 | 6 | Pending |
+| ZAP-50 | 4 | Pending |
+| ZAP-51 | 4 | Pending |
+| ZAP-52 | 4 | Pending |
+| ZAP-53 | 6 | Pending |
+| ZAP-54 | 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 42 total
-- Mapped to phases: 0 (will be populated by gsd-roadmapper)
-- Unmapped: 42 (expected — roadmap not yet generated)
+- v1 requirements: 43 total
+- Mapped to phases: 43 (100%)
+- Unmapped: 0
 
 ## User Stories
 
@@ -228,7 +228,7 @@ A requirement is "Complete" only when ALL of:
 
 `oplya` v1 is releasable when:
 
-- All 42 v1 requirements are Complete per Definition of Done
+- All 43 v1 requirements are Complete per Definition of Done
 - Acceptance criteria 1–13 above pass on a fresh clone in a clean environment
 - README install instructions verified verbatim against a clean machine (no prior `oplya` install)
 - LICENSE present; semver bump policy documented in top-level README
@@ -236,4 +236,4 @@ A requirement is "Complete" only when ALL of:
 
 ---
 *Requirements defined: 2026-05-27*
-*Last updated: 2026-05-27 after initial definition*
+*Last updated: 2026-05-27 — traceability populated by gsd-roadmapper (43/43 mapped)*
