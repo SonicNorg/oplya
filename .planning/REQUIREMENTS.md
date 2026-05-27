@@ -12,9 +12,9 @@ Requirements for initial release (`oplya` marketplace + `zapili` plugin v1). Eac
 - [x] **MKT-01**: Repository root contains `.claude-plugin/marketplace.json` listing all plugins (only `name`, `owner`, `plugins` are required by spec; ship `$schema`, `displayName`, `category`, `tags` for polish)
 - [x] **MKT-02**: Each plugin lives at `plugins/<plugin-name>/` with its own `.claude-plugin/plugin.json` (`name` required; `version` omitted while iterating so commit-SHA versioning applies)
 - [x] **MKT-03**: Top-level `README.md` (English) documents the marketplace, install instructions (`/plugin marketplace add <repo>` then `/plugin install <name>@oplya`), and lists all plugins with one-line summaries
-- [ ] **MKT-04**: Top-level `LICENSE` file (MIT or Apache 2.0)
-- [ ] **MKT-05**: Curated top-level `.gitignore` covering Node/Python/IDE/OS noise plus plugin-local state directories (`.zapili/`, `.claude/cache/`, etc.)
-- [ ] **MKT-06**: Top-level `.gitattributes` enforcing `*.sh text eol=lf` and `*.bash text eol=lf` to prevent CRLF-induced hook failures
+- [x] **MKT-04**: Top-level `LICENSE` file (MIT or Apache 2.0)
+- [x] **MKT-05**: Curated top-level `.gitignore` covering Node/Python/IDE/OS noise plus plugin-local state directories (`.zapili/`, `.claude/cache/`, etc.)
+- [x] **MKT-06**: Top-level `.gitattributes` enforcing `*.sh text eol=lf` and `*.bash text eol=lf` to prevent CRLF-induced hook failures
 - [ ] **MKT-07**: Local JSON validation script (`scripts/validate-manifests.sh`) verifying `marketplace.json` and each `plugin.json` parse cleanly before commit (light pre-commit checkpoint, not a CI gate)
 - [ ] **MKT-08**: Each plugin self-contained — no cross-plugin file references; every file `zapili` needs lives under `plugins/zapili/`
 
@@ -128,9 +128,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MKT-01 | 1 | Complete |
 | MKT-02 | 1 | Complete |
 | MKT-03 | 1 | Complete |
-| MKT-04 | 1 | Pending |
-| MKT-05 | 1 | Pending |
-| MKT-06 | 1 | Pending |
+| MKT-04 | 1 | Complete |
+| MKT-05 | 1 | Complete |
+| MKT-06 | 1 | Complete |
 | MKT-07 | 1 | Pending |
 | MKT-08 | 1 | Pending |
 | ZAP-01 | 2 | Pending |
