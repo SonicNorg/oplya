@@ -1,3 +1,17 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: planning
+last_updated: "2026-05-27T18:09:18.222Z"
+progress:
+  total_phases: 6
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
+---
+
 # STATE — oplya (Claude Code Plugin Marketplace + zapili)
 
 **Last updated:** 2026-05-27 (project initialization)
