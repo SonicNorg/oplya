@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "zapili",
+  "displayName": "zapili",
+  "description": "Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review",
+  "author": {
+    "name": "Pavel",
+    "email": "pavel.proger@gmail.com",
+    "url": "https://github.com/nepavel"
+  },
+  "homepage": "https://github.com/nepavel/oplya",
+  "repository": "https://github.com/nepavel/oplya",
+  "license": "MIT",
+  "keywords": ["workflow", "multi-agent", "codex", "planning", "parallel"]
+}
