@@ -42,6 +42,7 @@ Everything else (marketplace polish, additional plugins, docs) can fail. The `za
 - [ ] **ZAP-13**: **State persistence** — workflow progress survives session/restart via on-disk artifacts (`TASK.md`, `CONTEXT.md`, `PLAN.md`, `PHASE-XX.md`) plus a `.zapili/state.json` capturing current phase, wave, and validation-loop iteration; resume is automatic from artifact inspection
 - [ ] **ZAP-14**: **Formalized inter-agent contracts** — every prompt and every expected response is English, structured with Anthropic-style XML tags, with embedded JSON blocks for machine-parseable lists (issues, file changes, question batches, size classification). Strict, unambiguous, professional tone
 - [ ] **ZAP-15**: Task-size policy embedded in prompts — small (≤100 LOC, 1–3 modules, 3–4 questions, plan only); medium (≤500 LOC, 1–5 modules, 5–8 questions, plan + 3–4 phases); large (≤1000 LOC, 2–8 modules, 9–12 questions, plan + 5–8 phases); gigantic (>1000 LOC, 13–20 questions, plan + 9–20 phases)
+- [ ] **ZAP-16**: **Codex review prompts are exhaustive by design** — every codex invocation (research validation, plan validation, per-phase implementation review) explicitly instructs codex to report **all** findings at every severity (HIGH/MEDIUM/LOW), not just the top few. Prompts forbid summarization, "the most important", or pareto-style filtering. Goal: drive iteration count down by surfacing the full issue set in one pass instead of discovering new HIGH/MEDIUM problems after the previous batch is fixed
 
 ### Out of Scope
 
@@ -86,6 +87,7 @@ Everything else (marketplace polish, additional plugins, docs) can fail. The `za
 | Strictly sequential waves with parallel intra-wave phases | Maximum parallelism without write conflicts; matches the user's "wave" model exactly | — Pending |
 | Light publication process for v1 (no CI gates) | Solo maintainer + small team; ceremony slows iteration. JSON manifests still locally validated to prevent broken installs | — Pending |
 | Task-size thresholds (LOC / modules / question count / phase count) defined explicitly in prompts | Removes researcher/planner ambiguity; gives the workflow predictable shape across task sizes | — Pending |
+| Codex review prompts must produce **exhaustive** findings (full HIGH/MEDIUM/LOW set), no top-N filtering | Each missed issue forces another full review iteration. Asking codex for the complete set up front minimizes the loop count — fewer wasted runs, faster convergence | — Pending |
 
 ## Evolution
 
