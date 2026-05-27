@@ -1,0 +1,12 @@
+# Shell scripts — LF only (non-negotiable per ZAP-04 / MKT-06)
+# CRLF on a shebang line can invoke a non-existent "/bin/bash\r" interpreter.
+*.sh   text eol=lf
+*.bash text eol=lf
+
+# Config + documentation — LF for consistency
+*.json text eol=lf
+*.md   text eol=lf
+
+# Binary types — never diff/merge as text
+*.png binary
+*.jpg binary
