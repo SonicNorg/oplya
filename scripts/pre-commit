@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Template hook — copied into .git/hooks/pre-commit by scripts/install-hooks.sh.
+#
+# Gated invocation (CONTEXT D-17): the validator only runs when a staged
+# file matches one of the manifest paths. Unrelated commits are a fast
+# no-op.
+
+set -euo pipefail
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR)
+
+if printf '%s\n' "$STAGED" \
+    | grep -qE '^(\.claude-plugin/marketplace\.json|plugins/[^/]+/\.claude-plugin/plugin\.json)$'; then
+    exec ./scripts/validate-manifests.sh
+fi
+
+exit 0
