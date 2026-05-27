@@ -3,18 +3,18 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-27T20:56:58.553Z"
+last_updated: "2026-05-27T21:30:39.877Z"
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 5
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
 # STATE — oplya (Claude Code Plugin Marketplace + zapili)
 
-**Last updated:** 2026-05-27 (project initialization)
+**Last updated:** 2026-05-28 (Phase 01 Plan 01 — manifests complete)
 
 ## Project Reference
 
@@ -30,11 +30,15 @@ progress:
 
 ## Current Position
 
+Phase: 01 (marketplace-plugin-skeleton) — EXECUTING
+Plan: 2 of 5
+
 - **Phase:** 1 — Marketplace + plugin skeleton
-- **Plan:** Not yet created (run `/gsd:plan-phase 1` next)
+- **Plan:** 01-02-documentation-PLAN.md (next)
 - **Status:** Ready to execute
-- **Progress:** 0 / 43 v1 requirements complete (0%)
-- **Progress bar:** `[░░░░░░░░░░░░░░░░░░░░] 0%`
+- **Last Activity:** 2026-05-28
+- **Progress:** [██░░░░░░░░] 20%
+- **Progress bar:** `[██░░░░░░░░░░░░░░░░░░] 20%` (1 of 5 plans in Phase 01 complete)
 
 ## Phase Map
 
@@ -50,9 +54,13 @@ progress:
 ## Performance Metrics
 
 - **Phases complete:** 0 / 6
-- **Requirements complete:** 0 / 43
+- **Requirements complete:** 4 / 43 (MKT-01, MKT-02, MKT-03, ZAP-03)
 - **Open blockers:** none
-- **Iterations / retries:** n/a (workflow not started)
+- **Iterations / retries:** Plan 01-01 executed first-pass clean (0 retries, 0 deviations)
+
+| Phase / Plan | Duration | Tasks | Files |
+|--------------|----------|-------|-------|
+| Phase 01 P01 (manifests) | 1 min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -73,6 +81,12 @@ progress:
 | Orchestrator-in-main-thread, workers-as-stateless-subagents (research finding) | Claude Code subagents cannot spawn subagents — forced architectural fact |
 | "Same agent fixes review" is a category error; continuity by artifact (research finding) | Subagents are stateless; persist reasoning trace as `PHASE-XX-attempt-N.md` and feed to fresh spawn |
 | Mechanical write-scope disjointness check before any wave spawn (research finding) | Never trust LLM-claimed parallel safety; orchestrator computes intersection |
+
+### Decisions Made During Execution
+
+- **[Phase 01 P01]** Pinned canonical `$schema` URLs (Anthropic marketplace schema + JSON Schema Store plugin schema) — editor-experience win; loader ignores `$schema` at load time.
+- **[Phase 01 P01]** Applied RESEARCH drift fixes: dropped `owner.url` from marketplace.json (documented schema is `{name, email}` only); omitted `category` from plugin.json (category is a marketplace `plugins[]`-entry field only, not a plugin-manifest field).
+- **[Phase 01 P01]** Zero component keys (`commands`/`agents`/`hooks`/`mcpServers`) in plugin.json — Phase 2+ default-folder auto-discovery picks up populated folders without manifest edits (D-10/D-23/D-24).
 
 ### Open Todos (from roadmap)
 
@@ -98,7 +112,7 @@ None.
 
 ### Next Action
 
-Run `/gsd:plan-phase 1` to decompose Phase 1 (Marketplace + plugin skeleton) into executable plans.
+Execute Plan 01-02 (Documentation) — author the top-level `README.md` and `plugins/zapili/README.md` per CONTEXT decisions D-25/D-26/D-27.
 
 ### How to Resume
 
@@ -110,7 +124,10 @@ Run `/gsd:plan-phase 1` to decompose Phase 1 (Marketplace + plugin skeleton) int
 
 ### Last Session Summary
 
+- 2026-05-28 — Completed Plan 01-01-manifests-PLAN.md. Wrote `.claude-plugin/marketplace.json` (commit `fd0d573`) and `plugins/zapili/.claude-plugin/plugin.json` (commit `c2d070b`). All plan acceptance criteria + `<verification>` block passed first-pass; zero deviations. Marketplace catalog now discoverable; plugin manifest now resolvable via `metadata.pluginRoot` → `./plugins/zapili`. RESEARCH drift fixes applied (no `owner.url`, no `category` on plugin.json). 4 requirements completed (MKT-01, MKT-02, MKT-03, ZAP-03). Ready for Plan 01-02 (Documentation).
 - 2026-05-27 — Project initialized. PROJECT.md, REQUIREMENTS.md (43 v1 reqs), and the four research streams (STACK / FEATURES / ARCHITECTURE / PITFALLS) authored, then synthesized into research/SUMMARY.md. Roadmap (6 phases, horizontal-layers structure, 100% coverage) approved and persisted. Ready to plan Phase 1.
+- **Stopped at:** Completed 01-01-manifests-PLAN.md
+- **Resume file:** None
 
 ---
-*State file initialized: 2026-05-27*
+*State file initialized: 2026-05-27 · Phase 01 Plan 01 complete: 2026-05-28*

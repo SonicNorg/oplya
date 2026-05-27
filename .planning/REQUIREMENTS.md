@@ -9,9 +9,9 @@ Requirements for initial release (`oplya` marketplace + `zapili` plugin v1). Eac
 
 ### Marketplace skeleton (MKT)
 
-- [ ] **MKT-01**: Repository root contains `.claude-plugin/marketplace.json` listing all plugins (only `name`, `owner`, `plugins` are required by spec; ship `$schema`, `displayName`, `category`, `tags` for polish)
-- [ ] **MKT-02**: Each plugin lives at `plugins/<plugin-name>/` with its own `.claude-plugin/plugin.json` (`name` required; `version` omitted while iterating so commit-SHA versioning applies)
-- [ ] **MKT-03**: Top-level `README.md` (English) documents the marketplace, install instructions (`/plugin marketplace add <repo>` then `/plugin install <name>@oplya`), and lists all plugins with one-line summaries
+- [x] **MKT-01**: Repository root contains `.claude-plugin/marketplace.json` listing all plugins (only `name`, `owner`, `plugins` are required by spec; ship `$schema`, `displayName`, `category`, `tags` for polish)
+- [x] **MKT-02**: Each plugin lives at `plugins/<plugin-name>/` with its own `.claude-plugin/plugin.json` (`name` required; `version` omitted while iterating so commit-SHA versioning applies)
+- [x] **MKT-03**: Top-level `README.md` (English) documents the marketplace, install instructions (`/plugin marketplace add <repo>` then `/plugin install <name>@oplya`), and lists all plugins with one-line summaries
 - [ ] **MKT-04**: Top-level `LICENSE` file (MIT or Apache 2.0)
 - [ ] **MKT-05**: Curated top-level `.gitignore` covering Node/Python/IDE/OS noise plus plugin-local state directories (`.zapili/`, `.claude/cache/`, etc.)
 - [ ] **MKT-06**: Top-level `.gitattributes` enforcing `*.sh text eol=lf` and `*.bash text eol=lf` to prevent CRLF-induced hook failures
@@ -22,7 +22,7 @@ Requirements for initial release (`oplya` marketplace + `zapili` plugin v1). Eac
 
 - [ ] **ZAP-01**: Single entry-point slash command (`/zapili:zapili`) defined in `plugins/zapili/commands/zapili.md` that delegates to the orchestrator skill and drives the entire workflow from `TASK.md` in the user's working directory
 - [ ] **ZAP-02**: `SessionStart` hook (`plugins/zapili/hooks/hooks.json` + `scripts/check-codex.sh`) emits an **advisory** warning if `codex` CLI is missing or unauthenticated (exit code 0 — must NOT brick Claude Code); strict pre-flight check happens inside the slash command itself
-- [ ] **ZAP-03**: Plugin-local README (`plugins/zapili/README.md`) explains what `zapili` does, required prerequisites (`codex` CLI + auth), and how to author a `TASK.md`
+- [x] **ZAP-03**: Plugin-local README (`plugins/zapili/README.md`) explains what `zapili` does, required prerequisites (`codex` CLI + auth), and how to author a `TASK.md`
 - [ ] **ZAP-04**: All hook and helper scripts (`scripts/*.sh`) are LF-only, have `#!/usr/bin/env bash` shebang, are committed with executable bit, and use `${CLAUDE_PLUGIN_ROOT}` for any plugin-local path
 - [ ] **ZAP-05**: Plugin does NOT mutate global Claude Code config (no writes to `~/.claude/settings.json`, `~/.claude.json`, etc.); all state lives in the user's project CWD
 
@@ -125,9 +125,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MKT-01 | 1 | Pending |
-| MKT-02 | 1 | Pending |
-| MKT-03 | 1 | Pending |
+| MKT-01 | 1 | Complete |
+| MKT-02 | 1 | Complete |
+| MKT-03 | 1 | Complete |
 | MKT-04 | 1 | Pending |
 | MKT-05 | 1 | Pending |
 | MKT-06 | 1 | Pending |
@@ -135,7 +135,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MKT-08 | 1 | Pending |
 | ZAP-01 | 2 | Pending |
 | ZAP-02 | 2 | Pending |
-| ZAP-03 | 1 | Pending |
+| ZAP-03 | 1 | Complete |
 | ZAP-04 | 2 | Pending |
 | ZAP-05 | 2 | Pending |
 | ZAP-10 | 3 | Pending |

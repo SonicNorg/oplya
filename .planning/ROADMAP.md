@@ -37,7 +37,7 @@ A single command turns a `TASK.md` into a shipped change through a formalized, v
 Plans:
 **Wave 1**
 
-- [ ] 01-01-manifests-PLAN.md — Marketplace + plugin JSON manifests (MKT-01, MKT-02, MKT-03, ZAP-03) — Wave 1
+- [x] 01-01-manifests-PLAN.md — Marketplace + plugin JSON manifests (MKT-01, MKT-02, MKT-03, ZAP-03) — Wave 1
 - [ ] 01-02-documentation-PLAN.md — Top-level + plugin English READMEs (MKT-03, MKT-04, ZAP-03) — Wave 1
 - [ ] 01-03-hygiene-PLAN.md — LICENSE + .gitignore + .gitattributes (MKT-04, MKT-05, MKT-06) — Wave 1
 
@@ -128,7 +128,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Marketplace + plugin skeleton | 0/5 | Planned (5 plans, 3 waves) | - |
+| 1. Marketplace + plugin skeleton | 1/5 | In Progress|  |
 | 2. Plugin packaging | 0/TBD | Not started | - |
 | 3. Inter-agent contracts | 0/TBD | Not started | - |
 | 4. Orchestrator + research + plan | 0/TBD | Not started | - |
