@@ -1,0 +1,1 @@
+{"name": "broken", "owner": {"name": "x"}, "plugins": [{"name": "y", "source": "../bad/y"}]}
