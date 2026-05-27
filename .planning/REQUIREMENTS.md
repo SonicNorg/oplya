@@ -15,8 +15,8 @@ Requirements for initial release (`oplya` marketplace + `zapili` plugin v1). Eac
 - [x] **MKT-04**: Top-level `LICENSE` file (MIT or Apache 2.0)
 - [x] **MKT-05**: Curated top-level `.gitignore` covering Node/Python/IDE/OS noise plus plugin-local state directories (`.zapili/`, `.claude/cache/`, etc.)
 - [x] **MKT-06**: Top-level `.gitattributes` enforcing `*.sh text eol=lf` and `*.bash text eol=lf` to prevent CRLF-induced hook failures
-- [ ] **MKT-07**: Local JSON validation script (`scripts/validate-manifests.sh`) verifying `marketplace.json` and each `plugin.json` parse cleanly before commit (light pre-commit checkpoint, not a CI gate)
-- [ ] **MKT-08**: Each plugin self-contained — no cross-plugin file references; every file `zapili` needs lives under `plugins/zapili/`
+- [x] **MKT-07**: Local JSON validation script (`scripts/validate-manifests.sh`) verifying `marketplace.json` and each `plugin.json` parse cleanly before commit (light pre-commit checkpoint, not a CI gate)
+- [x] **MKT-08**: Each plugin self-contained — no cross-plugin file references; every file `zapili` needs lives under `plugins/zapili/`
 
 ### zapili plugin scaffolding (ZAP-pkg)
 
@@ -131,8 +131,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MKT-04 | 1 | Complete |
 | MKT-05 | 1 | Complete |
 | MKT-06 | 1 | Complete |
-| MKT-07 | 1 | Pending |
-| MKT-08 | 1 | Pending |
+| MKT-07 | 1 | Complete |
+| MKT-08 | 1 | Complete |
 | ZAP-01 | 2 | Pending |
 | ZAP-02 | 2 | Pending |
 | ZAP-03 | 1 | Complete |

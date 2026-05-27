@@ -43,7 +43,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-04-validator-PLAN.md — validate-manifests.sh + install-hooks.sh + pre-commit + fixtures + driver (MKT-07, MKT-08) — Wave 2
+- [x] 01-04-validator-PLAN.md — validate-manifests.sh + install-hooks.sh + pre-commit + fixtures + driver (MKT-07, MKT-08) — Wave 2
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -128,7 +128,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Marketplace + plugin skeleton | 3/5 | In Progress|  |
+| 1. Marketplace + plugin skeleton | 4/5 | In Progress|  |
 | 2. Plugin packaging | 0/TBD | Not started | - |
 | 3. Inter-agent contracts | 0/TBD | Not started | - |
 | 4. Orchestrator + research + plan | 0/TBD | Not started | - |
