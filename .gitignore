@@ -1,0 +1,45 @@
+# zapili runtime state (per-task workflow cache in user CWDs)
+.zapili/
+
+# Claude Code per-plugin cache (project settings dir itself stays tracked)
+.claude/cache/
+
+# OS noise
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor / IDE noise
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# Node noise
+node_modules/
+dist/
+build/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp.*
+
+# Python noise
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Env files (prevents accidental secret commits)
+.env
+.env.local
+.env.*.local
