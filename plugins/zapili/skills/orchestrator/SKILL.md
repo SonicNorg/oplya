@@ -1,6 +1,6 @@
 ---
 description: zapili end-to-end workflow — research → plan → wave-parallel implementation → review, driven from TASK.md in the user's project root
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), Bash(jq:*), Bash(date:*), Bash(mkdir:*), Agent(researcher, planner), AskUserQuestion
+allowed-tools: Read, Glob, Grep, Write, Edit, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), Bash(jq:*), Bash(date:*), Bash(mkdir:*), Agent(researcher, planner, engineer), AskUserQuestion
 context: fork
 ---
 
@@ -186,43 +186,105 @@ If N reaches 4, STOP with the analogous diagnostic.
 
 ---
 
-## Stage 7 — Wave execution (PHASE-5-STUB)
+## Stage 7 — Single-phase execution + per-phase review + fix loop
 
-<!-- PHASE-5-STUB
+For each wave in PLAN.md, IN ORDER (waves are strictly sequential — the next wave waits for the prior wave's fix loop to converge):
 
-This stage will be filled in by Phase 5 (single-phase engineer round-trip) and
-Phase 6 (wave parallel fan-out). Phase 4 ships the orchestrator skeleton with
-this stage as a clear, parseable placeholder so Phase 5 just substitutes the
-implementation.
+For each phase in the current wave, ONE AT A TIME (Phase-5 release):
 
-Phase-5 implementation outline:
-- For each wave in PLAN.md (sequential):
-  - For each phase in the wave (Phase 5: sequential one-at-a-time;
-    Phase 6: parallel via a single assistant turn with N Agent() calls):
-    - Verify pairwise <files> writes disjointness across the wave (Phase 6)
-    - Dispatch Agent(engineer, ...) with TASK.md + scoped CONTEXT excerpt + PHASE-XX.md
-    - Receive phase-changes payload validated against phase-changes.schema.json
-    - Persist as PHASE-XX-attempt-1.md
-    - Run codex-review-phase.sh against the phase + engineer payload
-    - On HIGH/MEDIUM findings: route back to a fresh Agent(engineer, ...) with
-      the prior-attempt artifact; iterate ≤3
-- Final summary aggregator (Phase 6): aggregate every PHASE-XX-attempt-N.md and
-  emit a structured closing report to the user
+### 7a. Engineer attempt N (N starts at 1)
 
-state_advance_stage "summarize" → "complete" when Stage 7 finishes.
+Compose the engineer's input set:
+- `TASK.md`
+- A scoped CONTEXT excerpt — only the sections this phase declares it needs (extract by phase-id or section markers; if PHASE-XX.md does not declare a scope, pass full CONTEXT.md and accept the budget cost)
+- `PHASE-XX.md`
+- On N ≥ 2: `PHASE-XX-attempt-(N-1).md` + the prior review's findings file
 
-PHASE-5-STUB -->
-
-For now (Phase 4), STOP with:
+Dispatch:
 
 ```
-[zapili Phase 4] Research + planning complete.
-  CONTEXT.md         — captured user answers
-  PLAN.md            — wave plan
-  PHASE-XX.md (N)    — per-phase contracts with <files> blocks
-  .zapili/state.json — workflow state (current_stage: plan_validate → wave_execute pending)
+Agent(
+  description="zapili engineer pass — phase XX-NN attempt N",
+  subagent_type="engineer",
+  prompt="<engineer brief built per agents/engineer.md inputs>"
+)
+```
 
-Implementation execution (Phase 5+) is not yet wired in this release.
+Parse the engineer's XML envelope. Validate `<payload>` against `${CLAUDE_PLUGIN_ROOT}/schemas/phase-changes.schema.json`. On schema-validation failure: retry ONCE with the validation error appended; on second failure, STOP with diagnostic.
+
+Persist the FULL envelope (reasoning + payload) plus a header section (attempt number + input file list + timestamp) to `PHASE-XX-attempt-N.md` in the user's project root, ending with `<!-- <status>complete</status> -->`. This is the immutable reasoning-trace artifact — the next iteration READS it; nothing rewrites it.
+
+### 7b. Per-phase review
+
+```bash
+${CLAUDE_PLUGIN_ROOT}/scripts/codex-review-phase.sh \
+  TASK.md \
+  PHASE-XX.md \
+  .zapili/engineer-XX-attempt-N.payload.json \
+  "${PRIOR_PHASE_FINDINGS:-}"
+```
+
+(`engineer-XX-attempt-N.payload.json` is the bare JSON `<payload>` extracted from the envelope, persisted by Stage 7a alongside the human-readable `PHASE-XX-attempt-N.md`.)
+
+Exit-code routing:
+- `0` — clean → record success in state.json (`state_iter_inc '.iteration_counters.per_phase_fix["XX-NN"]'` accepted as 0 means "completed"), advance to the next phase in the wave
+- `1` — HIGH/MEDIUM present → set `PRIOR_PHASE_FINDINGS` to this attempt's output path, increment N, route back to Stage 7a as a FRESH `Agent(engineer, ...)` spawn (never reuse the engineer process — Claude Code subagents are stateless; continuity is by artifact)
+- `2/3/5` — error → STOP with diagnostic
+
+### 7c. Fix-loop convergence
+
+Per-phase iteration cap: **3**. If N reaches 4 without a clean review:
+
+```
+[zapili] Phase XX-NN did not converge after 3 engineer attempts.
+  Latest engineer attempt: PHASE-XX-attempt-3.md
+  Latest review findings: .zapili/phase-XX-review-attempt-3.json
+  Resolve manually or re-author PHASE-XX.md before re-running /zapili:zapili.
+```
+
+Then STOP. The orchestrator does NOT automatically widen the iteration cap.
+
+### 7d. Wave + phase advance
+
+After every phase in the wave passes review:
+
+```bash
+state_set '.current_wave' "$((current_wave + 1))"
+state_set '.current_phase' "null"
+```
+
+Loop back to the next wave. When all waves complete, advance to Stage 8.
+
+<!-- PHASE-6-STUB
+
+Phase 6 substitutes:
+- Mechanical pairwise <files>.writes disjointness verification across every wave
+  BEFORE Stage 7a — abort the wave with a diagnostic on any overlap.
+- Parallel engineer fan-out within a wave: single assistant turn with N
+  Agent(engineer, ...) calls; matched single-turn N codex-review-phase.sh
+  invocations after they all return.
+- Per-wave fix-loop convergence — every phase in the wave converges before the
+  next wave starts; per-phase iteration cap still 3.
+- Stage 8 final summary aggregator: walk every PHASE-XX-attempt-N.md, collect
+  every files_touched entry and every DEC-N decision, emit a single structured
+  closing report to the user.
+- Resume hardening: chaos tests at every state boundary; artifacts always win
+  over state.json on disagreement; orchestrator rewrites state.json from
+  artifact inspection on every fresh invocation.
+
+PHASE-6-STUB -->
+
+## Stage 8 — Closing summary (PHASE-6-STUB placeholder)
+
+For now (Phase 5 release), STOP with:
+
+```
+[zapili Phase 5] Single-phase round-trip complete for each phase processed.
+  PHASE-XX.md (N)            — per-phase contracts
+  PHASE-XX-attempt-N.md (M)  — engineer reasoning traces (per-attempt)
+  .zapili/phase-XX-review-attempt-N.json (M) — codex per-phase reviews
+
+Wave parallel fan-out + final summary aggregator + resume hardening land in Phase 6.
 ```
 
 ---
