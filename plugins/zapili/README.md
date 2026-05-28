@@ -27,6 +27,21 @@ The full TASK.md schema and worked examples ship in a later release.
 
 See the [marketplace README](../../README.md#install) — once the `oplya` marketplace is added, install with `/plugin install zapili@oplya`.
 
-## Status
+## Usage
 
-> The slash command surface is not yet wired in this release. This plugin's manifest is published so the marketplace install path is testable end-to-end; the orchestrator slash command lands in the next release.
+In a Claude Code session with this plugin installed:
+
+```
+/zapili:zapili
+```
+
+The command first runs a strict codex pre-flight; if codex is missing or unauthenticated it halts with a remediation message. In this Phase-2 release the command body is a stub — the full orchestrator (research → plan → wave-parallel implementation → review) lands in Phase 4.
+
+## Pre-flight
+
+Two safety nets verify codex is ready:
+
+- **SessionStart hook** (`plugins/zapili/hooks/hooks.json`) — advisory only. If `codex` is missing, prints remediation to stderr and exits 0 so Claude Code starts normally.
+- **Command pre-flight** (`plugins/zapili/scripts/preflight-codex.sh`) — strict. Run from the slash command body; fails fast with distinct exit codes (2 = missing, 3 = `--version` broken, 4 = `exec` unreachable) and a remediation message.
+
+Both probes use `codex exec --help` for auth verification, which never consumes API tokens or writes to `~/.config/codex/*`.
