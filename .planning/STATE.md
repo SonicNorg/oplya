@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: hardening + codex self-fix
 status: in_progress
-stopped_at: Phase 7 closed (review follow-ups landed); Phase 8 next (codex self-fix fallback)
-last_updated: "2026-05-28T17:30:00.000Z"
+stopped_at: Phase 8 closed (codex self-fix fallback live-validated); v1.1 milestone complete — awaiting audit
+last_updated: "2026-05-28T18:00:00.000Z"
 last_activity: 2026-05-28
 progress:
   total_phases: 8
-  completed_phases: 7
-  total_plans: 23
-  completed_plans: 23
-  percent: 87
+  completed_phases: 8
+  total_plans: 26
+  completed_plans: 26
+  percent: 100
 ---
 
 # STATE — oplya (Claude Code Plugin Marketplace + zapili)
@@ -53,7 +53,7 @@ Phase: 07 (review-followups-cleanup) — NOT YET PLANNED
 | 5 | Engineer subagent + single-phase implementation + per-phase review + fix loop | ✅ Complete |
 | 6 | Wave executor + final summary + resume hardening + publication polish | ✅ Complete |
 | 7 | Review follow-ups cleanup (C-03/C-04/F-01/F-02/H-01/S-01 → ZAP-55..59) | ✅ Complete |
-| 8 | Codex self-fix fallback after iteration cap (ZAP-60 — new capability) | ⏸ Not yet planned (next) |
+| 8 | Codex self-fix fallback after iteration cap (ZAP-60 — new capability) | ✅ Complete (live-calibrated) |
 
 ## Roadmap Evolution
 

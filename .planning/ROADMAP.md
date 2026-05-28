@@ -18,7 +18,7 @@ A single command turns a `TASK.md` into a shipped change through a formalized, v
 - [x] **Phase 5: Engineer subagent + single-phase implementation + per-phase review + fix loop** — Stress-test the per-phase round-trip and artifact-based continuity before introducing parallelism (completed 2026-05-28)
 - [x] **Phase 6: Wave executor + final summary + resume hardening + publication polish** — Lift the single-phase path into wave-parallel execution with mechanical write-scope disjointness, ship-ready polish (completed 2026-05-28)
 - [x] **Phase 7: Review follow-ups cleanup** — Closed five non-blocking follow-ups from v1.0.0 ultra-principal review: planner prior-findings contract (C-03), flagged_gaps routing (C-04), fixture completion f3/f4/f5 (F-01/F-02), check-codex.sh hygiene (H-01), check-wave-disjointness regex (S-01) (completed 2026-05-28)
-- [ ] **Phase 8: Codex self-fix fallback after iteration cap** — When the codex review fix-loop exhausts its iteration cap with persistent HIGH findings, dispatch a fixer-role codex pass that emits a unified-diff patch against the offending artifact; re-run the validator on the patched artifact; halt only if post-fix review still has HIGH
+- [x] **Phase 8: Codex self-fix fallback after iteration cap** — Live-validated against codex-cli 0.133.0 with f6 fixture. codex-self-fix.sh + fixer role + orchestrator Stage 6.1 + 7c.1 wiring + `## CODEX SELF-FIX EXHAUSTED` halt diagnostics. Round-trip resolved seeded `ISS-23ba7d51473d` (completed 2026-05-28)
 
 ## Phase Details
 
@@ -241,7 +241,16 @@ Plans:
   4. The fixer prompt is documented in `plugins/zapili/skills/orchestrator/references/codex-prompts.md` as a fourth role alongside `research_validator`, `plan_validator`, `phase_reviewer`; SHA-256 ID derivation rule (CALIB-01) applies if fixer must reference prior IDs.
   5. End-to-end fixture: a new fixture `tests/fixtures/f6-fix-loop-exhausted/` reproduces a case where the engineer cannot resolve a HIGH finding within 4 attempts but codex-self-fix DOES resolve it on the 5th turn; the fixture exists as an integration acceptance test for ZAP-60.
 
-**Plans**: TBD (run /gsd-plan-phase 8 to break down)
+**Plans**: 3 plans in 2 waves (completed 2026-05-28; live calibration transcript: `.planning/phases/08-codex-self-fix-fallback/live-codex-calibration-LOG.md`)
+Plans:
+**Wave 1**
+
+- [x] 08-01-fixer-script-and-prompt-PLAN.md — codex-self-fix.sh + fixer-role section in codex-prompts.md (ZAP-60 #1, #4) — Wave 1
+- [x] 08-02-f6-fixture-PLAN.md — engineer-stuck-but-codex-resolves fixture (ZAP-60 #5) — Wave 1
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [x] 08-03-orchestrator-integration-and-live-calibration-PLAN.md — SKILL.md Stage 6.1 + 7c.1 + live codex round-trip (ZAP-60 #2, #3) — Wave 2
 
 ---
 *Roadmap created: 2026-05-27*
