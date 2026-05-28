@@ -12,7 +12,7 @@ A single command turns a `TASK.md` into a shipped change through a formalized, v
 ## Phases
 
 - [x] **Phase 1: Marketplace + plugin skeleton** — Installable repo layout with valid manifests, READMEs, LICENSE, .gitignore, .gitattributes, JSON validators (completed 2026-05-28)
-- [ ] **Phase 2: Plugin packaging — SessionStart hook + slash command shell** — Advisory codex pre-flight + strict command-side check, LF-safe Bash scripts, `${CLAUDE_PLUGIN_ROOT}` discipline
+- [x] **Phase 2: Plugin packaging — SessionStart hook + slash command shell** — Advisory codex pre-flight + strict command-side check, LF-safe Bash scripts, `${CLAUDE_PLUGIN_ROOT}` discipline (completed 2026-05-28)
 - [ ] **Phase 3: Inter-agent contracts — JSON Schemas + contract reference docs** — Schemas for every machine-parseable payload, XML envelope spec, task-sizing thresholds, exhaustive-review prompt scaffold + calibration corpus
 - [ ] **Phase 4: Orchestrator skill + research + plan + their codex validations** — Linear single-shot pipeline (research → research-validate → plan → plan-validate) with iteration caps, prior-issue anchoring, artifact-as-truth state model
 - [ ] **Phase 5: Engineer subagent + single-phase implementation + per-phase review + fix loop** — Stress-test the per-phase round-trip and artifact-based continuity before introducing parallelism
@@ -62,7 +62,12 @@ Plans:
   4. Every `scripts/*.sh` is LF-only, has `#!/usr/bin/env bash`, is committed with mode `100755`, sets `set -euo pipefail`, and references plugin-local paths exclusively through `${CLAUDE_PLUGIN_ROOT}` (no relative `./`, no `$PWD`).
   5. Running `/zapili:zapili` does not write to `~/.claude/*`, `~/.config/codex/*`, or any path outside the user's project CWD — state stays under `<cwd>/.zapili/` and the artifact files in CWD.
 
-**Plans**: TBD
+**Plans**: 2 plans (1 wave)
+
+**Wave 1**
+
+- [x] 02-01-advisory-hook-PLAN.md — SessionStart hook + check-codex.sh (ZAP-02, partial ZAP-04/ZAP-05) — Wave 1
+- [x] 02-02-command-shell-PLAN.md — preflight-codex.sh + commands/zapili.md + README update (ZAP-01, ZAP-04, ZAP-05) — Wave 1
 
 ### Phase 3: Inter-agent contracts — JSON Schemas + contract reference docs
 
@@ -129,7 +134,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Marketplace + plugin skeleton | 5/5 | Complete   | 2026-05-28 |
-| 2. Plugin packaging | 0/TBD | Not started | - |
+| 2. Plugin packaging | 2/2 | Complete   | 2026-05-28 |
 | 3. Inter-agent contracts | 0/TBD | Not started | - |
 | 4. Orchestrator + research + plan | 0/TBD | Not started | - |
 | 5. Engineer + single-phase + review/fix | 0/TBD | Not started | - |

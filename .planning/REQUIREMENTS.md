@@ -20,11 +20,11 @@ Requirements for initial release (`oplya` marketplace + `zapili` plugin v1). Eac
 
 ### zapili plugin scaffolding (ZAP-pkg)
 
-- [ ] **ZAP-01**: Single entry-point slash command (`/zapili:zapili`) defined in `plugins/zapili/commands/zapili.md` that delegates to the orchestrator skill and drives the entire workflow from `TASK.md` in the user's working directory
-- [ ] **ZAP-02**: `SessionStart` hook (`plugins/zapili/hooks/hooks.json` + `scripts/check-codex.sh`) emits an **advisory** warning if `codex` CLI is missing or unauthenticated (exit code 0 — must NOT brick Claude Code); strict pre-flight check happens inside the slash command itself
+- [x] **ZAP-01**: Single entry-point slash command (`/zapili:zapili`) defined in `plugins/zapili/commands/zapili.md` that delegates to the orchestrator skill and drives the entire workflow from `TASK.md` in the user's working directory
+- [x] **ZAP-02**: `SessionStart` hook (`plugins/zapili/hooks/hooks.json` + `scripts/check-codex.sh`) emits an **advisory** warning if `codex` CLI is missing or unauthenticated (exit code 0 — must NOT brick Claude Code); strict pre-flight check happens inside the slash command itself
 - [x] **ZAP-03**: Plugin-local README (`plugins/zapili/README.md`) explains what `zapili` does, required prerequisites (`codex` CLI + auth), and how to author a `TASK.md`
-- [ ] **ZAP-04**: All hook and helper scripts (`scripts/*.sh`) are LF-only, have `#!/usr/bin/env bash` shebang, are committed with executable bit, and use `${CLAUDE_PLUGIN_ROOT}` for any plugin-local path
-- [ ] **ZAP-05**: Plugin does NOT mutate global Claude Code config (no writes to `~/.claude/settings.json`, `~/.claude.json`, etc.); all state lives in the user's project CWD
+- [x] **ZAP-04**: All hook and helper scripts (`scripts/*.sh`) are LF-only, have `#!/usr/bin/env bash` shebang, are committed with executable bit, and use `${CLAUDE_PLUGIN_ROOT}` for any plugin-local path
+- [x] **ZAP-05**: Plugin does NOT mutate global Claude Code config (no writes to `~/.claude/settings.json`, `~/.claude.json`, etc.); all state lives in the user's project CWD
 
 ### Inter-agent contracts (ZAP-spec)
 
@@ -133,11 +133,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MKT-06 | 1 | Complete |
 | MKT-07 | 1 | Complete |
 | MKT-08 | 1 | Complete |
-| ZAP-01 | 2 | Pending |
-| ZAP-02 | 2 | Pending |
+| ZAP-01 | 2 | Complete |
+| ZAP-02 | 2 | Complete |
 | ZAP-03 | 1 | Complete |
-| ZAP-04 | 2 | Pending |
-| ZAP-05 | 2 | Pending |
+| ZAP-04 | 2 | Complete |
+| ZAP-05 | 2 | Complete |
 | ZAP-10 | 3 | Pending |
 | ZAP-11 | 3 | Pending |
 | ZAP-12 | 3 | Pending |
