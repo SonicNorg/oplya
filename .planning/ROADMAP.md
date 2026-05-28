@@ -17,7 +17,7 @@ A single command turns a `TASK.md` into a shipped change through a formalized, v
 - [x] **Phase 4: Orchestrator skill + research + plan + their codex validations** — Linear single-shot pipeline (research → research-validate → plan → plan-validate) with iteration caps, prior-issue anchoring, artifact-as-truth state model (completed 2026-05-28)
 - [x] **Phase 5: Engineer subagent + single-phase implementation + per-phase review + fix loop** — Stress-test the per-phase round-trip and artifact-based continuity before introducing parallelism (completed 2026-05-28)
 - [x] **Phase 6: Wave executor + final summary + resume hardening + publication polish** — Lift the single-phase path into wave-parallel execution with mechanical write-scope disjointness, ship-ready polish (completed 2026-05-28)
-- [ ] **Phase 7: Review follow-ups cleanup** — Close five non-blocking follow-ups from v1.0.0 ultra-principal review: planner prior-findings contract (C-03), flagged_gaps routing (C-04), fixture completion f3/f4/f5 (F-01/F-02), check-codex.sh hygiene (H-01), check-wave-disjointness regex (S-01)
+- [x] **Phase 7: Review follow-ups cleanup** — Closed five non-blocking follow-ups from v1.0.0 ultra-principal review: planner prior-findings contract (C-03), flagged_gaps routing (C-04), fixture completion f3/f4/f5 (F-01/F-02), check-codex.sh hygiene (H-01), check-wave-disjointness regex (S-01) (completed 2026-05-28)
 - [ ] **Phase 8: Codex self-fix fallback after iteration cap** — When the codex review fix-loop exhausts its iteration cap with persistent HIGH findings, dispatch a fixer-role codex pass that emits a unified-diff patch against the offending artifact; re-run the validator on the patched artifact; halt only if post-fix review still has HIGH
 
 ## Phase Details
@@ -220,7 +220,13 @@ All 43 v1 REQ-IDs + 6 v1.1 REQ-IDs are mapped to exactly one phase (49 total).
   4. `plugins/zapili/scripts/check-codex.sh` uses `set -euo pipefail` (was `set -uo pipefail` — missing `-e` violates CLAUDE.md hook discipline and Phase 2 D-15); all existing `if !` and `|| true` guards still hold under `-e` (H-01).
   5. `plugins/zapili/scripts/check-wave-disjointness.sh` regex matches both production naming (`PHASE-01`, `PHASE-02`) and fixture naming (`PHASE-XX-a`, `PHASE-XX-b`) so the f2 self-test exercises the overlap-detection code path (S-01).
 
-**Plans**: TBD (run /gsd-plan-phase 7 to break down)
+**Plans**: 3 plans in 1 wave (all parallel-safe; completed 2026-05-28)
+Plans:
+**Wave 1**
+
+- [x] 07-01-agents-orchestrator-PLAN.md — planner prior-findings + SKILL.md Stage 5 flagged_gaps routing (ZAP-55, ZAP-56) — Wave 1
+- [x] 07-02-fixtures-completion-PLAN.md — fixtures/README + f3 PLAN + f4/f5 TASK (ZAP-57) — Wave 1
+- [x] 07-03-shell-hygiene-PLAN.md — check-codex.sh -e + check-wave-disjointness.sh regex (ZAP-58, ZAP-59) — Wave 1
 
 ### Phase 8: Codex self-fix fallback after iteration cap
 
