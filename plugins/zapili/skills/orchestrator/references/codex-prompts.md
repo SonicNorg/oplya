@@ -107,6 +107,80 @@ Review the engineer payload + `PHASE-XX.md` + the touched files for:
 5. `security` — Newly-introduced threats not covered by the phase plan's threat model
 6. `professionalism` — Same bar as plan_validator
 
+### fixer
+
+The fixer is the LAST-RESORT codex role dispatched after the engineer (or
+planner) fix-loop exhausts its iteration cap (default 4) with persistent HIGH
+findings. Unlike the three validator roles above, the fixer does NOT emit
+findings — it emits a **unified-diff patch** that revises the offending
+artifact (`PHASE-XX.md`, `PLAN.md`, or `CONTEXT.md`) to address every prior
+HIGH (and MEDIUM) finding.
+
+The wrapper that drives this role is `plugins/zapili/scripts/codex-self-fix.sh`
+(ZAP-60). See that script's header for the exit-code contract.
+
+#### Prompt shape
+
+```xml
+<role>fixer</role>
+
+<inputs>
+  <file role="artifact"><path to the file to fix></file>
+  <file role="prior-findings"><path to the validator's JSON output></file>
+</inputs>
+
+<task>
+Revise the artifact to address every HIGH (and MEDIUM) finding listed in
+<prior_findings>. Do not invent new ISS-... ids — reference the existing ids
+from the findings block when explaining your changes (SHA-256 ID derivation
+rule, CALIB-01).
+
+Emit a single unified-diff patch applicable from the repo root via:
+  git apply <patch>
+
+The patch's --- a/ and +++ b/ headers MUST use the artifact path EXACTLY as it
+appears in the <inputs> block. If no valid patch can address every HIGH
+finding, emit an empty <patch></patch> block — do NOT emit a partial or
+speculative patch.
+</task>
+
+<output_contract>
+Respond ONLY inside this envelope, nothing before or after:
+
+<response>
+  <patch>
+... unified diff here ...
+  </patch>
+</response>
+
+Forbidden vocabulary: `key`, `main`, `top`, `important`.
+</output_contract>
+
+<prior_findings>
+  <!-- HIGH + MEDIUM findings, one per <finding> child, with full remediation -->
+  <finding id="ISS-..." severity="HIGH" kind="..." file="..." line_range="...">
+    <remediation text>
+  </finding>
+  ...
+</prior_findings>
+```
+
+#### Halt paths
+
+| Condition | Wrapper exit | Orchestrator response |
+|-----------|--------------|------------------------|
+| Patch generated, dry-run + apply both clean, post-fix re-validate clean | 0 | Continue workflow |
+| Patch generated, applied, post-fix re-validate still HIGH | 0 (from script) | Halt with `## CODEX SELF-FIX EXHAUSTED` + finding IDs + patch path |
+| Codex emitted an empty `<patch></patch>` block | 1 | Halt with `## CODEX SELF-FIX EXHAUSTED — no diff produced` |
+| Codex invocation failed | 2 | Halt with codex-side diagnostic |
+| `git apply --check` rejected the patch | 4 | Halt with patch path + `git apply --check` stderr |
+
+#### Single-attempt rule
+
+Self-fix is dispatched ONCE per validator cap-hit. If the post-fix re-validate
+still has HIGH findings, the workflow halts. Re-running `/zapili:zapili` resets
+the counter, giving the human a chance to inspect first.
+
 ## Reclassification rules
 
 When `<prior_findings>` is present:
