@@ -32,6 +32,10 @@ If you have the `claude` CLI installed, you can also run a deeper supplementary 
 claude plugin validate . --strict
 ```
 
+## Status
+
+Current release: **v1.0.0** (2026-05-28). See [CHANGELOG.md](CHANGELOG.md) for the full delivery list and [.planning/REQUIREMENTS.md § "Acceptance Criteria"](.planning/REQUIREMENTS.md) for the verifiable acceptance set. Every v1 requirement (43 of 43) is implemented and stamped in `.planning/REQUIREMENTS.md` § "Traceability".
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
