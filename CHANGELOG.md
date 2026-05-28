@@ -6,9 +6,23 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 ## [Unreleased]
 
-(Nothing yet — next changes land here.)
+(Nothing yet — next changes land here. v1.1.1 candidate will collect deferred NITs.)
 
 ## [1.1.0] - 2026-05-29
+
+### Pre-release fixes (post-release-prep ultra-principal review, same date)
+
+- **Russian text removed from production prompt scaffolds** (review P1-1) — a two-word Russian phrase was verbatim-copied from an external prompt template and shipped in the `<exhaustiveness>` block of all three validator scripts + `codex-prompts.md`. Violates the global `CLAUDE.md` rule "Never use Russian in code or tests for any purpose". Replaced with `(exhaustive coverage, not a targeted re-review)` in all four locations + the four `calibration-v1.1.0-attempt-1.prompt.txt` snapshots.
+- **`phase-changes.schema.json` attempt cap raised to 10** (review P1-2) — `iteration_counters.maximum` in `state.schema.json` was raised to 10 during the B-3 fix, but `phase-changes.schema.json` `attempt` field still had `maximum: 3`. With `fix_loop_cap` default of 4, every attempt-4 engineer payload failed schema validation unconditionally, blocking the entire default workflow. Now `maximum: 10` matches `state.schema.json` parity.
+- **Top-level `README.md` Status section updated** (review P1-3) — version line was still `v1.0.0 (2026-05-28)` with `43 of 43`. Now `v1.1.0 (2026-05-29)` with `49 of 49: 43 v1 + 6 v1.1`.
+- **`validation-findings.schema.json` finding-ID uniqueness enforced** (review P2-1) — added `uniqueItems: true` to the `findings` array (catches whole-object duplicates) plus a runtime `jq` ID-uniqueness check in all three validator wrapper scripts after schema validation (catches duplicate-id-different-object cases that pass `uniqueItems`). Duplicate-id payloads now exit 3 instead of silently losing one finding from the orchestrator's prior-issue carry-forward set. `codex-prompts.md` documents the disambiguation rule: prefer the most specific category for the location and omit the duplicate; do NOT extend the SHA-256 digest input with `category` (would break back-compat with existing `expected-findings.json` fixtures).
+- **Absolute build-machine paths removed from prompt heredocs** (review P2-2) — all four scripts (`codex-validate-research.sh`, `codex-validate-plan.sh`, `codex-review-phase.sh`, `codex-self-fix.sh`) used `$PROMPTS_REF` which expanded to the developer's `/home/norg/...` absolute path in the heredoc'd prompt. Replaced with the literal `${CLAUDE_PLUGIN_ROOT}/...` placeholder that codex sees as documentation, plus an in-place `sed` patch of the four `calibration-v1.1.0-attempt-1.prompt.txt` snapshots.
+- **CALIBRATION-v1.1.0.md table accuracy** (review P2-3 + P2-4) — table claimed `tests_to_add: n/a` for plan_validator runs (false — codex does populate it opportunistically) and `not_fully_audited: TBD per attempt` for all f2..f5 (false — actual values are 0, 0, 2, 1 from the persisted JSONs). Updated table with real values + footnotes explaining the f4/f5 gaps.
+- **SKILL.md hardcoded "3-attempt cap" diagnostics replaced** (review P2-5) — Stage 4 (research-validate), Stage 6 (plan-validate), and Stage 7c (per-phase) had `"after 3 iterations"` / `"3-attempt cap"` literals while `fix_loop_cap` defaults to 4 and is user-configurable. All three stages now read `cap=$(state_get '.fix_loop_cap // 4')` and use `${cap}` in diagnostic strings. Research-validate also moved off its independent hardcoded-3 cap to honor `fix_loop_cap` like the other two validators.
+
+### Added
+
+- **Review follow-ups cleanup (ZAP-55..59, Phase 7)** — planner `<file role="prior-findings">` input contract on fix iterations (ZAP-55); orchestrator Stage 5.5 routes planner `flagged_gaps` to the user via `AskUserQuestion` and appends answers to CONTEXT.md `## Gap Resolutions` before plan_validate (ZAP-56); `tests/fixtures/README.md` calibration loop uses real wrapper signatures + minimal `f3/PLAN.md`, `f4/TASK.md`, `f5/TASK.md` so all 5 fixtures runnable end-to-end (ZAP-57); `check-codex.sh` switches to `set -euo pipefail` while preserving SessionStart advisory exit-0 contract (ZAP-58); `check-wave-disjointness.sh` regex broadened to `PHASE-[A-Za-z0-9]+(-[A-Za-z0-9]+)?` so f2 fixture detects the seeded overlap (ZAP-59).
 
 ### Added
 

@@ -19,7 +19,7 @@
 </categories>
 
 <exhaustiveness>
-This is a FULL review (полное ревью, not targeted re-review). Do NOT limit yourself to
+This is a FULL review (exhaustive coverage, not a targeted re-review). Do NOT limit yourself to
 previously-discussed findings, do NOT pick a top-N subset, do NOT stop at the first
 clear issue. Audit EVERY phase end-to-end across every category listed in &lt;categories&gt;.
 Treat any prior_findings as hypotheses to re-verify from scratch — they do NOT define
@@ -48,7 +48,7 @@ reason. Do NOT silently skip — silent gaps are worse than declared gaps.
   finding belongs in category `parallel-safety` with a concrete scenario in `repro`.
   If anything was not fully audited, populate top-level `not_fully_audited[]`.
   Forbidden vocabulary: `key`, `main`, `top`, `important`.
-  See /home/norg/work/nepavel/oplya/plugins/zapili/skills/orchestrator/references/codex-prompts.md for the full scaffold (exhaustiveness contract + severity mapping).
+  See ${CLAUDE_PLUGIN_ROOT}/skills/orchestrator/references/codex-prompts.md for the full scaffold (exhaustiveness contract + severity mapping).
 </output_contract>
 
 

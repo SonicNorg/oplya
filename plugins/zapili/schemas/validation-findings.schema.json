@@ -10,6 +10,7 @@
     "schema_version": { "const": 1 },
     "findings": {
       "type": "array",
+      "uniqueItems": true,
       "items": {
         "type": "object",
         "additionalProperties": false,

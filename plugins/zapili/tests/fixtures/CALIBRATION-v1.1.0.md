@@ -21,11 +21,15 @@ proof of behavior — not just a prose summary in `live-codex-calibration-LOG.md
 | Fixture | Wrapper exit | Expected ID match | Expected kind match | `why_real_risk` / `repro` populated on substantive | `tests_to_add` on substantive | `not_fully_audited[]` |
 |---------|--------------|-------------------|----------------------|--------------------------------------------------------|------------------------------|-----------------------|
 | f1 | 1 ✓ | YES (`ISS-cc94a3aa8710`) | YES | YES (1/1 HIGH + 1/1 MEDIUM) | YES | `[]` (legit full coverage on small fixture) |
-| f2 | 1 ✓ | NO (LLM stochasticity on SHA-256 inputs) | YES (`write-scope-overlap` HIGH) | YES | n/a (plan_validator, not phase_reviewer) | TBD per attempt |
-| f3 | 1 ✓ | NO (same LLM stochasticity) | YES (`ambiguous-task-wording` variant) | YES | n/a | TBD per attempt |
-| f4 | 1 ✓ | NO (LLM stochasticity) | YES (`missing-test*` variant) | YES | YES (6/6 substantive — phase_reviewer takes `tests_to_add` seriously) | TBD per attempt |
-| f5 | 1 ✓ | **YES** (`ISS-4653b5e9bc97` exact match) | YES | YES on the 1 substantive | partial | TBD per attempt |
+| f2 | 1 ✓ | NO (LLM anchor-location drift; see "ID determinism" below) | YES (`write-scope-overlap` HIGH) | YES | YES — plan_validator opportunistically populates it on this run | `[]` (0 entries) |
+| f3 | 1 ✓ | NO (same anchor-location drift) | YES (`ambiguous-task-wording` variant) | YES | YES — populated on 2 of 3 MEDIUM findings (opportunistic) | `[]` (0 entries) |
+| f4 | 1 ✓ | NO (anchor-location drift) | YES (`missing-test*` variant) | YES | YES (6/6 substantive — phase_reviewer takes `tests_to_add` seriously) | `2` entries (real scope gaps — missing source/test files in fixture) |
+| f5 | 1 ✓ | **YES** (`ISS-4653b5e9bc97` exact match) | YES | YES on the 1 substantive | partial | `1` entry |
 | f6 (post-fix) | 1 ✓ | seeded `ISS-23ba7d51473d` **NOT in findings** ✓ (resolved by self-fix patch) | n/a | n/a — new pass, new findings | YES on substantive | `2` entries (codex honest about budget) |
+
+Footnotes:
+- f4/f5 `not_fully_audited[]` entries reflect that the fixtures intentionally omit real source files (only PHASE-XX.md + engineer-payload.json are provided); codex honestly declares the source-tree it could not inspect rather than silently extrapolating. This is the exhaustiveness contract working as designed.
+- f2/f3 `not_fully_audited: []` (empty) — both small plan-validator fixtures fit in budget; codex claims full coverage of every listed category against every PHASE-XX.md.
 
 ## Interpretation
 

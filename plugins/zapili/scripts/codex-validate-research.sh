@@ -67,7 +67,7 @@ cat >"$PROMPT_FILE" <<EOF
 </categories>
 
 <exhaustiveness>
-This is a FULL review (полное ревью, not targeted re-review). Do NOT limit yourself to
+This is a FULL review (exhaustive coverage, not a targeted re-review). Do NOT limit yourself to
 previously-discussed findings, do NOT pick a top-N subset, do NOT stop at the first
 clear issue. Audit the ENTIRE artifact end-to-end across every category listed in
 &lt;categories&gt;. Treat any prior_findings as hypotheses to re-verify from scratch — they
@@ -95,7 +95,7 @@ gaps are worse than declared gaps because the orchestrator cannot route around t
   Trailing &lt;coverage&gt; block lists files_reviewed and categories_checked. If anything
   was not fully audited, populate top-level \`not_fully_audited[]\` with {scope, reason}.
   Forbidden vocabulary in your response: \`key\`, \`main\`, \`top\`, \`important\`.
-  See $PROMPTS_REF for the full scaffold (exhaustiveness contract + severity mapping).
+  See \${CLAUDE_PLUGIN_ROOT}/skills/orchestrator/references/codex-prompts.md for the full scaffold (exhaustiveness contract + severity mapping).
 </output_contract>
 
 $PRIOR_BLOCK
@@ -152,6 +152,18 @@ PY
     fi
     ;;
 esac
+
+# Finding-ID uniqueness check — JSON Schema `uniqueItems` compares whole objects
+# (deep equality), so two findings with the same id but different file/category
+# still pass schema validation. The orchestrator's prior-issue dedup is set-based
+# on .id, so duplicate ids silently drop one finding from the carry-forward set.
+# Enforce real id-uniqueness here, after schema validation.
+DUPE_IDS=$(jq -r '.findings | map(.id) | group_by(.) | map(select(length > 1) | .[0]) | .[]' "$OUT_FILE" 2>/dev/null)
+if [ -n "$DUPE_IDS" ]; then
+  printf '[codex-validate-research] duplicate finding ids in payload (orchestrator dedup would lose one): %s\n' "$DUPE_IDS" | tr '\n' ' ' >&2
+  printf '\n' >&2
+  exit 3
+fi
 
 # Decide exit code based on severity.
 SEVERE_COUNT=$(jq '[.findings[] | select(.severity=="HIGH" or .severity=="MEDIUM")] | length' "$OUT_FILE")

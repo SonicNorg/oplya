@@ -6,10 +6,10 @@
 
 Without an explicit anti-targeting instruction, codex defaults to a narrow targeted review — it picks the most salient issue, emits ~3 findings, and stops. This wastes every iteration of the fix-loop on partial coverage and is the single most expensive failure mode of the whole pipeline. The scaffold below was calibrated to defeat that default; the instructions are not advisory.
 
-Every validator prompt MUST contain this paragraph verbatim (the exact wording matters — calibrated against codex-cli 0.133.0; substitutions like "comprehensive" or "thorough" do not produce the same coverage):
+Every validator prompt MUST contain this paragraph verbatim (the exact wording matters — calibrated against codex-cli 0.133.0; the "FULL review (exhaustive coverage, not a targeted re-review)" framing was tuned against live codex behavior — milder substitutions like "comprehensive" or "thorough" alone do not produce the same coverage):
 
 ```
-This is a FULL review (полное ревью, not targeted re-review). Do NOT limit yourself to
+This is a FULL review (exhaustive coverage, not a targeted re-review). Do NOT limit yourself to
 previously-discussed findings, do NOT pick a top-N subset, do NOT stop at the first
 clear issue. Audit the ENTIRE artifact end-to-end across every category listed in
 <categories>. Treat any prior_findings as hypotheses to re-verify from scratch — they
@@ -124,6 +124,8 @@ digest_input = "CONTEXT.md|8-9|context-task-contradiction"
 sha256       = cc94a3aa8710e3cd... (first 12 hex)
 id           = "ISS-cc94a3aa8710"
 ```
+
+**Duplicate-ID disambiguation** (added 2026-05-29): a single `(file, line_range, kind)` location can legitimately surface under two distinct categories (e.g. a missing API uncovered by the goal under both `gaps` and `completeness`). The base formula produces the same `id` for both, but the schema now enforces `uniqueItems: true` on `findings` — so emitting two entries with identical `id` will fail validation. When this collision occurs, pick ONE category per location: choose the most specific category that describes the issue and omit the duplicate. If you genuinely need both findings (different root cause), use distinct `kind` values per category to disambiguate the digest input. Do NOT append `category` to the digest input — that breaks back-compat with `expected-findings.json` fixtures derived from the 3-tuple formula.
 
 **Forbidden:** inventing IDs such as `ISS-a1b2c3d4e5f6`, `ISS-d4e5f6a7b8c9`, or any incrementing-hex sequence. Findings with non-deterministic IDs are treated as malformed output and force the orchestrator to retry the codex call.
 

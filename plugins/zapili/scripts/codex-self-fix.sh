@@ -97,7 +97,7 @@ role "$VALIDATOR_ROLE" exhausted its iteration cap with persistent findings.
 Your single job: revise the artifact above to address every HIGH (and MEDIUM)
 finding listed in &lt;prior_findings&gt;. Do not invent new ISS-... ids — reference
 the existing ids from the findings block when explaining your changes (per the
-SHA-256 ID derivation rule, CALIB-01, documented in $PROMPTS_REF).
+SHA-256 ID derivation rule, CALIB-01, documented in \${CLAUDE_PLUGIN_ROOT}/skills/orchestrator/references/codex-prompts.md).
 
 Emit a single unified-diff patch applicable from the repo root via:
   git apply &lt;patch&gt;

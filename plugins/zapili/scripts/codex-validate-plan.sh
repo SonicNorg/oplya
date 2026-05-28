@@ -71,7 +71,7 @@ $PHASE_INPUTS
 </categories>
 
 <exhaustiveness>
-This is a FULL review (полное ревью, not targeted re-review). Do NOT limit yourself to
+This is a FULL review (exhaustive coverage, not a targeted re-review). Do NOT limit yourself to
 previously-discussed findings, do NOT pick a top-N subset, do NOT stop at the first
 clear issue. Audit EVERY phase end-to-end across every category listed in &lt;categories&gt;.
 Treat any prior_findings as hypotheses to re-verify from scratch — they do NOT define
@@ -100,7 +100,7 @@ reason. Do NOT silently skip — silent gaps are worse than declared gaps.
   finding belongs in category \`parallel-safety\` with a concrete scenario in \`repro\`.
   If anything was not fully audited, populate top-level \`not_fully_audited[]\`.
   Forbidden vocabulary: \`key\`, \`main\`, \`top\`, \`important\`.
-  See $PROMPTS_REF for the full scaffold (exhaustiveness contract + severity mapping).
+  See \${CLAUDE_PLUGIN_ROOT}/skills/orchestrator/references/codex-prompts.md for the full scaffold (exhaustiveness contract + severity mapping).
 </output_contract>
 
 $PRIOR_BLOCK
@@ -152,6 +152,16 @@ PY
     fi
     ;;
 esac
+
+# Finding-ID uniqueness check — JSON Schema uniqueItems is whole-object equality,
+# so duplicate-id-different-category passes schema. The orchestrator's prior-issue
+# carry-forward is set-based on .id, so duplicates silently drop one finding.
+DUPE_IDS=$(jq -r '.findings | map(.id) | group_by(.) | map(select(length > 1) | .[0]) | .[]' "$OUT_FILE" 2>/dev/null)
+if [ -n "$DUPE_IDS" ]; then
+  printf '[codex-validate-plan] duplicate finding ids in payload (orchestrator dedup would lose one): %s\n' "$DUPE_IDS" | tr '\n' ' ' >&2
+  printf '\n' >&2
+  exit 3
+fi
 
 SEVERE_COUNT=$(jq '[.findings[] | select(.severity=="HIGH" or .severity=="MEDIUM")] | length' "$OUT_FILE")
 printf '%s\n' "$OUT_FILE"

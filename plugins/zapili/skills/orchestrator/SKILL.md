@@ -141,12 +141,15 @@ When all questions are answered, write `CONTEXT.md` in the user's project root w
 
 ## Stage 4 — Research-validate loop
 
-Iteration cap: **3**. Prior-issue anchoring required from iteration 2 onward.
+Iteration cap: `state.json .fix_loop_cap` (default 4). Prior-issue anchoring required from iteration 2 onward.
 
 For iteration N (starting at 1):
 
 ```bash
-${CLAUDE_PLUGIN_ROOT}/scripts/codex-validate-research.sh \
+source "${CLAUDE_PLUGIN_ROOT}/scripts/state.sh"
+cap=$(state_get '.fix_loop_cap // 4')
+
+"${CLAUDE_PLUGIN_ROOT}/scripts/codex-validate-research.sh" \
   TASK.md \
   CONTEXT.md \
   "${PRIOR_FINDINGS_FILE:-}"
@@ -157,9 +160,9 @@ The wrapper persists output to `.zapili/research-validate-attempt-$N.json` and e
 - `1` — HIGH or MEDIUM present → set `PRIOR_FINDINGS_FILE` to this attempt's output, increment N, route findings back to the user (call `AskUserQuestion` per HIGH/MEDIUM finding's remediation), update `CONTEXT.md`, re-run
 - `2..5` — error → STOP with diagnostic
 
-If N reaches 4 (cap exceeded), STOP with:
+If `N > cap` (cap exceeded), STOP with:
 ```
-[zapili] Research validation did not converge after 3 iterations. See .zapili/research-validate-attempt-3.json for outstanding findings.
+[zapili] Research validation did not converge after ${cap} iterations. See .zapili/research-validate-attempt-${cap}.json for outstanding findings.
 ```
 
 Stable issue IDs persist via `state_set '.issue_ids.research_validate' ...` so the next iteration's `prior_findings` block contains them. Resolved IDs MUST NOT reappear in subsequent iterations (per `contracts.md`).
@@ -225,12 +228,15 @@ Resume signal: the presence of a `## Gap Resolutions` section in CONTEXT.md AND 
 
 ## Stage 6 — Plan-validate loop
 
-Iteration cap: **3**.
+Iteration cap: `state.json .fix_loop_cap` (default 4).
 
 For iteration N:
 
 ```bash
-${CLAUDE_PLUGIN_ROOT}/scripts/codex-validate-plan.sh \
+source "${CLAUDE_PLUGIN_ROOT}/scripts/state.sh"
+cap=$(state_get '.fix_loop_cap // 4')
+
+"${CLAUDE_PLUGIN_ROOT}/scripts/codex-validate-plan.sh" \
   PLAN.md \
   'PHASE-*.md' \
   "${PRIOR_PLAN_FINDINGS_FILE:-}"
@@ -238,7 +244,7 @@ ${CLAUDE_PLUGIN_ROOT}/scripts/codex-validate-plan.sh \
 
 Persistence + exit semantics identical to Stage 4. On HIGH/MEDIUM findings, route them back to the planner via a fresh `Agent(planner, ...)` invocation that includes the prior-findings block; on no findings, proceed to Stage 7.
 
-If N reaches 4, STOP with the analogous diagnostic — UNLESS the codex-self-fix fallback succeeds (see Stage 6.1 below).
+If `N > cap`, STOP with the analogous diagnostic — UNLESS the codex-self-fix fallback succeeds (see Stage 6.1 below).
 
 ### 6.1. Cap-hit codex-self-fix fallback (ZAP-60)
 
@@ -366,7 +372,7 @@ If `(b)` is non-empty:
 - If any phase's N reaches 4 — DO NOT STOP immediately. First try the codex-self-fix fallback per Stage 7c.1 below. If that also fails, STOP the entire wave with:
 
   ```
-  [zapili] Wave W did not converge: phase(s) XX-Y, XX-Z hit the 3-attempt cap.
+  [zapili] Wave W did not converge: phase(s) XX-Y, XX-Z hit the ${cap}-attempt cap (state.json .fix_loop_cap, default 4).
     Latest engineer attempts: PHASE-XX-Y-attempt-3.md, PHASE-XX-Z-attempt-3.md
     Latest review findings: .zapili/phase-XX-Y-review-attempt-3.json, .zapili/phase-XX-Z-review-attempt-3.json
     Codex self-fix transcript: .zapili/codex-self-fix-attempt-*.patch + .raw

@@ -34,7 +34,7 @@ claude plugin validate . --strict
 
 ## Status
 
-Current release: **v1.0.0** (2026-05-28). See [CHANGELOG.md](CHANGELOG.md) for the full delivery list and [.planning/REQUIREMENTS.md § "Acceptance Criteria"](.planning/REQUIREMENTS.md) for the verifiable acceptance set. Every v1 requirement (43 of 43) is implemented and stamped in `.planning/REQUIREMENTS.md` § "Traceability".
+Current release: **v1.1.0** (2026-05-29). See [CHANGELOG.md](CHANGELOG.md) for the full delivery list and [.planning/REQUIREMENTS.md § "Acceptance Criteria"](.planning/REQUIREMENTS.md) for the verifiable acceptance set. Every requirement (49 of 49: 43 v1 + 6 v1.1) is implemented and stamped in `.planning/REQUIREMENTS.md` § "Traceability".
 
 ## License
 
