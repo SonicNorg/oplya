@@ -14,7 +14,7 @@ A single command turns a `TASK.md` into a shipped change through a formalized, v
 - [x] **Phase 1: Marketplace + plugin skeleton** — Installable repo layout with valid manifests, READMEs, LICENSE, .gitignore, .gitattributes, JSON validators (completed 2026-05-28)
 - [x] **Phase 2: Plugin packaging — SessionStart hook + slash command shell** — Advisory codex pre-flight + strict command-side check, LF-safe Bash scripts, `${CLAUDE_PLUGIN_ROOT}` discipline (completed 2026-05-28)
 - [x] **Phase 3: Inter-agent contracts — JSON Schemas + contract reference docs** — Schemas for every machine-parseable payload, XML envelope spec, task-sizing thresholds, exhaustive-review prompt scaffold + calibration corpus (completed 2026-05-28)
-- [ ] **Phase 4: Orchestrator skill + research + plan + their codex validations** — Linear single-shot pipeline (research → research-validate → plan → plan-validate) with iteration caps, prior-issue anchoring, artifact-as-truth state model
+- [x] **Phase 4: Orchestrator skill + research + plan + their codex validations** — Linear single-shot pipeline (research → research-validate → plan → plan-validate) with iteration caps, prior-issue anchoring, artifact-as-truth state model (completed 2026-05-28)
 - [ ] **Phase 5: Engineer subagent + single-phase implementation + per-phase review + fix loop** — Stress-test the per-phase round-trip and artifact-based continuity before introducing parallelism
 - [ ] **Phase 6: Wave executor + final summary + resume hardening + publication polish** — Lift the single-phase path into wave-parallel execution with mechanical write-scope disjointness, ship-ready polish
 
@@ -106,7 +106,16 @@ Plans:
   4. Codex plan-validation reviews `PLAN.md` + all `PHASE-XX.md` per the exhaustive-review prompt (including explicit pairwise write-scope disjointness verification per wave), loops until clean or iteration cap; codex scripts separate stdout (final answer) from stderr (progress) and propagate exit codes correctly.
   5. `.zapili/state.json` is bootstrapped by the orchestrator only (single-writer invariant), every artifact write uses temp-then-rename atomic pattern with a `<status>complete</status>` sentinel, and re-invoking `/zapili:zapili` after a kill-9 at any state boundary derives the resume point from artifact inspection (artifacts win over `state.json` on disagreement).
 
-**Plans**: TBD
+**Plans**: 3 plans (2 waves)
+
+**Wave 1** *(parallel-safe)*
+
+- [x] 04-01-codex-wrappers-and-state-PLAN.md — codex-review.sh + codex-validate-research.sh + codex-validate-plan.sh + state.sh (ZAP-22, ZAP-34, ZAP-50..52) — Wave 1
+- [x] 04-02-subagents-PLAN.md — researcher.md + planner.md (ZAP-20, ZAP-30..33) — Wave 1
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [x] 04-03-orchestrator-SKILL-PLAN.md — skills/orchestrator/SKILL.md body + commands/zapili.md skill delegation (ZAP-21, ZAP-23, ZAP-24, ZAP-35, ZAP-52) — Wave 2
 
 ### Phase 5: Engineer subagent + single-phase implementation + per-phase review + fix loop
 
@@ -145,7 +154,7 @@ Plans:
 | 1. Marketplace + plugin skeleton | 5/5 | Complete   | 2026-05-28 |
 | 2. Plugin packaging | 2/2 | Complete   | 2026-05-28 |
 | 3. Inter-agent contracts | 3/3 | Complete   | 2026-05-28 |
-| 4. Orchestrator + research + plan | 0/TBD | Not started | - |
+| 4. Orchestrator + research + plan | 3/3 | Complete   | 2026-05-28 |
 | 5. Engineer + single-phase + review/fix | 0/TBD | Not started | - |
 | 6. Wave executor + summary + resume + polish | 0/TBD | Not started | - |
 

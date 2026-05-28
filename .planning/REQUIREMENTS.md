@@ -37,20 +37,20 @@ Requirements for initial release (`oplya` marketplace + `zapili` plugin v1). Eac
 
 ### Research phase (ZAP-research)
 
-- [ ] **ZAP-20**: Researcher subagent (`plugins/zapili/agents/researcher.md`) is read-only (tools allowlist: Read, Grep, Glob, Bash for ls/find only — no Write/Edit), reads `TASK.md` + referenced sources, classifies task size per ZAP-13, and produces an XML+JSON question batch with relevant context per question
-- [ ] **ZAP-21**: Orchestrator presents researcher's questions to the user via AskUserQuestion (or text-mode equivalent), collects answers, and writes consolidated `CONTEXT.md` containing researcher findings, code references, and user answers
-- [ ] **ZAP-22**: Codex research-validation wrapper (`plugins/zapili/scripts/codex-validate-research.sh`) reviews `TASK.md` + `CONTEXT.md` for contradictions, gaps, missing context; returns schema-validated HIGH/MEDIUM/LOW findings with remediation hints
-- [ ] **ZAP-23**: Research-validation loop — orchestrator runs additional research + asks targeted user questions to resolve findings, loops until no HIGH/MEDIUM remain or hard iteration cap (≤3) is reached; on cap-reached, halts with a clear error and persisted findings file
-- [ ] **ZAP-24**: Prior-issue anchoring — each subsequent codex research-validation call receives the prior issue list with stable issue IDs and the rule "resolved must not reappear; reclassifications must be justified"
+- [x] **ZAP-20**: Researcher subagent (`plugins/zapili/agents/researcher.md`) is read-only (tools allowlist: Read, Grep, Glob, Bash for ls/find only — no Write/Edit), reads `TASK.md` + referenced sources, classifies task size per ZAP-13, and produces an XML+JSON question batch with relevant context per question
+- [x] **ZAP-21**: Orchestrator presents researcher's questions to the user via AskUserQuestion (or text-mode equivalent), collects answers, and writes consolidated `CONTEXT.md` containing researcher findings, code references, and user answers
+- [x] **ZAP-22**: Codex research-validation wrapper (`plugins/zapili/scripts/codex-validate-research.sh`) reviews `TASK.md` + `CONTEXT.md` for contradictions, gaps, missing context; returns schema-validated HIGH/MEDIUM/LOW findings with remediation hints
+- [x] **ZAP-23**: Research-validation loop — orchestrator runs additional research + asks targeted user questions to resolve findings, loops until no HIGH/MEDIUM remain or hard iteration cap (≤3) is reached; on cap-reached, halts with a clear error and persisted findings file
+- [x] **ZAP-24**: Prior-issue anchoring — each subsequent codex research-validation call receives the prior issue list with stable issue IDs and the rule "resolved must not reappear; reclassifications must be justified"
 
 ### Planning phase (ZAP-plan)
 
-- [ ] **ZAP-30**: Planner subagent (`plugins/zapili/agents/planner.md`) reads `TASK.md` + `CONTEXT.md` and produces `PLAN.md` (overall plan with wave structure and phase references) plus zero or more `PHASE-XX.md` files (one per phase), with NO duplicated content between documents
-- [ ] **ZAP-31**: Phase count is bounded per task size class (per ZAP-13)
-- [ ] **ZAP-32**: Each `PHASE-XX.md` includes a mandatory machine-parseable `<files>{"writes": [...], "reads": [...]}</files>` block declaring its file scope
-- [ ] **ZAP-33**: `PLAN.md` organizes phases into **waves** — strictly sequential groups in which intra-wave phases may run in parallel iff their write-scopes are pairwise disjoint; the planner proposes wave grouping but the orchestrator verifies disjointness mechanically
-- [ ] **ZAP-34**: Codex plan-validation wrapper (`plugins/zapili/scripts/codex-validate-plan.sh`) performs ultra-principal review of `PLAN.md` + all `PHASE-XX.md` + referenced sources, checking contradictions, gaps, ambiguity, parallelization safety, completeness, architectural fit, OOP/DRY/KISS, professionalism, and explicitly verifying pairwise write-scope disjointness per wave
-- [ ] **ZAP-35**: Plan-validation loop — orchestrator routes findings back to the planner for fixes, loops until no HIGH/MEDIUM remain or hard iteration cap (≤3) is reached
+- [x] **ZAP-30**: Planner subagent (`plugins/zapili/agents/planner.md`) reads `TASK.md` + `CONTEXT.md` and produces `PLAN.md` (overall plan with wave structure and phase references) plus zero or more `PHASE-XX.md` files (one per phase), with NO duplicated content between documents
+- [x] **ZAP-31**: Phase count is bounded per task size class (per ZAP-13)
+- [x] **ZAP-32**: Each `PHASE-XX.md` includes a mandatory machine-parseable `<files>{"writes": [...], "reads": [...]}</files>` block declaring its file scope
+- [x] **ZAP-33**: `PLAN.md` organizes phases into **waves** — strictly sequential groups in which intra-wave phases may run in parallel iff their write-scopes are pairwise disjoint; the planner proposes wave grouping but the orchestrator verifies disjointness mechanically
+- [x] **ZAP-34**: Codex plan-validation wrapper (`plugins/zapili/scripts/codex-validate-plan.sh`) performs ultra-principal review of `PLAN.md` + all `PHASE-XX.md` + referenced sources, checking contradictions, gaps, ambiguity, parallelization safety, completeness, architectural fit, OOP/DRY/KISS, professionalism, and explicitly verifying pairwise write-scope disjointness per wave
+- [x] **ZAP-35**: Plan-validation loop — orchestrator routes findings back to the planner for fixes, loops until no HIGH/MEDIUM remain or hard iteration cap (≤3) is reached
 
 ### Implementation phase (ZAP-impl)
 
@@ -65,9 +65,9 @@ Requirements for initial release (`oplya` marketplace + `zapili` plugin v1). Eac
 
 ### State, resume, and final summary (ZAP-state)
 
-- [ ] **ZAP-50**: On-disk artifacts in the user's project CWD are the source of truth for resume — `TASK.md`, `CONTEXT.md`, `PLAN.md`, `PHASE-XX.md`, `PHASE-XX-attempt-N.md`
-- [ ] **ZAP-51**: `.zapili/state.json` (schema in `schemas/state.schema.json`) is a cache capturing current phase, current wave, iteration counters, and stable issue IDs; **single-writer rule** — only the orchestrator writes it
-- [ ] **ZAP-52**: All artifact writes use temp-then-rename atomic pattern; each artifact embeds a completion sentinel (`<status>complete</status>` or equivalent) so half-written files are detectable
+- [x] **ZAP-50**: On-disk artifacts in the user's project CWD are the source of truth for resume — `TASK.md`, `CONTEXT.md`, `PLAN.md`, `PHASE-XX.md`, `PHASE-XX-attempt-N.md`
+- [x] **ZAP-51**: `.zapili/state.json` (schema in `schemas/state.schema.json`) is a cache capturing current phase, current wave, iteration counters, and stable issue IDs; **single-writer rule** — only the orchestrator writes it
+- [x] **ZAP-52**: All artifact writes use temp-then-rename atomic pattern; each artifact embeds a completion sentinel (`<status>complete</status>` or equivalent) so half-written files are detectable
 - [ ] **ZAP-53**: Automatic resume — on `/zapili` re-invocation, the orchestrator derives current stage from artifact presence and completion sentinels; if `.zapili/state.json` disagrees with artifacts, artifacts win and `state.json` is rewritten
 - [ ] **ZAP-54**: Final summary on workflow completion — user receives a structured report listing all modified files (aggregated across all phases) and the key decisions (with justifications) made by implementation agents, drawn from each `PHASE-XX-attempt-N.md`
 
@@ -144,17 +144,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ZAP-13 | 3 | Complete |
 | ZAP-14 | 3 | Complete |
 | ZAP-15 | 3 | Complete |
-| ZAP-20 | 4 | Pending |
-| ZAP-21 | 4 | Pending |
-| ZAP-22 | 4 | Pending |
-| ZAP-23 | 4 | Pending |
-| ZAP-24 | 4 | Pending |
-| ZAP-30 | 4 | Pending |
-| ZAP-31 | 4 | Pending |
-| ZAP-32 | 4 | Pending |
-| ZAP-33 | 4 | Pending |
-| ZAP-34 | 4 | Pending |
-| ZAP-35 | 4 | Pending |
+| ZAP-20 | 4 | Complete |
+| ZAP-21 | 4 | Complete |
+| ZAP-22 | 4 | Complete |
+| ZAP-23 | 4 | Complete |
+| ZAP-24 | 4 | Complete |
+| ZAP-30 | 4 | Complete |
+| ZAP-31 | 4 | Complete |
+| ZAP-32 | 4 | Complete |
+| ZAP-33 | 4 | Complete |
+| ZAP-34 | 4 | Complete |
+| ZAP-35 | 4 | Complete |
 | ZAP-40 | 5 | Pending |
 | ZAP-41 | 6 | Pending |
 | ZAP-42 | 6 | Pending |
@@ -163,9 +163,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ZAP-45 | 5 | Pending |
 | ZAP-46 | 6 | Pending |
 | ZAP-47 | 6 | Pending |
-| ZAP-50 | 4 | Pending |
-| ZAP-51 | 4 | Pending |
-| ZAP-52 | 4 | Pending |
+| ZAP-50 | 4 | Complete |
+| ZAP-51 | 4 | Complete |
+| ZAP-52 | 4 | Complete |
 | ZAP-53 | 6 | Pending |
 | ZAP-54 | 6 | Pending |
 
