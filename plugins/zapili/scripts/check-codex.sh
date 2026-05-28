@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 
 # SessionStart advisory hook: verify codex CLI is available.
 # Contract: NEVER exit non-zero (would brick Claude Code per ZAP-02).

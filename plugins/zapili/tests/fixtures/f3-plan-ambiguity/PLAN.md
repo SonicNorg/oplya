@@ -2,7 +2,7 @@
 
 ## Goal
 
-Add a session-renewal API; sessions should last longer than the current default. Exact target duration unspecified — see PHASE-XX.md.
+Add a session-renewal API; sessions should last longer than the current default. Exact target duration unspecified — see the phase file.
 
 ## Wave 1
 
@@ -10,8 +10,8 @@ Add a session-renewal API; sessions should last longer than the current default.
 
 ## Requirements traceability
 
-| REQ | Phase |
-|-----|-------|
-| FIX-AMBIG | PHASE-XX |
+| REQ | Maps to |
+|-----|---------|
+| FIX-AMBIG | the phase above |
 
 <!-- <status>complete</status> -->

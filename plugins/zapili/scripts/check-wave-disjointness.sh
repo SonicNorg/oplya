@@ -40,8 +40,12 @@ while IFS= read -r line; do
     current_phases=""
     continue
   fi
-  # Phase id pattern: PHASE-XX or PHASE-NN-NN (matches what planner.md writes).
-  pids=$(printf '%s' "$line" | grep -oE 'PHASE-[0-9]+(-[0-9]+)?' || true)
+  # Phase id pattern: production naming (PHASE-01, PHASE-01-02) AND fixture
+  # naming (PHASE-XX, PHASE-XX-a, PHASE-XX-b). Character class broadened from
+  # [0-9]+ to [A-Za-z0-9]+ per Phase 7 D-12 / ZAP-59. The phase_writes() lookup
+  # below just appends `.md` to whatever id is captured, so the broader class
+  # is sound.
+  pids=$(printf '%s' "$line" | grep -oE 'PHASE-[A-Za-z0-9]+(-[A-Za-z0-9]+)?' || true)
   if [ -n "$pids" ]; then
     current_phases="$current_phases $pids"
   fi
