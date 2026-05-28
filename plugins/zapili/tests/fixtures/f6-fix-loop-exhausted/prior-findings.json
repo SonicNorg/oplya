@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "ISS-23ba7d51473d",
+      "severity": "HIGH",
+      "category": "missing-tasks",
+      "file": "plugins/zapili/tests/fixtures/f6-fix-loop-exhausted/PHASE-XX.md",
+      "line_range": null,
+      "kind": "missing-tasks",
+      "summary": "PHASE-XX.md omits a unit-test authoring task; engineer cannot produce test files because src/cache.test.kt is not in <files>.writes and no test task exists in the task list.",
+      "remediation": "Add a task to the phase plan: 'Author unit tests in src/cache.test.kt covering insertion, eviction, and overflow' and extend the <files>.writes JSON to include 'src/cache.test.kt'. This unblocks the engineer's next attempt.",
+      "prior_status": "carried"
+    }
+  ],
+  "coverage": {
+    "files_reviewed": ["plugins/zapili/tests/fixtures/f6-fix-loop-exhausted/PHASE-XX.md"],
+    "categories_checked": ["missing-tasks"]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "phase_id": "XX",
+  "attempt": 4,
+  "files_touched": [
+    {
+      "path": "src/cache.kt",
+      "operation": "create",
+      "summary": "implement insertion and lookup; deferred tests"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-1",
+      "title": "skip test authoring",
+      "rationale": "phase plan tasks list does not include a test task; staying within the declared scope",
+      "alternatives_considered": null
+    }
+  ],
+  "change_summary": "Implemented put/get on a simple Kotlin HashMap-backed cache. Did not author tests because no test task is listed in PHASE-XX.md and src/cache.test.kt is not in <files>.writes. After four attempts with the same phase plan, this is the converged engineer interpretation."
+}
