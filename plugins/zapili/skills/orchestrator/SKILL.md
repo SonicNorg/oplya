@@ -186,6 +186,39 @@ After it returns, verify on disk:
 
 If any verification fails, retry the planner ONCE with the failure list in the prompt; on second failure, STOP.
 
+### 5.5. Route planner-flagged gaps to the user (ZAP-56)
+
+After planner artifact verification succeeds and BEFORE advancing to `plan_validate`, extract `flagged_gaps` from the planner response payload and route every non-empty entry through the user.
+
+```bash
+# The planner response payload is whatever the orchestrator parsed out of
+# the <payload>{...}</payload> envelope in Stage 5. Persist it once via:
+#   printf '%s' "$PLANNER_PAYLOAD_JSON" > .zapili/planner-output.json
+gap_count=$(jq '.flagged_gaps | length' .zapili/planner-output.json 2>/dev/null || echo 0)
+```
+
+If `gap_count == 0`, do nothing and proceed to `state_advance_stage "plan_validate"`. The empty-array case is the normal happy path — no user interruption.
+
+If `gap_count > 0`, for each entry in `.flagged_gaps[]`:
+
+1. Call `AskUserQuestion` once per gap:
+   - question: `"Planner flagged gap: <topic>. Context: <context>. Please clarify."`
+   - options: free-form input (no defaults — the planner only flags genuinely undecided context)
+2. Collect every answer in order.
+3. Append a new section to `CONTEXT.md` (just before the trailing completion sentinel):
+
+   ```markdown
+   ## Gap Resolutions
+
+   **GAP-1 (<topic-1>):** <user's answer 1>
+   **GAP-2 (<topic-2>):** <user's answer 2>
+   ...
+   ```
+
+   Numbering restarts at 1 per planner attempt. On a fix iteration that revisits planning, a second `## Gap Resolutions` section is appended — the latest section is the authoritative one for downstream validators.
+
+Resume signal: the presence of a `## Gap Resolutions` section in CONTEXT.md AND a `.zapili/planner-output.json` with non-empty `flagged_gaps` means gap routing has already happened — skip this sub-step on resume.
+
 `state_advance_stage "plan_validate"`.
 
 ---
