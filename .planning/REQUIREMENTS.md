@@ -28,12 +28,12 @@ Requirements for initial release (`oplya` marketplace + `zapili` plugin v1). Eac
 
 ### Inter-agent contracts (ZAP-spec)
 
-- [ ] **ZAP-10**: `plugins/zapili/schemas/` contains JSON Schemas for every machine-parseable payload — minimum: `validation-findings.schema.json`, `research-questions.schema.json`, `phase-changes.schema.json`, `state.schema.json`
-- [ ] **ZAP-11**: All prompts (orchestrator → subagent, orchestrator → codex) and all expected responses are **English** and use Anthropic-style XML envelope (`<request>...</request>` / `<response><payload>{json}</payload></response>`), with JSON payloads validated against the schemas in ZAP-10
-- [ ] **ZAP-12**: Orchestrator reference docs (`plugins/zapili/skills/orchestrator/references/contracts.md`) specify the XML envelope, stable-issue-ID rules (hash of `{file, line-range, kind}`), payload-size budgets (soft cap ~10k tokens per engineer prompt), and forbidden vocabulary for review prompts (no "key", "main", "top", "important")
-- [ ] **ZAP-13**: Task-size policy reference (`plugins/zapili/skills/orchestrator/references/task-sizing.md`) embeds the hard numeric thresholds — small (≤100 LOC, 1–3 modules, 3–4 questions, plan only); medium (≤500 LOC, 1–5 modules, 5–8 questions, plan + 3–4 phases); large (≤1000 LOC, 2–8 modules, 9–12 questions, plan + 5–8 phases); gigantic (>1000 LOC, 13–20 questions, plan + 9–20 phases)
-- [ ] **ZAP-14**: Codex review prompt scaffold (`plugins/zapili/skills/orchestrator/references/codex-prompts.md`) forces **exhaustive** HIGH/MEDIUM/LOW coverage — explicit category enumeration first, then findings per category (including "no findings"), trailing `<coverage>{files_reviewed, categories_checked}</coverage>` block, forbidden top-N vocabulary, and a `<reclassification>` block when prior findings are anchored
-- [ ] **ZAP-15**: Reference corpus of 3–5 deliberately-flawed sample plans/diffs exists in `plugins/zapili/tests/fixtures/` and is used to calibrate the exhaustive-review prompt before release
+- [x] **ZAP-10**: `plugins/zapili/schemas/` contains JSON Schemas for every machine-parseable payload — minimum: `validation-findings.schema.json`, `research-questions.schema.json`, `phase-changes.schema.json`, `state.schema.json`
+- [x] **ZAP-11**: All prompts (orchestrator → subagent, orchestrator → codex) and all expected responses are **English** and use Anthropic-style XML envelope (`<request>...</request>` / `<response><payload>{json}</payload></response>`), with JSON payloads validated against the schemas in ZAP-10
+- [x] **ZAP-12**: Orchestrator reference docs (`plugins/zapili/skills/orchestrator/references/contracts.md`) specify the XML envelope, stable-issue-ID rules (hash of `{file, line-range, kind}`), payload-size budgets (soft cap ~10k tokens per engineer prompt), and forbidden vocabulary for review prompts (no "key", "main", "top", "important")
+- [x] **ZAP-13**: Task-size policy reference (`plugins/zapili/skills/orchestrator/references/task-sizing.md`) embeds the hard numeric thresholds — small (≤100 LOC, 1–3 modules, 3–4 questions, plan only); medium (≤500 LOC, 1–5 modules, 5–8 questions, plan + 3–4 phases); large (≤1000 LOC, 2–8 modules, 9–12 questions, plan + 5–8 phases); gigantic (>1000 LOC, 13–20 questions, plan + 9–20 phases)
+- [x] **ZAP-14**: Codex review prompt scaffold (`plugins/zapili/skills/orchestrator/references/codex-prompts.md`) forces **exhaustive** HIGH/MEDIUM/LOW coverage — explicit category enumeration first, then findings per category (including "no findings"), trailing `<coverage>{files_reviewed, categories_checked}</coverage>` block, forbidden top-N vocabulary, and a `<reclassification>` block when prior findings are anchored
+- [x] **ZAP-15**: Reference corpus of 3–5 deliberately-flawed sample plans/diffs exists in `plugins/zapili/tests/fixtures/` and is used to calibrate the exhaustive-review prompt before release
 
 ### Research phase (ZAP-research)
 
@@ -138,12 +138,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ZAP-03 | 1 | Complete |
 | ZAP-04 | 2 | Complete |
 | ZAP-05 | 2 | Complete |
-| ZAP-10 | 3 | Pending |
-| ZAP-11 | 3 | Pending |
-| ZAP-12 | 3 | Pending |
-| ZAP-13 | 3 | Pending |
-| ZAP-14 | 3 | Pending |
-| ZAP-15 | 3 | Pending |
+| ZAP-10 | 3 | Complete |
+| ZAP-11 | 3 | Complete |
+| ZAP-12 | 3 | Complete |
+| ZAP-13 | 3 | Complete |
+| ZAP-14 | 3 | Complete |
+| ZAP-15 | 3 | Complete |
 | ZAP-20 | 4 | Pending |
 | ZAP-21 | 4 | Pending |
 | ZAP-22 | 4 | Pending |

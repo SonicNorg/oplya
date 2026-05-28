@@ -13,7 +13,7 @@ A single command turns a `TASK.md` into a shipped change through a formalized, v
 
 - [x] **Phase 1: Marketplace + plugin skeleton** — Installable repo layout with valid manifests, READMEs, LICENSE, .gitignore, .gitattributes, JSON validators (completed 2026-05-28)
 - [x] **Phase 2: Plugin packaging — SessionStart hook + slash command shell** — Advisory codex pre-flight + strict command-side check, LF-safe Bash scripts, `${CLAUDE_PLUGIN_ROOT}` discipline (completed 2026-05-28)
-- [ ] **Phase 3: Inter-agent contracts — JSON Schemas + contract reference docs** — Schemas for every machine-parseable payload, XML envelope spec, task-sizing thresholds, exhaustive-review prompt scaffold + calibration corpus
+- [x] **Phase 3: Inter-agent contracts — JSON Schemas + contract reference docs** — Schemas for every machine-parseable payload, XML envelope spec, task-sizing thresholds, exhaustive-review prompt scaffold + calibration corpus (completed 2026-05-28)
 - [ ] **Phase 4: Orchestrator skill + research + plan + their codex validations** — Linear single-shot pipeline (research → research-validate → plan → plan-validate) with iteration caps, prior-issue anchoring, artifact-as-truth state model
 - [ ] **Phase 5: Engineer subagent + single-phase implementation + per-phase review + fix loop** — Stress-test the per-phase round-trip and artifact-based continuity before introducing parallelism
 - [ ] **Phase 6: Wave executor + final summary + resume hardening + publication polish** — Lift the single-phase path into wave-parallel execution with mechanical write-scope disjointness, ship-ready polish
@@ -82,7 +82,16 @@ Plans:
   4. `skills/orchestrator/references/codex-prompts.md` defines the exhaustive-review prompt scaffold (category enumeration → per-category findings including "no findings" → trailing `<coverage>` block → `<reclassification>` block when prior findings are anchored) and forbids top-N filtering vocabulary.
   5. `plugins/zapili/tests/fixtures/` contains 3–5 deliberately-flawed sample plans/diffs that demonstrate the exhaustive-review prompt surfacing every seeded issue at first pass — calibration is reproducible and documented.
 
-**Plans**: TBD
+**Plans**: 3 plans (2 waves)
+
+**Wave 1** *(parallel-safe)*
+
+- [x] 03-01-schemas-PLAN.md — 4 JSON Schemas + 8 examples + validate-schemas.sh (ZAP-10) — Wave 1
+- [x] 03-02-references-PLAN.md — contracts.md + task-sizing.md + codex-prompts.md (ZAP-11, ZAP-12, ZAP-13, ZAP-14) — Wave 1
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [x] 03-03-fixtures-PLAN.md — 5 calibration fixtures + tests/fixtures/README.md (ZAP-15) — Wave 2
 
 ### Phase 4: Orchestrator skill + research + plan + their codex validations
 
@@ -135,7 +144,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Marketplace + plugin skeleton | 5/5 | Complete   | 2026-05-28 |
 | 2. Plugin packaging | 2/2 | Complete   | 2026-05-28 |
-| 3. Inter-agent contracts | 0/TBD | Not started | - |
+| 3. Inter-agent contracts | 3/3 | Complete   | 2026-05-28 |
 | 4. Orchestrator + research + plan | 0/TBD | Not started | - |
 | 5. Engineer + single-phase + review/fix | 0/TBD | Not started | - |
 | 6. Wave executor + summary + resume + polish | 0/TBD | Not started | - |
