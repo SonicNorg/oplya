@@ -41,6 +41,36 @@ Every codex review prompt MUST contain these XML blocks in order:
 
 The `<prior_findings>` block triggers the reclassification rule: every prior ID must appear in the response either as a carried-forward finding (with `prior_status: "carried"`), a resolved finding (omitted from `findings` array, listed in `reclassification` with `new_severity: "RESOLVED"`), or a reclassified finding (listed in `reclassification` with the new severity + justification).
 
+## Finding ID derivation (mandatory, deterministic)
+
+Every finding's `id` MUST be derived from the triple `(file, line_range, kind)` via SHA-256, taking the first 12 hex characters and prefixing with `ISS-`. This is **non-negotiable** — without it, the same underlying issue produces a different ID on every attempt, the orchestrator cannot match prior findings, the reclassification rule above breaks, and the fix-loop loses the ability to track whether the engineer's revision actually closed the issue.
+
+**Formula:**
+```
+id = "ISS-" + first_12_hex( SHA-256( file + "|" + line_range + "|" + kind ) )
+```
+
+**Edge cases (apply verbatim):**
+- If `file` is `null` (e.g. a `no-findings` placeholder), use the literal string `"null"` in the digest input.
+- If `line_range` is `null`, use the literal string `"null"` in the digest input.
+- `file` is always the path **as it appears in the `<inputs>` block** (no normalization, no leading `./`, no absolute paths).
+- `line_range` is the exact string written to the `line_range` field (e.g. `"12-15"`, `"8"`, `null`).
+
+**Worked example:**
+```
+file       = "CONTEXT.md"
+line_range = "8-9"
+kind       = "context-task-contradiction"
+
+digest_input = "CONTEXT.md|8-9|context-task-contradiction"
+sha256       = cc94a3aa8710e3cd... (first 12 hex)
+id           = "ISS-cc94a3aa8710"
+```
+
+**Forbidden:** inventing IDs such as `ISS-a1b2c3d4e5f6`, `ISS-d4e5f6a7b8c9`, or any incrementing-hex sequence. Findings with non-deterministic IDs are treated as malformed output and force the orchestrator to retry the codex call.
+
+If you cannot compute SHA-256 inline, emit the digest input on a comment line above the finding so the orchestrator can re-derive — but compute it whenever the runtime allows.
+
 ## Per-role category lists (verbatim)
 
 ### research_validator
@@ -95,3 +125,5 @@ When `<prior_findings>` is present:
 ## Calibration
 
 The reference fixtures under `plugins/zapili/tests/fixtures/` seed one issue per family and document expected IDs/categories. Phase 4 development MUST run codex against every fixture before shipping any codex wrapper change; calibration passes when every fixture's `expected-findings.json` IDs all appear in the codex output.
+
+**Note on ID determinism:** live calibration against codex-cli 0.133.0 (2026-05-28) confirmed that without the explicit SHA-256 formula above, the model invents non-deterministic IDs (incrementing hex sequences like `ISS-a1b2c3d4e5f6`, `ISS-b2c3d4e5f6a7`, ...) even when shown placeholder `ISS-...` examples. Fixture `f2-plan-write-overlap` reproduced this: codex correctly identified the `write-scope-overlap` issue but emitted `ISS-d4e5f6a7b8c9` instead of the expected `ISS-da83a9a75c86`. The "Finding ID derivation" section above was added to close that gap. Re-run calibration after any change to that section.
