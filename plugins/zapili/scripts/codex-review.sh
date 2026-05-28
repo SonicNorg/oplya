@@ -39,11 +39,24 @@ set -e
 
 # Extract the final assistant message regardless of codex exit code (best-effort parse).
 # codex JSONL event shape can vary across versions; isolate it here so a future
-# schema bump is a one-file change.
+# schema bump is a one-file change. Writes RAW TEXT (not JSON-encoded) so downstream
+# extractors (perl -0777 / python re.DOTALL) can match `<payload>...</payload>` across
+# newlines. Handles both string content (`content: "..."`) and OpenAI structured
+# content arrays (`content: [{type: "text", text: "..."}]`).
 if [ -s "$RAW_FILE" ]; then
-  jq -s '
+  jq -rs '
     map(select((.type // "") == "message" and ((.role // "") == "assistant")))
-    | if length > 0 then (last | (.content // .text // .message)) else "" end
+    | if length == 0 then ""
+      else
+        (last | .content) as $c
+        | if ($c | type) == "array" then
+            ($c | map(select(.type == "text") | .text) | join(""))
+          elif ($c | type) == "string" then
+            $c
+          else
+            ((last | .text // last | .message) // "")
+          end
+      end
   ' "$RAW_FILE" >"$OUT_FILE" 2>/dev/null || printf '' >"$OUT_FILE"
 else
   printf '' >"$OUT_FILE"

@@ -288,6 +288,10 @@ If `(b)` is non-empty:
 When the wave's entire partition is in `(a)` converged:
 
 ```bash
+# Read current_wave BEFORE the arithmetic — unset/empty would expand to
+# $((+1)) = 1 and reset the counter on every wave boundary.
+source "${CLAUDE_PLUGIN_ROOT}/scripts/state.sh"
+current_wave=$(state_get '.current_wave // 1')
 state_set '.current_wave' "$((current_wave + 1))"
 state_set '.current_phase' "null"
 ```

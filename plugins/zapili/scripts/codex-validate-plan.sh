@@ -94,7 +94,9 @@ if ! bash "$ROOT/scripts/codex-review.sh" "$PROMPT_FILE" "$OUT_FILE"; then
   exit 2
 fi
 
-PAYLOAD=$(jq -r '.' "$OUT_FILE" 2>/dev/null | sed -n 's/.*<payload>\(.*\)<\/payload>.*/\1/p' | head -n1)
+# Strip XML envelope; perl -0777 + /s handles multi-line <payload>...</payload>
+# that sed (single-line by default) misses.
+PAYLOAD=$(perl -0777 -ne 'print $1 if /<payload>(.*?)<\/payload>/s' "$OUT_FILE" 2>/dev/null)
 if [ -n "$PAYLOAD" ]; then
   printf '%s' "$PAYLOAD" >"$OUT_FILE"
 fi

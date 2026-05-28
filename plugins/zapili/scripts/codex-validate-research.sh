@@ -92,7 +92,11 @@ if ! bash "$ROOT/scripts/codex-review.sh" "$PROMPT_FILE" "$OUT_FILE"; then
 fi
 
 # Strip XML envelope if present; keep only the JSON payload.
-PAYLOAD=$(jq -r '.' "$OUT_FILE" 2>/dev/null | sed -n 's/.*<payload>\(.*\)<\/payload>.*/\1/p' | head -n1)
+# Use perl -0777 (slurp mode) + /s flag so `.` matches across newlines —
+# `sed` is single-line by default and silently returns empty when the
+# <payload> opening and closing tags land on separate lines (typical for
+# pretty-printed JSON from codex).
+PAYLOAD=$(perl -0777 -ne 'print $1 if /<payload>(.*?)<\/payload>/s' "$OUT_FILE" 2>/dev/null)
 if [ -n "$PAYLOAD" ]; then
   printf '%s' "$PAYLOAD" >"$OUT_FILE"
 fi
