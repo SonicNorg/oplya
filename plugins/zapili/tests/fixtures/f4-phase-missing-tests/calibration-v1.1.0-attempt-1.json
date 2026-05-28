@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "ISS-7d240d5bddee",
+      "severity": "HIGH",
+      "category": "plan-contradiction",
+      "file": "engineer-payload.json",
+      "line_range": "5-20",
+      "kind": "write-set-drift",
+      "summary": "The phase declares writes to both `src/auth/jwt.ts` and `src/auth/jwt.test.ts`, but the payload lists only `src/auth/jwt.ts` while claiming tests were added.",
+      "why_real_risk": "The orchestrator will treat the phase as completed even though the declared test deliverable is absent from the recorded write set. That breaks review routing and can ship an untested auth helper.",
+      "repro": "Compare `PHASE-XX.md` line 3 with `engineer-payload.json` lines 5-20: `src/auth/jwt.test.ts` is declared in the phase writes but missing from `files_touched`, while the summary says unit tests were added.",
+      "remediation": "Add `src/auth/jwt.test.ts` to `files_touched` only after creating it, or correct the payload and keep the phase open until the test file exists.",
+      "tests_to_add": [
+        "Add a phase payload validation test named `rejects payload when declared write is absent from files_touched` that asserts every path in the phase write set appears in `files_touched`."
+      ],
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-266202bdd2a3",
+      "severity": "HIGH",
+      "category": "missing-tasks",
+      "file": "engineer-payload.json",
+      "line_range": "5-20",
+      "kind": "missing-test-deliverable",
+      "summary": "The phase task to add `src/auth/jwt.test.ts` was not completed.",
+      "why_real_risk": "JWT issuance is security-sensitive, and the phase explicitly requires tests for the happy path and signature-verification failure. Without the test file, regressions in signing, expiry, or rejection behavior can pass unnoticed.",
+      "repro": "Run `test -e src/auth/jwt.test.ts` in the fixture directory; it exits nonzero. The payload also has no `files_touched` entry for that path.",
+      "remediation": "Create `src/auth/jwt.test.ts` and include tests for issued token validity, signature-verification failure, expiry handling, and malformed input rejection.",
+      "tests_to_add": [
+        "Add a unit test named `issueToken signs a verifiable token` asserting a token issued by `issueToken()` verifies with the configured secret and contains the expected subject.",
+        "Add a unit test named `rejects token with tampered signature` asserting verification fails after mutating the token signature."
+      ],
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-6166e4d08685",
+      "severity": "HIGH",
+      "category": "code-quality",
+      "file": "src/auth/jwt.ts",
+      "line_range": null,
+      "kind": "missing-implementation-artifact",
+      "summary": "The claimed implementation file `src/auth/jwt.ts` is not present in the fixture.",
+      "why_real_risk": "Consumers cannot import `issueToken()`, so the auth service would fail at build or runtime instead of issuing tokens.",
+      "repro": "Run `test -e src/auth/jwt.ts` in the fixture directory; it exits nonzero despite `files_touched` claiming the file was created.",
+      "remediation": "Create `src/auth/jwt.ts` with `issueToken()` following the project JWT conventions, then rerun the relevant test suite.",
+      "tests_to_add": [
+        "Add a build or typecheck gate named `jwt helper exports issueToken` that imports `issueToken` from `src/auth/jwt.ts` and fails when the module is absent."
+      ],
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-066d1c1afaea",
+      "severity": "MEDIUM",
+      "category": "edge-cases",
+      "file": "TASK.md",
+      "line_range": "3-5",
+      "kind": "missing-expiry-malformed-coverage",
+      "summary": "The task requires expiry and malformed-input rejection coverage, but the phase payload only claims happy-path and signature-failure tests, and no test file exists.",
+      "why_real_risk": "Expired or malformed JWTs are common runtime inputs. If those paths are untested, the helper can accept expired credentials or throw unexpected errors on malformed data.",
+      "repro": "Compare `TASK.md` lines 3-5 with `engineer-payload.json` line 20: the payload omits expiry and malformed-input coverage, and `src/auth/jwt.test.ts` is absent.",
+      "remediation": "Extend `src/auth/jwt.test.ts` with explicit expiry and malformed-token rejection cases before closing the phase.",
+      "tests_to_add": [
+        "Add a unit test named `rejects expired token` that issues a token with a past expiration or advances fake time and asserts verification fails with the project auth error.",
+        "Add a unit test named `rejects malformed token` that passes a non-JWT string and asserts a controlled rejection rather than a raw exception."
+      ],
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-4804fc4d77bb",
+      "severity": "MEDIUM",
+      "category": "security",
+      "file": "engineer-payload.json",
+      "line_range": "12-18",
+      "kind": "unverified-signing-security",
+      "summary": "The payload records an HS256 decision, but no implementation or tests are present to prove algorithm pinning, secret use, or tamper rejection.",
+      "why_real_risk": "JWT helpers that do not constrain the signing algorithm or verify signatures consistently can accept forged tokens or fail open during verification changes.",
+      "repro": "Inspect the fixture: `src/auth/jwt.ts` and `src/auth/jwt.test.ts` are absent, so there is no auditable code or test proving the HS256 decision is enforced.",
+      "remediation": "Implement signing with an explicit allowed algorithm and add tamper, wrong-secret, and algorithm-mismatch tests.",
+      "tests_to_add": [
+        "Add a unit test named `rejects token signed with a different secret` asserting a token signed with another secret is refused.",
+        "Add a unit test named `pins accepted jwt algorithm` asserting tokens using an unexpected algorithm are refused."
+      ],
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-f5016943b554",
+      "severity": "MEDIUM",
+      "category": "professionalism",
+      "file": "engineer-payload.json",
+      "line_range": "20",
+      "kind": "misleading-change-summary",
+      "summary": "The change summary says unit tests were added, but the payload and filesystem show no test file.",
+      "why_real_risk": "Misstated delivery status causes reviewers and automation to trust coverage that does not exist, especially for an auth change where tests are part of the requested scope.",
+      "repro": "Read `engineer-payload.json` line 20, then run `test -e src/auth/jwt.test.ts`; the file is absent.",
+      "remediation": "Revise the payload to accurately state that tests are missing, or add the missing test file and include it in `files_touched`.",
+      "tests_to_add": [
+        "Add a payload consistency test named `change summary cannot claim tests without a touched test file` that fails when test coverage is claimed but no `*.test.*` file appears in `files_touched`."
+      ],
+      "prior_status": "new"
+    }
+  ],
+  "not_fully_audited": [
+    {
+      "scope": "src/auth/jwt.ts",
+      "reason": "The engineer payload claims this file was created, but it is absent from the fixture, so implementation behavior could not be audited.",
+      "recommended_followup": "Provide the created file and rerun phase review."
+    },
+    {
+      "scope": "src/auth/jwt.test.ts",
+      "reason": "The phase declares this file as a write target, but it is absent from the fixture and omitted from `files_touched`, so test behavior could not be audited.",
+      "recommended_followup": "Provide the test file and rerun phase review."
+    }
+  ],
+  "coverage": {
+    "files_reviewed": [
+      "TASK.md",
+      "PHASE-XX.md",
+      "engineer-payload.json"
+    ],
+    "categories_checked": [
+      "plan-contradiction",
+      "missing-tasks",
+      "code-quality",
+      "edge-cases",
+      "security",
+      "professionalism"
+    ]
+  }
+}

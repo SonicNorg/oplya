@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "ISS-5f32cadd02e6",
+      "severity": "LOW",
+      "category": "plan-contradiction",
+      "file": "tests/fixtures/f5-phase-style-drift/engineer-payload.json",
+      "line_range": "4-20",
+      "kind": "phase-null-safety-contradiction",
+      "summary": "The payload says the Kotlin login change uses Java Optional and explicit null checks, which conflicts with the phase requirement for idiomatic Kotlin null-safety.",
+      "remediation": "Use Kotlin nullable types such as String? and Kotlin null-safe expressions instead of Optional<String> and repeated if-null branches.",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-9384e8c0566f",
+      "severity": "MEDIUM",
+      "category": "missing-tasks",
+      "file": "tests/fixtures/f5-phase-style-drift/engineer-payload.json",
+      "line_range": "20",
+      "kind": "missing-flow-builder-evidence",
+      "summary": "The change summary says login now suspends but does not show that the required flow {} builder migration was completed.",
+      "why_real_risk": "The phase requires the coroutine API shape to be flow based; leaving login as only a suspending call can preserve the old one-shot contract and break callers expecting a Flow emission sequence.",
+      "repro": "Call the refactored login() from code that expects a Flow and collects emitted loading, success, or failure states; if the implementation only exposes a suspend return, the caller either fails to compile or loses emission semantics.",
+      "remediation": "Implement login() with kotlinx.coroutines.flow.flow and emit the documented auth states from inside the builder.",
+      "tests_to_add": [
+        "Add a coroutine unit test named login emits auth states through Flow that collects login() and asserts the expected ordered emissions.",
+        "Add an API contract test named login return type is Flow that compiles against the coroutine-first service interface."
+      ],
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-4653b5e9bc97",
+      "severity": "LOW",
+      "category": "code-quality",
+      "file": "tests/fixtures/f5-phase-style-drift/engineer-payload.json",
+      "line_range": "4-10",
+      "kind": "mixed-language-style",
+      "summary": "Engineer introduces Java idioms in a Kotlin file that should use Kotlin nullable types and idiomatic null-safety.",
+      "remediation": "Replace Optional<String> with String?, remove the repeated explicit null branches, and express nullable behavior with Kotlin operators.",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-192fa21bccd6",
+      "severity": "LOW",
+      "category": "edge-cases",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No substantiated edge-case issue was found from the available phase and payload artifacts.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-b3db1789682e",
+      "severity": "LOW",
+      "category": "security",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No substantiated security issue was found from the available phase and payload artifacts.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-e88e4a444344",
+      "severity": "LOW",
+      "category": "professionalism",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No substantiated professionalism issue was found from the available phase and payload artifacts.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    }
+  ],
+  "coverage": {
+    "files_reviewed": [
+      "tests/fixtures/f5-phase-style-drift/TASK.md",
+      "tests/fixtures/f5-phase-style-drift/PHASE-XX.md",
+      "tests/fixtures/f5-phase-style-drift/engineer-payload.json"
+    ],
+    "categories_checked": [
+      "plan-contradiction",
+      "missing-tasks",
+      "code-quality",
+      "edge-cases",
+      "security",
+      "professionalism"
+    ]
+  },
+  "not_fully_audited": [
+    {
+      "scope": "src/auth/Login.kt",
+      "reason": "The file is listed in files_touched but is absent from the fixture checkout, so the actual Kotlin implementation could not be inspected.",
+      "recommended_followup": "Provide src/auth/Login.kt or rerun the phase review in a checkout that contains the touched source file."
+    }
+  ]
+}

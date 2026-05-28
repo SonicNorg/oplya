@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "ISS-28524052a748",
+      "severity": "LOW",
+      "category": "contradictions",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No direct contradiction found between PLAN.md and PHASE-XX.md.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-1d16c307f4f6",
+      "severity": "MEDIUM",
+      "category": "gaps",
+      "file": "PLAN.md",
+      "line_range": "5",
+      "kind": "uncovered-session-renewal-api",
+      "summary": "The goal asks for a session-renewal API, but the only phase covers login remember-me duration.",
+      "remediation": "Either add a phase that defines and implements the renewal API surface, including route or handler, request and response contract, and tests, or revise the goal so it only asks for remember-me session duration.",
+      "prior_status": "new",
+      "why_real_risk": "An engineer following PHASE-XX can complete the checkbox-based login change without adding any renewal endpoint or callable API behavior. That leaves the stated deliverable absent while the plan still appears traceable.",
+      "repro": "Dispatch Wave 1 as written. The engineer edits src/auth/login.ts so remember-me login sessions last longer, then marks PHASE-XX complete. A client then attempts to call the requested renewal API and no route, handler, or contract exists.",
+      "tests_to_add": [
+        "Add a plan-validation fixture where a goal requires an API but phases only alter login flow, and assert validation reports an uncovered API output.",
+        "Add acceptance criteria requiring a renewal API contract or an explicit goal rewrite when the work is limited to remember-me login duration."
+      ]
+    },
+    {
+      "id": "ISS-f1ceb86df056",
+      "severity": "MEDIUM",
+      "category": "ambiguity",
+      "file": "PHASE-XX.md",
+      "line_range": "7",
+      "kind": "ambiguous-task-wording",
+      "summary": "PHASE-XX says remember-me sessions should last longer, but gives no target duration.",
+      "remediation": "Replace longer with a concrete duration and unit, such as 30 days, and state whether the value applies to cookie max-age, server-side session expiry, refresh-token expiry, or all relevant session stores.",
+      "prior_status": "new",
+      "why_real_risk": "Different engineers can implement incompatible behavior while satisfying the wording: 24 hours, 30 days, or one year could all be described as longer than the current default.",
+      "repro": "Engineer A sets remember-me sessions to 24 hours because that is longer than the current default. Engineer B later expects 30 days for the same checkbox. Both implementations match the phase text, so tests and product behavior diverge.",
+      "tests_to_add": [
+        "Add an auth test asserting the exact remember-me session duration after login.",
+        "Add a plan-validation fixture that rejects relative duration wording without a concrete numeric target."
+      ]
+    },
+    {
+      "id": "ISS-28524052a748",
+      "severity": "LOW",
+      "category": "parallel-safety",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "Wave 1 write-scope disjointness was checked; only PHASE-XX writes files, so no intra-wave write intersection exists.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new",
+      "repro": "Wave 1 contains a single phase, PHASE-XX, with writes limited to src/auth/login.ts. There is no second phase in the same wave that can concurrently write src/auth/login.ts or any other declared write path."
+    },
+    {
+      "id": "ISS-1d16c307f4f6",
+      "severity": "MEDIUM",
+      "category": "completeness",
+      "file": "PLAN.md",
+      "line_range": "5",
+      "kind": "uncovered-session-renewal-api",
+      "summary": "FIX-AMBIG is mapped to one phase, but that phase does not fully satisfy the stated session-renewal API goal.",
+      "remediation": "Update requirements traceability so FIX-AMBIG maps to explicit deliverables for the renewal API and remember-me duration, or narrow FIX-AMBIG to the remember-me duration decision only.",
+      "prior_status": "new",
+      "why_real_risk": "The traceability table can give a false completion signal even though the API portion of the goal has no implementation task.",
+      "repro": "A reviewer checks the Requirements traceability table, sees FIX-AMBIG mapped to PHASE-XX, and accepts the plan. PHASE-XX then changes only src/auth/login.ts, leaving no renewal API behavior to verify.",
+      "tests_to_add": [
+        "Add a traceability validation case requiring every stated goal noun, including API deliverables, to appear in at least one phase task or acceptance criterion."
+      ]
+    },
+    {
+      "id": "ISS-28524052a748",
+      "severity": "LOW",
+      "category": "architectural-fit",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No architectural-fit issue found in the reviewed plan and phase.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-28524052a748",
+      "severity": "LOW",
+      "category": "dry-kiss",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No duplication or needless abstraction issue found in the reviewed plan and phase.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-28524052a748",
+      "severity": "LOW",
+      "category": "professionalism",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No professionalism issue found in the reviewed plan and phase.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    }
+  ],
+  "coverage": {
+    "files_reviewed": [
+      "PLAN.md",
+      "PHASE-XX.md"
+    ],
+    "categories_checked": [
+      "contradictions",
+      "gaps",
+      "ambiguity",
+      "parallel-safety",
+      "completeness",
+      "architectural-fit",
+      "dry-kiss",
+      "professionalism"
+    ]
+  },
+  "not_fully_audited": []
+}

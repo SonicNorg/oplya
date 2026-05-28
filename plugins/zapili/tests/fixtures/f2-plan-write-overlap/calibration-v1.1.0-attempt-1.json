@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "ISS-28524052a748",
+      "severity": "LOW",
+      "category": "contradictions",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No contradictions found in reviewed plan and phase files.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-28524052a748",
+      "severity": "LOW",
+      "category": "gaps",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No uncovered phase output gap found in reviewed plan and phase files.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-28524052a748",
+      "severity": "LOW",
+      "category": "ambiguity",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No ambiguous phase instruction found beyond the write conflict reported separately.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-8fd6f9cbb88f",
+      "severity": "HIGH",
+      "category": "parallel-safety",
+      "file": "PHASE-XX-a.md",
+      "line_range": "3",
+      "kind": "write-scope-overlap",
+      "summary": "Wave 1 is marked parallel, but PHASE-XX-a and PHASE-XX-b both write src/auth/login.ts.",
+      "remediation": "Give src/auth/login.ts ownership to one phase and make the other phase read it, or split the two phases into separate waves so JWT issuance and rate-limit wiring are sequenced.",
+      "prior_status": "new",
+      "why_real_risk": "The pairwise write-scope audit for Wave 1 finds an intersection: PHASE-XX-a writes src/auth/login.ts and PHASE-XX-b also writes src/auth/login.ts. Parallel execution can produce incompatible edits to the same file, with one engineer's patch failing or overwriting the other's login changes.",
+      "repro": "Dispatch Wave 1 in parallel: engineer A implements JWT issuance in src/auth/login.ts while engineer B wires rate limiting in src/auth/login.ts. When both patches are applied, the second patch touches a file already changed by the first phase, so either git apply conflicts or the later edit loses part of the JWT or middleware integration.",
+      "tests_to_add": [
+        "Add a plan-validation fixture asserting that two phases in the same wave with shared writes to src/auth/login.ts are rejected before dispatch.",
+        "Add a disjointness check that reports the phase pair and shared write path for every intra-wave write intersection."
+      ]
+    },
+    {
+      "id": "ISS-28524052a748",
+      "severity": "LOW",
+      "category": "completeness",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No completeness issue found apart from the parallel write conflict reported separately.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-28524052a748",
+      "severity": "LOW",
+      "category": "architectural-fit",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No architectural fit issue found in the reviewed plan and phase files.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-28524052a748",
+      "severity": "LOW",
+      "category": "dry-kiss",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No duplication or needless abstraction issue found in the reviewed plan and phase files.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    },
+    {
+      "id": "ISS-28524052a748",
+      "severity": "LOW",
+      "category": "professionalism",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No professionalism issue found in the reviewed plan and phase files.",
+      "remediation": "category audited; no issues detected",
+      "prior_status": "new"
+    }
+  ],
+  "coverage": {
+    "files_reviewed": [
+      "PLAN.md",
+      "PHASE-XX-a.md",
+      "PHASE-XX-b.md"
+    ],
+    "categories_checked": [
+      "contradictions",
+      "gaps",
+      "ambiguity",
+      "parallel-safety",
+      "completeness",
+      "architectural-fit",
+      "dry-kiss",
+      "professionalism"
+    ]
+  },
+  "not_fully_audited": []
+}

@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "ISS-d5bedcf02715",
+      "severity": "HIGH",
+      "category": "plan-contradiction",
+      "file": "engineer-payload.json",
+      "line_range": "15-20",
+      "kind": "phase-scope-misread",
+      "summary": "The payload says the phase has no test task and no test write target, but PHASE-XX.md explicitly declares both.",
+      "remediation": "Treat PHASE-XX.md lines 3 and 8 as authoritative: update the engineer work to create src/cache.test.kt and remove the false rationale from the delivery record.",
+      "prior_status": "new",
+      "why_real_risk": "This false scope interpretation already caused attempt 4 to omit required test work and can keep the fix loop exhausted even though the phase text is clear.",
+      "repro": "Open PHASE-XX.md line 3 and line 8, then compare them with engineer-payload.json lines 15-20; the payload asserts the opposite of the phase declaration.",
+      "tests_to_add": [
+        "Add a phase-review fixture assertion that rejects payloads claiming a declared write file or task is absent when PHASE-XX.md contains it."
+      ]
+    },
+    {
+      "id": "ISS-2cd26b5f0235",
+      "severity": "HIGH",
+      "category": "plan-contradiction",
+      "file": "engineer-payload.json",
+      "line_range": "5-10",
+      "kind": "files-touched-write-drift",
+      "summary": "files_touched omits src/cache.test.kt even though PHASE-XX.md declares it in writes.",
+      "remediation": "Create src/cache.test.kt and add it to files_touched, or reject the phase attempt as incomplete until the declared write set is satisfied.",
+      "prior_status": "new",
+      "why_real_risk": "The phase contract requires both source and test artifacts; omitting the test file lets an incomplete cache implementation appear deliverable.",
+      "repro": "Compare PHASE-XX.md line 3 with engineer-payload.json lines 5-10; only src/cache.kt is reported touched, so the declared test artifact is absent.",
+      "tests_to_add": [
+        "Add a validator test named rejects_payload_when_declared_write_file_is_missing_from_files_touched with PHASE writes containing src/cache.test.kt and payload touching only src/cache.kt."
+      ]
+    },
+    {
+      "id": "ISS-c5d8d3f55653",
+      "severity": "HIGH",
+      "category": "missing-tasks",
+      "file": "engineer-payload.json",
+      "line_range": "12-20",
+      "kind": "missing-test-task",
+      "summary": "The engineer explicitly skipped unit tests required by the phase task.",
+      "remediation": "Author src/cache.test.kt with tests covering insertion, eviction, and overflow for ISS-23ba7d51473d before accepting the phase.",
+      "prior_status": "new",
+      "why_real_risk": "The task specifically asks for test coverage of eviction and overflow; without it, regressions in capacity behavior can ship unnoticed.",
+      "repro": "Read PHASE-XX.md line 8, then inspect engineer-payload.json lines 12-20; the decision title is skip test authoring and the summary says tests were not authored.",
+      "tests_to_add": [
+        "Add a unit test named put_then_get_returns_inserted_value that inserts one id and asserts get returns the stored value.",
+        "Add a unit test named put_beyond_capacity_evicts_expected_entry that fills the cache, inserts one extra entry, and asserts the eviction contract.",
+        "Add a unit test named overflow_does_not_grow_past_capacity that inserts more entries than capacity and asserts size or observable contents stay within the documented limit."
+      ]
+    },
+    {
+      "id": "ISS-dfeec5a8a249",
+      "severity": "HIGH",
+      "category": "code-quality",
+      "file": "engineer-payload.json",
+      "line_range": "5-10",
+      "kind": "missing-claimed-source-file",
+      "summary": "The payload reports creating src/cache.kt, but no src directory or cache.kt file exists in the reviewed workspace.",
+      "remediation": "Provide the actual src/cache.kt implementation or correct the payload so it does not claim a nonexistent deliverable.",
+      "prior_status": "new",
+      "why_real_risk": "A missing source file means the project cannot compile or satisfy the put/get API promised by the phase.",
+      "repro": "Run rg --files in the fixture; only TASK.md, PHASE-XX.md, and engineer-payload.json are present, while ls src fails because the directory does not exist.",
+      "tests_to_add": [
+        "Add a phase-review test named rejects_payload_when_touched_file_is_absent that reports src/cache.kt in files_touched but leaves it missing on disk."
+      ]
+    },
+    {
+      "id": "ISS-e8b569c9102a",
+      "severity": "HIGH",
+      "category": "edge-cases",
+      "file": "engineer-payload.json",
+      "line_range": "20",
+      "kind": "missing-eviction-overflow-behavior",
+      "summary": "The reported implementation is only a simple HashMap-backed put/get cache, with no stated eviction or overflow behavior.",
+      "remediation": "Define and implement capacity behavior in src/cache.kt, including which entry is evicted and what happens when inserts exceed capacity, then cover it in src/cache.test.kt.",
+      "prior_status": "new",
+      "why_real_risk": "A cache without explicit capacity behavior fails the task's overflow requirement and can behave incorrectly once more entries are inserted than allowed.",
+      "repro": "Using the payload description, instantiate the cache, insert entries past the intended capacity, and call get on older and newer ids; there is no documented or tested result for eviction or overflow.",
+      "tests_to_add": [
+        "Add a unit test named overflow_uses_documented_eviction_order that inserts capacity plus one entries and asserts the exact surviving ids.",
+        "Add a unit test named replacing_existing_id_does_not_trigger_extra_eviction that updates an existing id at capacity and asserts unrelated entries remain accessible."
+      ]
+    },
+    {
+      "id": "ISS-12dacc563995",
+      "severity": "MEDIUM",
+      "category": "security",
+      "file": "engineer-payload.json",
+      "line_range": "20",
+      "kind": "unbounded-cache-resource-exhaustion",
+      "summary": "A simple HashMap-backed cache with no overflow handling creates an availability risk under unbounded inserts.",
+      "remediation": "Enforce a fixed capacity or explicit overflow failure mode in src/cache.kt and test that repeated unique ids cannot grow storage without limit.",
+      "prior_status": "new",
+      "why_real_risk": "If callers can submit arbitrary ids, each unique id can allocate additional memory until the process slows down or terminates.",
+      "repro": "Loop over many unique ids and call put(id, value); with plain HashMap storage and no eviction or overflow path, retained entries grow with each unique insert.",
+      "tests_to_add": [
+        "Add a property or stress-style unit test named many_unique_puts_respect_capacity that inserts far more unique ids than capacity and asserts retained entry count never exceeds capacity."
+      ]
+    },
+    {
+      "id": "ISS-48169328334c",
+      "severity": "MEDIUM",
+      "category": "professionalism",
+      "file": "engineer-payload.json",
+      "line_range": "15-20",
+      "kind": "misleading-delivery-rationale",
+      "summary": "The delivery note presents a false reading of PHASE-XX.md as the converged interpretation after four attempts.",
+      "remediation": "Replace the rationale with an accurate status: tests and the declared test file are missing, so the phase is incomplete.",
+      "prior_status": "new",
+      "why_real_risk": "A misleading completion record wastes review cycles and can route the workflow toward a fixer despite the engineer payload being the source of the failure.",
+      "repro": "Compare the decision rationale with PHASE-XX.md line 8; the payload says no test task exists even though the phase has a dedicated test task.",
+      "tests_to_add": [
+        "Add a review-fixture assertion named flags_false_scope_rationale that detects payload rationales contradicting explicit phase tasks."
+      ]
+    }
+  ],
+  "coverage": {
+    "files_reviewed": [
+      "TASK.md",
+      "PHASE-XX.md",
+      "engineer-payload.json"
+    ],
+    "categories_checked": [
+      "plan-contradiction",
+      "missing-tasks",
+      "code-quality",
+      "edge-cases",
+      "security",
+      "professionalism"
+    ]
+  },
+  "not_fully_audited": [
+    {
+      "scope": "src/cache.kt",
+      "reason": "The engineer payload reports this file as created, but it is absent from the workspace, so implementation details could not be inspected.",
+      "recommended_followup": "Provide the source file and rerun phase review against its actual contents."
+    },
+    {
+      "scope": "src/cache.test.kt",
+      "reason": "PHASE-XX.md declares this test file in writes, but the engineer did not create or report it.",
+      "recommended_followup": "Create the required test file and rerun phase review."
+    }
+  ]
+}

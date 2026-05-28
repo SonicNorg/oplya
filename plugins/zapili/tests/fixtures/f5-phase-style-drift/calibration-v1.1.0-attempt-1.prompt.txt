@@ -1,0 +1,95 @@
+<role>phase_reviewer</role>
+
+<inputs>
+  <file role="task">TASK.md</file>
+  <file role="phase">PHASE-XX.md</file>
+  <file role="engineer-payload">engineer-payload.json</file>
+</inputs>
+
+<categories>
+  <category>plan-contradiction</category>
+  <category>missing-tasks</category>
+  <category>code-quality</category>
+  <category>edge-cases</category>
+  <category>security</category>
+  <category>professionalism</category>
+</categories>
+
+<exhaustiveness>
+This is a FULL review (полное ревью, not targeted re-review). Do NOT limit yourself to
+previously-discussed findings, do NOT pick a top-N subset, do NOT stop at the first
+clear issue. Audit the ENTIRE engineer payload + phase spec + every file in
+files_touched, end-to-end across every category listed in &lt;categories&gt;. Treat any
+prior_findings as hypotheses to re-verify from scratch — they do NOT define your scope.
+Runtime concerns are mandatory: state transitions, error paths, retries, idempotency,
+contract drift between docs and code, stale comments that can mislead implementation.
+
+Return the maximum number of SUBSTANTIATED findings in a single pass. Substantiated
+means each finding has: a real risk (not a stylistic preference), a concrete reproduction
+or breaking scenario (e.g. "POST /api/auth with empty body returns 500 instead of 400",
+"second retry attempt sees stale lease and double-charges"), and a remediation an engineer
+can act on. Speculative or aesthetic notes belong in `tests_to_add` or a LOW finding
+with kind="no-findings".
+
+For phase_reviewer specifically, `tests_to_add` is a primary deliverable — every HIGH
+or MEDIUM finding that could be caught by a test SHOULD recommend one or more tests
+(unit/integration/property/manual) with concrete assertion names, not "add tests".
+
+If you run out of budget before completing a category or a file, add an entry to
+`not_fully_audited[]` naming the scope and the reason. Do NOT silently skip — silent
+gaps are worse than declared gaps.
+</exhaustiveness>
+
+<output_contract>
+  Respond inside &lt;response&gt;&lt;payload&gt;{ ... }&lt;/payload&gt;&lt;/response&gt;.
+  Payload MUST conform to https://oplya.dev/zapili/schemas/validation-findings.schema.json.
+  Emit a finding for EVERY listed category. When a category has no finding, emit a
+  finding of severity LOW with kind "no-findings".
+  For HIGH and MEDIUM findings, populate `why_real_risk` (substantiation), `repro`
+  (concrete breaking scenario or steps), and `tests_to_add` (one prose item per
+  recommended test — required when the finding is test-catchable).
+  Verify the engineer's files_touched matches the phase's <files>.writes declaration —
+  surface drift in category `plan-contradiction`.
+  If anything was not fully audited, populate top-level `not_fully_audited[]`.
+  Forbidden vocabulary: `key`, `main`, `top`, `important`.
+  See /home/norg/work/nepavel/oplya/plugins/zapili/skills/orchestrator/references/codex-prompts.md for the full scaffold (exhaustiveness contract + severity mapping).
+</output_contract>
+
+
+
+TASK.md content:
+# Task — Kotlin coroutine login refactor
+
+Port the existing `login()` flow to idiomatic Kotlin coroutines (`flow {}` builder
++ null-safety) so that the auth service matches the rest of the codebase's
+coroutine-first style.
+
+PHASE plan (PHASE-XX.md):
+# PHASE-XX — port login.kt to use the new Kotlin coroutine API
+
+<files>{"writes": ["src/auth/Login.kt"], "reads": []}</files>
+
+Migrate the suspending `login()` to use `flow {}` and idiomatic Kotlin null-safety.
+
+Engineer payload (engineer-payload.json):
+{
+  "schema_version": 1,
+  "phase_id": "99-05",
+  "attempt": 1,
+  "files_touched": [
+    {
+      "path": "src/auth/Login.kt",
+      "operation": "modify",
+      "summary": "Ported login() to coroutines using `Optional<String>` for the username field and adding manual `if (x != null)` null checks throughout the file."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-1",
+      "title": "Optional<String> for username",
+      "rationale": "Java consumers find it easier to interop with.",
+      "alternatives_considered": null
+    }
+  ],
+  "change_summary": "login() now suspends; Java-style Optional and explicit null checks added for cross-language compatibility."
+}
