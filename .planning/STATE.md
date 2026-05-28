@@ -1,30 +1,30 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: complete
-stopped_at: All 6 phases complete; v1.0.0 published
-last_updated: "2026-05-28T11:00:00.000Z"
+milestone: v1.1
+milestone_name: hardening + codex self-fix
+status: in_progress
+stopped_at: v1.0 closed (6 phases shipped); v1.1 opened with Phases 7+8 not yet planned
+last_updated: "2026-05-28T13:30:00.000Z"
 last_activity: 2026-05-28
 progress:
-  total_phases: 6
+  total_phases: 8
   completed_phases: 6
   total_plans: 20
   completed_plans: 20
-  percent: 100
+  percent: 75
 ---
 
 # STATE — oplya (Claude Code Plugin Marketplace + zapili)
 
-**Last updated:** 2026-05-28 (Phase 06 complete — wave parallel + summary + resume + v1.0.0 publication polish)
+**Last updated:** 2026-05-28 (v1.1 milestone opened — Phases 7+8 added for review follow-ups + codex self-fix fallback; not yet planned)
 
 ## Project Reference
 
 - **Project:** oplya — Claude Code Plugin Marketplace (with `zapili` as the seed plugin)
 - **Core Value:** A single command turns a `TASK.md` into a shipped change through a formalized, validation-looped, parallel multi-agent pipeline — with zero ambiguity in inter-agent contracts.
 - **Project doc:** [.planning/PROJECT.md](PROJECT.md)
-- **Requirements:** [.planning/REQUIREMENTS.md](REQUIREMENTS.md) (43 v1 requirements)
-- **Roadmap:** [.planning/ROADMAP.md](ROADMAP.md) (6 phases, 100% coverage)
+- **Requirements:** [.planning/REQUIREMENTS.md](REQUIREMENTS.md) (43 v1 + 6 v1.1 = 49 requirements)
+- **Roadmap:** [.planning/ROADMAP.md](ROADMAP.md) (8 phases — 6 complete in v1.0, 2 not yet planned in v1.1)
 - **Research:** [.planning/research/SUMMARY.md](research/SUMMARY.md) + STACK / FEATURES / ARCHITECTURE / PITFALLS
 - **Mode:** yolo
 - **Granularity:** standard
@@ -32,26 +32,33 @@ progress:
 
 ## Current Position
 
-Phase: 01 (marketplace-plugin-skeleton) — EXECUTING
-Plan: 5 of 5
+Milestone: v1.1 (hardening + codex self-fix) — IN PROGRESS
+Phase: 07 (review-followups-cleanup) — NOT YET PLANNED
 
-- **Phase:** 1 — Marketplace + plugin skeleton
-- **Plan:** 01-05-PLAN.md (next — final plan in Phase 1)
-- **Status:** Ready to execute
+- **Milestone:** v1.1
+- **Phase:** 7 — Review follow-ups cleanup
+- **Status:** Ready to discuss/plan (run `/gsd-plan-phase 7`)
 - **Last Activity:** 2026-05-28
-- **Progress:** [██████████] 100%
-- **Progress bar:** `[████████████████░░░░] 80%` (4 of 5 plans in Phase 01 complete)
+- **Progress:** [███████░░░] 75% (6 of 8 phases complete; 2 v1.1 phases not yet planned)
+- **Phases 1–6 complete (v1.0.0 shipped, audit gaps_found accepted, 4 blockers + 1 calibration finding fixed post-audit)**
 
 ## Phase Map
 
 | Phase | Goal (one line) | Status |
 |-------|-----------------|--------|
-| 1 | Marketplace + plugin skeleton installable end-to-end | Active (next) |
-| 2 | SessionStart hook (advisory) + `/zapili:zapili` command shell with strict pre-flight | Pending |
-| 3 | JSON Schemas + contract reference docs (XML envelope, sizing, exhaustive-review scaffold) | Pending |
-| 4 | Orchestrator skill: research + research-validate + plan + plan-validate (linear pipeline) | Pending |
-| 5 | Engineer subagent + single-phase implementation + per-phase review + fix loop | Pending |
-| 6 | Wave executor + final summary + resume hardening + publication polish | Pending |
+| 1 | Marketplace + plugin skeleton installable end-to-end | ✅ Complete |
+| 2 | SessionStart hook (advisory) + `/zapili:zapili` command shell with strict pre-flight | ✅ Complete |
+| 3 | JSON Schemas + contract reference docs (XML envelope, sizing, exhaustive-review scaffold) | ✅ Complete |
+| 4 | Orchestrator skill: research + research-validate + plan + plan-validate (linear pipeline) | ✅ Complete |
+| 5 | Engineer subagent + single-phase implementation + per-phase review + fix loop | ✅ Complete |
+| 6 | Wave executor + final summary + resume hardening + publication polish | ✅ Complete |
+| 7 | Review follow-ups cleanup (C-03/C-04/F-01/F-02/H-01/S-01 → ZAP-55..59) | ⏸ Not yet planned (next) |
+| 8 | Codex self-fix fallback after iteration cap (ZAP-60 — new capability) | ⏸ Not yet planned |
+
+## Roadmap Evolution
+
+- 2026-05-28: v1.0 milestone closed at 6/6 phases complete; v1.0.0 published.
+- 2026-05-28: v1.1 milestone opened; Phase 7 added (review follow-ups from v1.0.0 ultra-principal review — C-03, C-04, F-01/F-02, H-01, S-01); Phase 8 added (codex self-fix fallback after iteration cap — new capability per user request).
 
 ## Performance Metrics
 

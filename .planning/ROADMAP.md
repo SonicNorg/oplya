@@ -17,6 +17,8 @@ A single command turns a `TASK.md` into a shipped change through a formalized, v
 - [x] **Phase 4: Orchestrator skill + research + plan + their codex validations** — Linear single-shot pipeline (research → research-validate → plan → plan-validate) with iteration caps, prior-issue anchoring, artifact-as-truth state model (completed 2026-05-28)
 - [x] **Phase 5: Engineer subagent + single-phase implementation + per-phase review + fix loop** — Stress-test the per-phase round-trip and artifact-based continuity before introducing parallelism (completed 2026-05-28)
 - [x] **Phase 6: Wave executor + final summary + resume hardening + publication polish** — Lift the single-phase path into wave-parallel execution with mechanical write-scope disjointness, ship-ready polish (completed 2026-05-28)
+- [ ] **Phase 7: Review follow-ups cleanup** — Close five non-blocking follow-ups from v1.0.0 ultra-principal review: planner prior-findings contract (C-03), flagged_gaps routing (C-04), fixture completion f3/f4/f5 (F-01/F-02), check-codex.sh hygiene (H-01), check-wave-disjointness regex (S-01)
+- [ ] **Phase 8: Codex self-fix fallback after iteration cap** — When the codex review fix-loop exhausts its iteration cap with persistent HIGH findings, dispatch a fixer-role codex pass that emits a unified-diff patch against the offending artifact; re-run the validator on the patched artifact; halt only if post-fix review still has HIGH
 
 ## Phase Details
 
@@ -176,10 +178,12 @@ Plans:
 | 4. Orchestrator + research + plan | 3/3 | Complete   | 2026-05-28 |
 | 5. Engineer + single-phase + review/fix | 3/3 | Complete   | 2026-05-28 |
 | 6. Wave executor + summary + resume + polish | 4/4 | Complete   | 2026-05-28 |
+| 7. Review follow-ups cleanup | 0/0 | Not planned | — |
+| 8. Codex self-fix fallback after iteration cap | 0/0 | Not planned | — |
 
 ## Coverage Map
 
-All 43 v1 REQ-IDs are mapped to exactly one phase.
+All 43 v1 REQ-IDs + 6 v1.1 REQ-IDs are mapped to exactly one phase (49 total).
 
 | Phase | Requirement IDs | Count |
 |-------|-----------------|-------|
@@ -189,7 +193,9 @@ All 43 v1 REQ-IDs are mapped to exactly one phase.
 | 4 | ZAP-20, ZAP-21, ZAP-22, ZAP-23, ZAP-24, ZAP-30, ZAP-31, ZAP-32, ZAP-33, ZAP-34, ZAP-35, ZAP-50, ZAP-51, ZAP-52 | 14 |
 | 5 | ZAP-40, ZAP-43, ZAP-44, ZAP-45 | 4 |
 | 6 | ZAP-41, ZAP-42, ZAP-46, ZAP-47, ZAP-53, ZAP-54 | 6 |
-| **Total** | | **43** |
+| 7 | ZAP-55, ZAP-56, ZAP-57, ZAP-58, ZAP-59 | 5 |
+| 8 | ZAP-60 | 1 |
+| **Total** | | **49** |
 
 ## Phase Ordering Rationale
 
@@ -199,6 +205,37 @@ All 43 v1 REQ-IDs are mapped to exactly one phase.
 - **Marketplace polish is split (Phase 1 + Phase 6):** the minimum installable skeleton is Phase 1 (you cannot test anything without `/plugin install` working); README polish, smoke tests, CHANGELOG, and reserved-name verification are Phase 6 (only meaningful once the workflow actually works).
 - **Resume hardening sits in Phase 6, not Phase 4:** resume tests the union of all prior phases' state writes — chaos-test failures must be fixed in whichever phase wrote the bad state, so isolating it as a verification step is correct.
 - **State requirements split across Phase 4 (ZAP-50/51/52) and Phase 6 (ZAP-53):** state-file plumbing, single-writer rule, and atomic writes are built into the orchestrator backbone in Phase 4; automatic resume hardening with chaos tests belongs to Phase 6 because it can only be validated against the full pipeline.
+- **v1.1 hardening split into Phase 7 (followups) and Phase 8 (codex self-fix):** the followups are tactical bug-class items (UX gaps, fixture completeness, shell hygiene) — bundling them into one phase keeps the cleanup atomic. The codex self-fix fallback is a new capability (changes how the fix-loop terminates), depends on Phase 7's `prior-findings` contract and `flagged_gaps` routing (so the fixer reuses the same artifact-passing convention), and benefits from being a focused phase with its own success criteria and dedicated `f6-fix-loop-exhausted` fixture.
+
+### Phase 7: Review follow-ups cleanup
+
+**Goal**: Close the five non-blocking follow-ups surfaced by the v1.0.0 ultra-principal code review — planner's `prior-findings` input contract, orchestrator routing of `planner.flagged_gaps` to the user, completion of the three broken fixtures (f3/f4/f5 + the `fixtures/README.md` calibration loop), `check-codex.sh` shell-flag hygiene, and the `check-wave-disjointness.sh` phase-ID regex. None of these block end-to-end execution today; together they close the v1.0.0 hardening loop and raise fixture-coverage to 5/5 for codex calibration rehearsals.
+**Depends on**: Phase 6 (all v1.0 artifacts shipped)
+**Requirements**: ZAP-55, ZAP-56, ZAP-57, ZAP-58, ZAP-59
+**Success Criteria** (what must be TRUE):
+
+  1. `plugins/zapili/agents/planner.md` accepts an `<inputs>` block role `prior-findings` (optional) and its `<task>` section instructs the planner how to address each prior HIGH/MEDIUM finding by ID — fix-loop iterations have a defined contract (C-03).
+  2. Orchestrator Stage 5 parses `planner.flagged_gaps` from the planner payload; if non-empty, surfaces each gap to the user via `AskUserQuestion` and appends answers to CONTEXT.md before advancing to `plan_validate` (C-04).
+  3. `plugins/zapili/tests/fixtures/README.md` calibration loop uses the correct per-role wrapper invocation pattern (no more nonexistent `--role`/`--inputs`/`--out` flags); `f3-plan-ambiguity/PLAN.md`, `f4-phase-missing-tests/TASK.md`, and `f5-phase-style-drift/TASK.md` exist as minimal stub files so every fixture can be prog'd end-to-end (F-01/F-02).
+  4. `plugins/zapili/scripts/check-codex.sh` uses `set -euo pipefail` (was `set -uo pipefail` — missing `-e` violates CLAUDE.md hook discipline and Phase 2 D-15); all existing `if !` and `|| true` guards still hold under `-e` (H-01).
+  5. `plugins/zapili/scripts/check-wave-disjointness.sh` regex matches both production naming (`PHASE-01`, `PHASE-02`) and fixture naming (`PHASE-XX-a`, `PHASE-XX-b`) so the f2 self-test exercises the overlap-detection code path (S-01).
+
+**Plans**: TBD (run /gsd-plan-phase 7 to break down)
+
+### Phase 8: Codex self-fix fallback after iteration cap
+
+**Goal**: When the codex review fix-loop hits the iteration cap (default: 4 attempts) with HIGH findings still persistent, do NOT abort — instead, dispatch a second codex invocation with role `fixer` whose task is to MODIFY the offending artifact (PHASE-XX.md, PLAN.md, or CONTEXT.md depending on the validator) to address every persistent HIGH finding, then re-run the original validator on the codex-fixed artifact. This is the escape hatch for cases where the engineer/planner subagent has reached its own ceiling on a particular issue but codex (with its independent context window and different model family) can resolve it. The loop terminates when (a) no HIGH findings remain, OR (b) codex's fix attempt itself produces no diff, OR (c) the post-fix re-review still has HIGH findings — at which point the workflow halts with the persisted findings + the codex fix transcript so the human can inspect.
+**Depends on**: Phase 7 (planner contract and flagged_gaps routing land first — fixer reuses the same prior-findings contract)
+**Requirements**: ZAP-60
+**Success Criteria** (what must be TRUE):
+
+  1. `plugins/zapili/scripts/codex-self-fix.sh` exists and accepts `<artifact_to_fix> <validator_role> <prior_findings_json>`; it composes a "fixer" prompt that (a) includes the artifact verbatim, (b) includes every HIGH finding from `prior_findings_json` with file/line/kind/remediation, (c) instructs codex to emit a unified-diff patch wrapped in `<response><patch>...</patch></response>` and nothing else; invokes codex via `codex-review.sh`; applies the patch via `git apply --check` first then `git apply`.
+  2. Orchestrator Stage 4/6 fix-loop detects the iteration cap (default 4, configurable via `.zapili/state.json` `.fix_loop_cap`); on cap-hit with persistent HIGH findings, dispatches `codex-self-fix.sh` against the offending artifact; re-runs the original validator on the patched artifact; if post-fix review is clean → workflow proceeds; if post-fix review still has HIGH → workflow halts with a structured `## CODEX SELF-FIX EXHAUSTED` message naming the unresolved finding IDs and the path to the codex fix transcript.
+  3. `codex-self-fix.sh` is safe to dry-run: when invoked with `--dry-run`, prints the proposed patch to stdout but does NOT touch the working tree; the orchestrator always dry-runs first and persists the patch under `.zapili/codex-self-fix-attempt-N.patch` before applying.
+  4. The fixer prompt is documented in `plugins/zapili/skills/orchestrator/references/codex-prompts.md` as a fourth role alongside `research_validator`, `plan_validator`, `phase_reviewer`; SHA-256 ID derivation rule (CALIB-01) applies if fixer must reference prior IDs.
+  5. End-to-end fixture: a new fixture `tests/fixtures/f6-fix-loop-exhausted/` reproduces a case where the engineer cannot resolve a HIGH finding within 4 attempts but codex-self-fix DOES resolve it on the 5th turn; the fixture exists as an integration acceptance test for ZAP-60.
+
+**Plans**: TBD (run /gsd-plan-phase 8 to break down)
 
 ---
 *Roadmap created: 2026-05-27*
