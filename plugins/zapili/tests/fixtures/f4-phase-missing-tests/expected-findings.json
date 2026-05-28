@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "ISS-3c9a191be875",
+      "severity": "MEDIUM",
+      "category": "missing-tasks",
+      "file": "tests/fixtures/f4-phase-missing-tests/engineer-payload.json",
+      "line_range": "2-15",
+      "kind": "missing-test-files",
+      "summary": "change_summary claims unit tests added, but files_touched contains no jwt.test.ts entry.",
+      "remediation": "Either add jwt.test.ts to files_touched (and ensure the file actually exists on disk) or correct the change_summary to reflect that tests are deferred.",
+      "prior_status": "new"
+    }
+  ],
+  "coverage": {
+    "files_reviewed": [
+      "tests/fixtures/f4-phase-missing-tests/PHASE-XX.md",
+      "tests/fixtures/f4-phase-missing-tests/engineer-payload.json"
+    ],
+    "categories_checked": ["plan-contradiction","missing-tasks","code-quality","edge-cases","security","professionalism"]
+  }
+}

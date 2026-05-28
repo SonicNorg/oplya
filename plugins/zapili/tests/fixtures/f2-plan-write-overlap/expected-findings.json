@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "ISS-da83a9a75c86",
+      "severity": "HIGH",
+      "category": "parallel-safety",
+      "file": "tests/fixtures/f2-plan-write-overlap/PLAN.md",
+      "line_range": "8-25",
+      "kind": "write-scope-overlap",
+      "summary": "PHASE-XX-a and PHASE-XX-b both declare src/auth/login.ts in their writes; cannot run in same wave.",
+      "remediation": "Either move login.ts ownership to one phase (the other reads it) or split waves so the phases run sequentially.",
+      "prior_status": "new"
+    }
+  ],
+  "coverage": {
+    "files_reviewed": [
+      "tests/fixtures/f2-plan-write-overlap/PLAN.md",
+      "tests/fixtures/f2-plan-write-overlap/PHASE-XX-a.md",
+      "tests/fixtures/f2-plan-write-overlap/PHASE-XX-b.md"
+    ],
+    "categories_checked": [
+      "contradictions",
+      "gaps",
+      "ambiguity",
+      "parallel-safety",
+      "completeness",
+      "architectural-fit",
+      "dry-kiss",
+      "professionalism"
+    ]
+  }
+}

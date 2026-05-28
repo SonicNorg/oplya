@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "ISS-4653b5e9bc97",
+      "severity": "LOW",
+      "category": "code-quality",
+      "file": "tests/fixtures/f5-phase-style-drift/engineer-payload.json",
+      "line_range": "4-10",
+      "kind": "mixed-language-style",
+      "summary": "Engineer introduces Java idioms (Optional<String>, explicit null checks) in a Kotlin file that should use Kotlin nullable types and the !! / ?. operators.",
+      "remediation": "Replace Optional<String> with String?, drop the manual null checks, and rely on idiomatic Kotlin null-safety.",
+      "prior_status": "new"
+    }
+  ],
+  "coverage": {
+    "files_reviewed": [
+      "tests/fixtures/f5-phase-style-drift/PHASE-XX.md",
+      "tests/fixtures/f5-phase-style-drift/engineer-payload.json"
+    ],
+    "categories_checked": ["plan-contradiction","missing-tasks","code-quality","edge-cases","security","professionalism"]
+  }
+}

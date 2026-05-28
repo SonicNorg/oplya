@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "phase_id": "99-05",
+  "attempt": 1,
+  "files_touched": [
+    {
+      "path": "src/auth/Login.kt",
+      "operation": "modify",
+      "summary": "Ported login() to coroutines using `Optional<String>` for the username field and adding manual `if (x != null)` null checks throughout the file."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-1",
+      "title": "Optional<String> for username",
+      "rationale": "Java consumers find it easier to interop with.",
+      "alternatives_considered": null
+    }
+  ],
+  "change_summary": "login() now suspends; Java-style Optional and explicit null checks added for cross-language compatibility."
+}

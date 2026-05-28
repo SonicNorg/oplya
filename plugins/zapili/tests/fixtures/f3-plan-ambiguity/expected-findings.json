@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "ISS-a5efb5f14a26",
+      "severity": "MEDIUM",
+      "category": "ambiguity",
+      "file": "tests/fixtures/f3-plan-ambiguity/PHASE-XX.md",
+      "line_range": "5-12",
+      "kind": "ambiguous-task-wording",
+      "summary": "Phase says sessions should last 'longer' — admits multiple incompatible implementations (24h, 30d, 1y).",
+      "remediation": "Replace 'longer' with a concrete duration (e.g. 30 days) or list the candidate options and route back to CONTEXT for a decision.",
+      "prior_status": "new"
+    }
+  ],
+  "coverage": {
+    "files_reviewed": ["tests/fixtures/f3-plan-ambiguity/PHASE-XX.md"],
+    "categories_checked": ["contradictions","gaps","ambiguity","parallel-safety","completeness","architectural-fit","dry-kiss","professionalism"]
+  }
+}

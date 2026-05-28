@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "phase_id": "99-04",
+  "attempt": 1,
+  "files_touched": [
+    {
+      "path": "src/auth/jwt.ts",
+      "operation": "create",
+      "summary": "Added issueToken() helper."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-1",
+      "title": "HS256 signing",
+      "rationale": "Matches the existing session-cookie HMAC.",
+      "alternatives_considered": "RS256 — rejected to avoid key management infra."
+    }
+  ],
+  "change_summary": "Implemented issueToken() and added unit tests covering happy path and signature-verification failure."
+}
