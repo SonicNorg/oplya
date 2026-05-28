@@ -101,9 +101,28 @@ SHA-256 ID derivation rule, CALIB-01, documented in $PROMPTS_REF).
 Emit a single unified-diff patch applicable from the repo root via:
   git apply &lt;patch&gt;
 
-The patch's --- a/ and +++ b/ headers MUST use the artifact path EXACTLY as it
-appears in the &lt;inputs&gt; block (no normalization, no leading ./, no absolute
-paths). If no valid patch can address every HIGH finding, emit an empty
+REQUIREMENTS for the patch (git apply will reject the patch otherwise):
+- The --- a/ and +++ b/ headers MUST use the artifact path EXACTLY as it
+  appears in the &lt;inputs&gt; block (no normalization, no leading ./, no absolute
+  paths).
+- Include UNCHANGED CONTEXT lines around each change — the standard "diff -u"
+  three-line context format. Append lines by including the last existing line
+  as context. Modify lines by including the lines above and below as context.
+- Use the standard "@@ -OLD_START,OLD_COUNT +NEW_START,NEW_COUNT @@" hunk
+  header form with explicit comma-separated counts.
+
+Worked example (a fictional 4-line file that adds a new line after the last):
+
+  --- a/example.md
+  +++ b/example.md
+  @@ -1,4 +1,5 @@
+   # title
+
+   ## section
+   first line
+  +second line
+
+If no valid patch can address every HIGH finding, emit an empty
 &lt;patch&gt;&lt;/patch&gt; block — do NOT emit a partial or speculative patch.
 </task>
 
@@ -137,9 +156,19 @@ fi
 # multi-line patches (typical: hunk bodies span many lines).
 PATCH_BODY=$(perl -0777 -ne 'print $1 if /<patch>(.*?)<\/patch>/s' "$RAW_OUT_FILE" 2>/dev/null || true)
 
-# Strip a single leading + trailing newline if present (codex often pretty-prints).
-PATCH_BODY="${PATCH_BODY#$'\n'}"
-PATCH_BODY="${PATCH_BODY%$'\n'}"
+# Trim leading/trailing whitespace-only lines (codex often pretty-prints the
+# closing </patch> tag with indentation, which gets parsed as a phantom hunk
+# line by git apply). Awk strips fully-blank lines at both ends but preserves
+# blank lines inside the patch body (some hunks legitimately contain empty
+# context lines).
+PATCH_BODY=$(printf '%s' "$PATCH_BODY" | awk '
+  /^[[:space:]]*$/ && !started { next }
+  { started=1; lines[++n]=$0 }
+  END {
+    while (n > 0 && lines[n] ~ /^[[:space:]]*$/) n--
+    for (i=1; i<=n; i++) print lines[i]
+  }
+')
 
 # Empty-patch detection: literal empty, whitespace-only, or just a few stray bytes.
 if [ -z "$(printf '%s' "$PATCH_BODY" | tr -d '[:space:]')" ]; then

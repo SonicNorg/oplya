@@ -1,0 +1,69 @@
+<role>fixer</role>
+
+<inputs>
+  <file role="artifact">plugins/zapili/tests/fixtures/f6-fix-loop-exhausted/PHASE-XX.md</file>
+  <file role="prior-findings">plugins/zapili/tests/fixtures/f6-fix-loop-exhausted/prior-findings.json</file>
+</inputs>
+
+<task>
+You are the last-resort fixer dispatched after the engineer (or planner) for
+role "phase_reviewer" exhausted its iteration cap with persistent findings.
+Your single job: revise the artifact above to address every HIGH (and MEDIUM)
+finding listed in &lt;prior_findings&gt;. Do not invent new ISS-... ids — reference
+the existing ids from the findings block when explaining your changes (per the
+SHA-256 ID derivation rule, CALIB-01, documented in /home/norg/work/nepavel/oplya/plugins/zapili/skills/orchestrator/references/codex-prompts.md).
+
+Emit a single unified-diff patch applicable from the repo root via:
+  git apply &lt;patch&gt;
+
+REQUIREMENTS for the patch (git apply will reject the patch otherwise):
+- The --- a/ and +++ b/ headers MUST use the artifact path EXACTLY as it
+  appears in the &lt;inputs&gt; block (no normalization, no leading ./, no absolute
+  paths).
+- Include UNCHANGED CONTEXT lines around each change — the standard "diff -u"
+  three-line context format. Append lines by including the last existing line
+  as context. Modify lines by including the lines above and below as context.
+- Use the standard "@@ -OLD_START,OLD_COUNT +NEW_START,NEW_COUNT @@" hunk
+  header form with explicit comma-separated counts.
+
+Worked example (a fictional 4-line file that adds a new line after the last):
+
+  --- a/example.md
+  +++ b/example.md
+  @@ -1,4 +1,5 @@
+   # title
+
+   ## section
+   first line
+  +second line
+
+If no valid patch can address every HIGH finding, emit an empty
+&lt;patch&gt;&lt;/patch&gt; block — do NOT emit a partial or speculative patch.
+</task>
+
+<output_contract>
+Respond ONLY inside this envelope, nothing before or after:
+
+&lt;response&gt;
+  &lt;patch&gt;
+... unified diff here ...
+  &lt;/patch&gt;
+&lt;/response&gt;
+
+Forbidden vocabulary in your response and in any modified line: `key`, `main`, `top`, `important`.
+</output_contract>
+
+<prior_findings>
+<finding id="ISS-23ba7d51473d" severity="HIGH" kind="missing-tasks" file="plugins/zapili/tests/fixtures/f6-fix-loop-exhausted/PHASE-XX.md" line_range="null">
+  Add a task to the phase plan: 'Author unit tests in src/cache.test.kt covering insertion, eviction, and overflow' and extend the <files>.writes JSON to include 'src/cache.test.kt'. This unblocks the engineer's next attempt.
+</finding>
+</prior_findings>
+
+Artifact content (plugins/zapili/tests/fixtures/f6-fix-loop-exhausted/PHASE-XX.md):
+# PHASE-XX — implement cache
+
+<files>{"writes": ["src/cache.kt"], "reads": []}</files>
+
+## Tasks
+
+1. Implement an in-memory hash-table cache with `put(key, value)` and `get(key)` in `src/cache.kt`.

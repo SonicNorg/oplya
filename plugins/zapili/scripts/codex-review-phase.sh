@@ -31,7 +31,10 @@ mkdir -p "$STATE_DIR"
 
 # Parse XX phase id from the PHASE-XX.md filename.
 PHASE_BASENAME=$(basename "$PHASE_MD")
-PHASE_ID=$(printf '%s' "$PHASE_BASENAME" | sed -nE 's/^PHASE-([0-9]+-[0-9]+|[0-9]+)\.md$/\1/p')
+# Phase id pattern: production naming (PHASE-01, PHASE-01-02) AND fixture
+# naming (PHASE-XX, PHASE-XX-a). Mirrors check-wave-disjointness.sh broadening
+# from Phase 7 D-12 / ZAP-59.
+PHASE_ID=$(printf '%s' "$PHASE_BASENAME" | sed -nE 's/^PHASE-([A-Za-z0-9]+(-[A-Za-z0-9]+)?)\.md$/\1/p')
 if [ -z "$PHASE_ID" ]; then
   printf '[codex-review-phase] could not parse phase id from %s\n' "$PHASE_BASENAME" >&2
   exit 64

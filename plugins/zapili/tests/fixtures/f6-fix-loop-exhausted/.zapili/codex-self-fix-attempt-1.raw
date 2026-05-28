@@ -1,0 +1,17 @@
+<response>
+  <patch>
+--- a/plugins/zapili/tests/fixtures/f6-fix-loop-exhausted/PHASE-XX.md
++++ b/plugins/zapili/tests/fixtures/f6-fix-loop-exhausted/PHASE-XX.md
+@@ -1,7 +1,8 @@
+ # PHASE-XX — implement cache
+ 
+-<files>{"writes": ["src/cache.kt"], "reads": []}</files>
++<files>{"writes": ["src/cache.kt", "src/cache.test.kt"], "reads": []}</files>
+ 
+ ## Tasks
+ 
+-1. Implement an in-memory hash-table cache with `put(key, value)` and `get(key)` in `src/cache.kt`.
++1. Implement an in-memory hash-table cache with `put(id, value)` and `get(id)` in `src/cache.kt`.
++2. Author unit tests in `src/cache.test.kt` covering insertion, eviction, and overflow for `ISS-23ba7d51473d`.
+  </patch>
+</response>

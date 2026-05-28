@@ -238,7 +238,54 @@ ${CLAUDE_PLUGIN_ROOT}/scripts/codex-validate-plan.sh \
 
 Persistence + exit semantics identical to Stage 4. On HIGH/MEDIUM findings, route them back to the planner via a fresh `Agent(planner, ...)` invocation that includes the prior-findings block; on no findings, proceed to Stage 7.
 
-If N reaches 4, STOP with the analogous diagnostic.
+If N reaches 4, STOP with the analogous diagnostic — UNLESS the codex-self-fix fallback succeeds (see Stage 6.1 below).
+
+### 6.1. Cap-hit codex-self-fix fallback (ZAP-60)
+
+When iteration N would exceed the cap AND the latest attempt's findings file still contains HIGH findings, do NOT halt. Dispatch the codex `fixer` role against `PLAN.md`.
+
+```bash
+source "${CLAUDE_PLUGIN_ROOT}/scripts/state.sh"
+cap=$(state_get '.fix_loop_cap // 4')
+latest_findings=".zapili/plan-validate-attempt-$((N-1)).json"
+
+# 1. Dry-run first — persists the patch but does NOT touch the tree.
+"${CLAUDE_PLUGIN_ROOT}/scripts/codex-self-fix.sh" --dry-run \
+  PLAN.md plan_validator "$latest_findings"
+self_fix_rc=$?
+
+case "$self_fix_rc" in
+  0)
+    # Patch generated and git apply --check passed. Apply for real.
+    "${CLAUDE_PLUGIN_ROOT}/scripts/codex-self-fix.sh" \
+      PLAN.md plan_validator "$latest_findings"
+    ;;
+  1)
+    # Empty patch — codex couldn't produce a diff.
+    printf '## CODEX SELF-FIX EXHAUSTED — no diff produced\n  See .zapili/plan-validate-attempt-%d.json for unresolved findings.\n' "$((N-1))"
+    exit 1
+    ;;
+  2|4|*)
+    printf '## CODEX SELF-FIX EXHAUSTED — wrapper exit %d\n  See .zapili/codex-self-fix-attempt-*.apply-check.log for details.\n' "$self_fix_rc"
+    exit "$self_fix_rc"
+    ;;
+esac
+
+# 2. Re-run the plan validator on the patched artifact.
+"${CLAUDE_PLUGIN_ROOT}/scripts/codex-validate-plan.sh" PLAN.md 'PHASE-*.md'
+revalidate_rc=$?
+
+if [ "$revalidate_rc" -eq 0 ]; then
+  : # clean — fall through to state_advance_stage "wave_execute"
+else
+  unresolved=$(jq -r '.findings[] | select(.severity=="HIGH") | .id' \
+    .zapili/plan-validate-attempt-*.json | tail -n+1 | sort -u | paste -sd, -)
+  printf '## CODEX SELF-FIX EXHAUSTED — post-fix re-review still HIGH\n  Unresolved finding IDs: %s\n  Patch applied: .zapili/codex-self-fix-attempt-1.patch\n' "$unresolved"
+  exit 1
+fi
+```
+
+Single-attempt rule: one self-fix per cap-hit. If the post-fix re-validate still reports HIGH findings, the workflow halts so a human can inspect; re-running `/zapili:zapili` resets the counter.
 
 `state_advance_stage "wave_execute"`.
 
@@ -307,16 +354,69 @@ Partition the wave's phases into: (a) converged (review clean), (b) needs-fix (r
 
 If `(b)` is non-empty:
 - For every needs-fix phase, increment per-phase N
-- If any phase's N reaches 4 — STOP the entire wave with:
+- If any phase's N reaches 4 — DO NOT STOP immediately. First try the codex-self-fix fallback per Stage 7c.1 below. If that also fails, STOP the entire wave with:
 
   ```
   [zapili] Wave W did not converge: phase(s) XX-Y, XX-Z hit the 3-attempt cap.
     Latest engineer attempts: PHASE-XX-Y-attempt-3.md, PHASE-XX-Z-attempt-3.md
     Latest review findings: .zapili/phase-XX-Y-review-attempt-3.json, .zapili/phase-XX-Z-review-attempt-3.json
+    Codex self-fix transcript: .zapili/codex-self-fix-attempt-*.patch + .raw
     Resolve manually or re-author the offending PHASE-XX.md files before re-running /zapili:zapili.
   ```
 
 - Otherwise, route back to Stage 7a as a FRESH parallel fan-out (only the needs-fix phases this time; converged phases stay converged — subagents are stateless; continuity is by `PHASE-XX-attempt-N.md` artifact).
+
+#### 7c.1. Cap-hit codex-self-fix fallback (ZAP-60)
+
+When a phase's per-phase N reaches the cap, dispatch the codex `fixer` role against THAT phase's `PHASE-XX.md` (the spec artifact — NOT the engineer's output, because the engineer has already tried four times against the current spec and converged on the same answer; the fix must revise the spec).
+
+```bash
+source "${CLAUDE_PLUGIN_ROOT}/scripts/state.sh"
+cap=$(state_get '.fix_loop_cap // 4')
+phase_id="XX"            # the offending phase id
+latest_review=".zapili/phase-${phase_id}-review-attempt-$((N-1)).json"
+phase_artifact="PHASE-${phase_id}.md"
+
+# 1. Dry-run first.
+"${CLAUDE_PLUGIN_ROOT}/scripts/codex-self-fix.sh" --dry-run \
+  "$phase_artifact" phase_reviewer "$latest_review"
+self_fix_rc=$?
+
+case "$self_fix_rc" in
+  0)
+    "${CLAUDE_PLUGIN_ROOT}/scripts/codex-self-fix.sh" \
+      "$phase_artifact" phase_reviewer "$latest_review"
+    ;;
+  1)
+    printf '## CODEX SELF-FIX EXHAUSTED — no diff produced for phase %s\n' "$phase_id"
+    # Fall through to the wave's halt diagnostic above.
+    exit 1
+    ;;
+  2|4|*)
+    printf '## CODEX SELF-FIX EXHAUSTED — wrapper exit %d for phase %s\n' "$self_fix_rc" "$phase_id"
+    exit "$self_fix_rc"
+    ;;
+esac
+
+# 2. Re-run the phase reviewer on the patched spec. Engineer-payload stays the same
+#    (the spec change must make the existing implementation acceptable, OR the
+#    spec change documents the gap as known-deferred and the reviewer must accept).
+"${CLAUDE_PLUGIN_ROOT}/scripts/codex-review-phase.sh" \
+  TASK.md "$phase_artifact" ".zapili/engineer-${phase_id}-attempt-$((N-1)).payload.json"
+revalidate_rc=$?
+
+if [ "$revalidate_rc" -eq 0 ]; then
+  # Mark this phase converged; let the wave's other phases finish their own convergence.
+  : # continue
+else
+  unresolved=$(jq -r '.findings[] | select(.severity=="HIGH") | .id' \
+    .zapili/phase-${phase_id}-review-attempt-*.json | tail -n+1 | sort -u | paste -sd, -)
+  printf '## CODEX SELF-FIX EXHAUSTED — post-fix re-review still HIGH for phase %s\n  Unresolved finding IDs: %s\n  Patch applied: .zapili/codex-self-fix-attempt-*.patch\n' "$phase_id" "$unresolved"
+  exit 1
+fi
+```
+
+Single-attempt rule (D-12) applies here too: one self-fix dispatch per phase per cap-hit. The fixer revises the SPEC (PHASE-XX.md), not the engineer's output, because the engineer keeps converging on the same answer.
 
 When the wave's entire partition is in `(a)` converged:
 
