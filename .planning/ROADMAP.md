@@ -11,7 +11,7 @@ A single command turns a `TASK.md` into a shipped change through a formalized, v
 
 ## Phases
 
-- [ ] **Phase 1: Marketplace + plugin skeleton** — Installable repo layout with valid manifests, READMEs, LICENSE, .gitignore, .gitattributes, JSON validators
+- [x] **Phase 1: Marketplace + plugin skeleton** — Installable repo layout with valid manifests, READMEs, LICENSE, .gitignore, .gitattributes, JSON validators (completed 2026-05-28)
 - [ ] **Phase 2: Plugin packaging — SessionStart hook + slash command shell** — Advisory codex pre-flight + strict command-side check, LF-safe Bash scripts, `${CLAUDE_PLUGIN_ROOT}` discipline
 - [ ] **Phase 3: Inter-agent contracts — JSON Schemas + contract reference docs** — Schemas for every machine-parseable payload, XML envelope spec, task-sizing thresholds, exhaustive-review prompt scaffold + calibration corpus
 - [ ] **Phase 4: Orchestrator skill + research + plan + their codex validations** — Linear single-shot pipeline (research → research-validate → plan → plan-validate) with iteration caps, prior-issue anchoring, artifact-as-truth state model
@@ -47,7 +47,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-05-install-rehearsal-PLAN.md — Live /plugin marketplace add + /plugin install rehearsal with stamped log (MKT-07) — Wave 3
+- [x] 01-05-install-rehearsal-PLAN.md — Live /plugin marketplace add + /plugin install rehearsal with stamped log (MKT-07) — Wave 3
 
 ### Phase 2: Plugin packaging — SessionStart hook + slash command shell
 
@@ -128,7 +128,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Marketplace + plugin skeleton | 4/5 | In Progress|  |
+| 1. Marketplace + plugin skeleton | 5/5 | Complete   | 2026-05-28 |
 | 2. Plugin packaging | 0/TBD | Not started | - |
 | 3. Inter-agent contracts | 0/TBD | Not started | - |
 | 4. Orchestrator + research + plan | 0/TBD | Not started | - |
