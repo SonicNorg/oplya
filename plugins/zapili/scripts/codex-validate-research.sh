@@ -66,14 +66,36 @@ cat >"$PROMPT_FILE" <<EOF
   <category>ambiguity</category>
 </categories>
 
+<exhaustiveness>
+This is a FULL review (полное ревью, not targeted re-review). Do NOT limit yourself to
+previously-discussed findings, do NOT pick a top-N subset, do NOT stop at the first
+clear issue. Audit the ENTIRE artifact end-to-end across every category listed in
+&lt;categories&gt;. Treat any prior_findings as hypotheses to re-verify from scratch — they
+do NOT define your scope.
+
+Return the maximum number of SUBSTANTIATED findings in a single pass. Substantiated
+means each finding has: a real risk (not a stylistic preference), a concrete reproduction
+or breaking scenario, and a remediation an engineer can act on. Speculative or aesthetic
+notes belong in \`tests_to_add\` or a LOW finding with kind="no-findings", not as a
+fabricated HIGH.
+
+If you run out of budget before completing a category or a file, add an entry to
+\`not_fully_audited[]\` naming the scope and the reason. Do NOT silently skip — silent
+gaps are worse than declared gaps because the orchestrator cannot route around them.
+</exhaustiveness>
+
 <output_contract>
   Respond inside &lt;response&gt;&lt;payload&gt;{ ... }&lt;/payload&gt;&lt;/response&gt;.
   Payload MUST conform to https://oplya.dev/zapili/schemas/validation-findings.schema.json.
   Emit a finding for EVERY listed category. When a category has no finding, emit a
   finding of severity LOW with kind "no-findings".
-  Trailing &lt;coverage&gt; block lists files_reviewed and categories_checked.
+  For HIGH and MEDIUM findings, populate \`why_real_risk\` (substantiation) and \`repro\`
+  (concrete breaking scenario or steps). For phase-test-relevant findings, populate
+  \`tests_to_add\` with one prose item per recommended test.
+  Trailing &lt;coverage&gt; block lists files_reviewed and categories_checked. If anything
+  was not fully audited, populate top-level \`not_fully_audited[]\` with {scope, reason}.
   Forbidden vocabulary in your response: \`key\`, \`main\`, \`top\`, \`important\`.
-  See $PROMPTS_REF for the full scaffold.
+  See $PROMPTS_REF for the full scaffold (exhaustiveness contract + severity mapping).
 </output_contract>
 
 $PRIOR_BLOCK

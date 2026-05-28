@@ -70,14 +70,37 @@ $PHASE_INPUTS
   <category>professionalism</category>
 </categories>
 
+<exhaustiveness>
+This is a FULL review (полное ревью, not targeted re-review). Do NOT limit yourself to
+previously-discussed findings, do NOT pick a top-N subset, do NOT stop at the first
+clear issue. Audit EVERY phase end-to-end across every category listed in &lt;categories&gt;.
+Treat any prior_findings as hypotheses to re-verify from scratch — they do NOT define
+your scope. Cross-phase audits (wave dependencies, write-set intersection, completeness
+against the goal) are mandatory, not optional.
+
+Return the maximum number of SUBSTANTIATED findings in a single pass. Substantiated
+means each finding has: a real risk (not a stylistic preference), a concrete reproduction
+or breaking scenario (e.g. "in Wave 2, PHASE-XX and PHASE-YY both write src/auth.ts →
+second engineer overwrites first"), and a remediation an engineer can act on. Speculative
+or aesthetic notes belong in \`tests_to_add\` or a LOW finding with kind="no-findings".
+
+If you run out of budget before completing a category or a phase file, add an entry to
+\`not_fully_audited[]\` naming the scope (e.g. "PHASE-03.md security category") and the
+reason. Do NOT silently skip — silent gaps are worse than declared gaps.
+</exhaustiveness>
+
 <output_contract>
   Respond inside &lt;response&gt;&lt;payload&gt;{ ... }&lt;/payload&gt;&lt;/response&gt;.
   Payload MUST conform to https://oplya.dev/zapili/schemas/validation-findings.schema.json.
   Emit a finding for EVERY listed category. When a category has no finding, emit a
   finding of severity LOW with kind "no-findings".
-  Explicitly verify pairwise write-scope disjointness across every wave.
+  For HIGH and MEDIUM findings, populate \`why_real_risk\` (substantiation) and \`repro\`
+  (concrete breaking scenario or steps).
+  Explicitly verify pairwise write-scope disjointness across every wave — the disjointness
+  finding belongs in category \`parallel-safety\` with a concrete scenario in \`repro\`.
+  If anything was not fully audited, populate top-level \`not_fully_audited[]\`.
   Forbidden vocabulary: \`key\`, \`main\`, \`top\`, \`important\`.
-  See $PROMPTS_REF for the full scaffold.
+  See $PROMPTS_REF for the full scaffold (exhaustiveness contract + severity mapping).
 </output_contract>
 
 $PRIOR_BLOCK

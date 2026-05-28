@@ -9,12 +9,36 @@
       "line_range": "42-58",
       "kind": "write-scope-overlap",
       "summary": "Phase XX-a and XX-b both declare src/auth.ts in their <files> writes block.",
-      "remediation": "Move src/auth.ts ownership to one phase; the other reads it.",
+      "remediation": "Move src/auth.ts ownership to one phase (the other reads it), OR split into separate waves.",
+      "prior_status": "new",
+      "why_real_risk": "Parallel engineer agents in the same wave will both write src/auth.ts; the second commit silently overwrites the first because git apply has no merge semantics inside the worktree. The orchestrator's mechanical disjointness check (check-wave-disjointness.sh) would normally catch this, but the planner asserted disjointness in PLAN.md prose without verifying — the failure surfaces only at engineer dispatch.",
+      "repro": "Run /zapili:zapili against the current PLAN.md → Stage 7.0 disjointness check exits 1 with 'OVERLAP in Wave 1: PHASE-XX-a and PHASE-XX-b both write src/auth.ts'; workflow halts before any engineer is dispatched.",
+      "tests_to_add": [
+        "tests/check-wave-disjointness/test_overlap_detected — assert that bash check-wave-disjointness.sh PLAN.md exits 1 when two phases in the same wave share a write target",
+        "tests/planner/test_no_silent_overlap — assert that planner output rejected when intra-wave writes intersect, before disjointness check runs"
+      ]
+    },
+    {
+      "id": "ISS-fed987cba321",
+      "severity": "LOW",
+      "category": "contradictions",
+      "file": null,
+      "line_range": null,
+      "kind": "no-findings",
+      "summary": "No contradictions between PLAN.md and CONTEXT.md detected.",
+      "remediation": "category audited; no issues detected",
       "prior_status": "new"
     }
   ],
   "coverage": {
     "files_reviewed": ["PLAN.md", "PHASE-XX-a.md", "PHASE-XX-b.md"],
-    "categories_checked": ["contradictions", "gaps", "ambiguity", "parallel-safety", "completeness"]
-  }
+    "categories_checked": ["contradictions", "gaps", "ambiguity", "parallel-safety", "completeness", "architectural-fit", "dry-kiss", "professionalism"]
+  },
+  "not_fully_audited": [
+    {
+      "scope": "PHASE-XX-c.md — security category",
+      "reason": "PHASE-XX-c.md references threat-model.md which was not provided in <inputs>; security review requires the referenced threat model to ground the analysis.",
+      "recommended_followup": "Re-run codex-validate-plan.sh with the threat-model.md added as an additional <file role=\"context\"> input."
+    }
+  ]
 }

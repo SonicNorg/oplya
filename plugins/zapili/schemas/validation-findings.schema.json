@@ -23,7 +23,20 @@
           "kind":          { "type": "string", "minLength": 1 },
           "summary":       { "type": "string", "minLength": 1 },
           "remediation":   { "type": "string", "minLength": 1 },
-          "prior_status":  { "enum": ["new", "carried", "resolved", "reclassified", null] }
+          "prior_status":  { "enum": ["new", "carried", "resolved", "reclassified", null] },
+          "why_real_risk": {
+            "type": ["string", "null"],
+            "description": "Substantiation: why this finding represents a real production/correctness risk rather than a stylistic preference. Optional but strongly encouraged for HIGH and MEDIUM. Discriminator that filters substantiated findings from noise."
+          },
+          "repro": {
+            "type": ["string", "null"],
+            "description": "Reproduction steps OR the concrete scenario that breaks. Examples: 'two phases in Wave 1 both write src/auth.ts → second engineer overwrites first', 'POST /api/auth with empty body returns 500 instead of 400', 'CONTEXT D-03 says jose@5; TASK forbids new auth deps → install fails'. Optional but strongly encouraged for HIGH."
+          },
+          "tests_to_add": {
+            "type": ["array", "null"],
+            "items": { "type": "string", "minLength": 1 },
+            "description": "Specific tests (unit/integration/property/manual) that would catch this issue going forward. Each item is one test description, not a code snippet. Optional; especially valuable for phase_reviewer findings where tests are part of the deliverable."
+          }
         }
       }
     },
@@ -46,6 +59,31 @@
           "id":            { "type": "string", "pattern": "^ISS-[0-9a-f]{12}$" },
           "new_severity":  { "enum": ["HIGH", "MEDIUM", "LOW", "RESOLVED"] },
           "justification": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "not_fully_audited": {
+      "type": "array",
+      "description": "Explicit honesty list: areas/categories/files the reviewer COULD NOT fully audit in this pass (token budget, ambiguous scope, missing dependency, etc.). The orchestrator surfaces this list to the user instead of letting gaps disappear silently. An empty array means the reviewer claims full coverage of every category and every file in <inputs>.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["scope", "reason"],
+        "properties": {
+          "scope":  {
+            "type": "string",
+            "minLength": 1,
+            "description": "What was not audited. Examples: 'src/legacy/' (file/dir), 'security category against PHASE-03.md' (category × artifact), 'cross-phase invariants between Wave 2 and Wave 3'."
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Why it was skipped. Examples: 'context budget exhausted at 87 percent', 'PHASE-03.md references a schema not provided in <inputs>', 'requires runtime evidence not available in static review'."
+          },
+          "recommended_followup": {
+            "type": ["string", "null"],
+            "description": "Optional: a specific action that would close the gap (e.g., 're-run with PHASE-03.md included', 'run integration test suite and re-validate against runtime logs')."
+          }
         }
       }
     }

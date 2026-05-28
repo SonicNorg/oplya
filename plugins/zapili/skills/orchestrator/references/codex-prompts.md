@@ -2,6 +2,64 @@
 
 > Source of truth for every codex review invocation in zapili — research_validate, plan_validate, phase_review. The scaffold guarantees **exhaustive HIGH/MEDIUM/LOW coverage** and produces a payload that conforms to `validation-findings.schema.json`.
 
+## Exhaustiveness contract (the load-bearing instruction)
+
+Without an explicit anti-targeting instruction, codex defaults to a narrow targeted review — it picks the most salient issue, emits ~3 findings, and stops. This wastes every iteration of the fix-loop on partial coverage and is the single most expensive failure mode of the whole pipeline. The scaffold below was calibrated to defeat that default; the instructions are not advisory.
+
+Every validator prompt MUST contain this paragraph verbatim (the exact wording matters — calibrated against codex-cli 0.133.0; substitutions like "comprehensive" or "thorough" do not produce the same coverage):
+
+```
+This is a FULL review (полное ревью, not targeted re-review). Do NOT limit yourself to
+previously-discussed findings, do NOT pick a top-N subset, do NOT stop at the first
+clear issue. Audit the ENTIRE artifact end-to-end across every category listed in
+<categories>. Treat any prior_findings as hypotheses to re-verify from scratch — they
+do NOT define your scope.
+
+Return the maximum number of SUBSTANTIATED findings in a single pass. Substantiated
+means each finding has: a real risk (not a stylistic preference), a concrete reproduction
+or breaking scenario, and a remediation an engineer can act on. Speculative or aesthetic
+notes belong in `tests_to_add` or a LOW finding with kind="no-findings", not as a
+fabricated HIGH.
+
+If you run out of budget before completing a category or a file, add an entry to
+`not_fully_audited[]` naming the scope and the reason. Do NOT silently skip — silent
+gaps are worse than declared gaps because the orchestrator cannot route around them.
+```
+
+### Severity mapping (HIGH/MEDIUM/LOW)
+
+External P0/P1/P2/P3 schemes map onto zapili's three-level scale as follows. Use this mapping when adapting prompts from other review traditions:
+
+| External | zapili severity | Meaning |
+|----------|-----------------|---------|
+| P0       | HIGH            | Blocker — data loss, security breach, contract violation, parallel-safety failure, build-broken |
+| P1       | HIGH            | Correctness defect that ships if not fixed — wrong behavior under documented scenarios |
+| P2       | MEDIUM          | Latent risk, missing edge-case handling, weak test, ambiguity that will cause future bugs |
+| P3       | LOW             | Stylistic or nit-level; tone, naming, comment density. Also `kind: "no-findings"` confirmations. |
+
+LOW with `kind: "no-findings"` is the explicit "I checked this category and found nothing" entry — required for every listed `<category>` that produces no real finding, so the orchestrator can mechanically verify exhaustive coverage from the schema-shaped output.
+
+### Finding evidence requirements
+
+Each substantive finding (HIGH or MEDIUM — not no-findings placeholders) MUST include:
+
+1. **`file` + `line_range`** — exact location. If the finding is cross-file (e.g. parallel-safety overlap), pick the primary artifact and name the second one in `summary`.
+2. **`summary`** — one sentence stating what is wrong.
+3. **`why_real_risk`** (optional but strongly encouraged) — substantiation. Why this is a real production/correctness risk, not a stylistic preference. Filters substantiated findings from noise. Skip only when the risk is self-evident from `summary` (e.g. obvious null-pointer).
+4. **`repro`** (optional but strongly encouraged for HIGH) — the concrete scenario that breaks OR reproduction steps. Examples: "two phases in Wave 1 both write src/auth.ts → second engineer overwrites first", "POST /api/auth with empty body returns 500 instead of 400". Without this, "real risk" is just an assertion.
+5. **`remediation`** — what the engineer/planner should do. Concrete: name files, fields, functions. "Improve security" is not remediation; "validate request body against the auth.LoginRequest schema before issuing the JWT" is.
+6. **`tests_to_add`** (optional, array) — specific tests (unit/integration/property/manual) that would catch this issue going forward. One item per test, prose not code. Especially valuable for phase_reviewer findings where tests are part of the deliverable.
+
+### `not_fully_audited[]` — explicit honesty
+
+Top-level array. Each entry: `{scope, reason, recommended_followup?}`.
+
+- `scope` — what was not audited. Examples: `"src/legacy/"` (file/dir), `"security category against PHASE-03.md"` (category × artifact), `"cross-phase invariants between Wave 2 and Wave 3"`.
+- `reason` — why it was skipped. Examples: `"context budget exhausted at 87 percent"`, `"PHASE-03.md references a schema not provided in <inputs>"`, `"requires runtime evidence not available in static review"`.
+- `recommended_followup` — optional concrete action to close the gap.
+
+An empty `not_fully_audited: []` means the reviewer claims full coverage of every category and every file in `<inputs>`. The orchestrator surfaces non-empty entries to the user instead of treating them as silently OK.
+
 ## Mandatory prompt structure
 
 Every codex review prompt MUST contain these XML blocks in order:
@@ -221,6 +279,7 @@ When `<prior_findings>` is present:
 - Each prior `id` MUST appear EITHER in the new `findings` array (with `prior_status: "carried"` or `prior_status: "reclassified"`) OR in the `reclassification` array.
 - A prior finding marked `RESOLVED` in the reclassification array MUST NOT reappear in the new `findings` array. This is the "resolved must not reappear" rule (ZAP-24).
 - Justifications for severity changes are required — schema enforces non-empty `justification`.
+- **Prior findings do NOT define your scope.** The exhaustiveness contract above still applies in full. Re-validate the entire artifact from scratch, treating prior findings as hypotheses to verify or refute. Adding NEW findings on a re-validation iteration is correct and expected — it means the engineer's fix introduced a regression OR the prior pass missed an issue. Targeted re-review that only checks prior findings (a default codex tendency on retry calls) is a contract violation; the response MUST include the full category coverage with `kind: "no-findings"` placeholders just like a first-pass call.
 
 ## Why this scaffold
 
