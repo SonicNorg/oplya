@@ -15,7 +15,7 @@ A single command turns a `TASK.md` into a shipped change through a formalized, v
 - [x] **Phase 2: Plugin packaging — SessionStart hook + slash command shell** — Advisory codex pre-flight + strict command-side check, LF-safe Bash scripts, `${CLAUDE_PLUGIN_ROOT}` discipline (completed 2026-05-28)
 - [x] **Phase 3: Inter-agent contracts — JSON Schemas + contract reference docs** — Schemas for every machine-parseable payload, XML envelope spec, task-sizing thresholds, exhaustive-review prompt scaffold + calibration corpus (completed 2026-05-28)
 - [x] **Phase 4: Orchestrator skill + research + plan + their codex validations** — Linear single-shot pipeline (research → research-validate → plan → plan-validate) with iteration caps, prior-issue anchoring, artifact-as-truth state model (completed 2026-05-28)
-- [ ] **Phase 5: Engineer subagent + single-phase implementation + per-phase review + fix loop** — Stress-test the per-phase round-trip and artifact-based continuity before introducing parallelism
+- [x] **Phase 5: Engineer subagent + single-phase implementation + per-phase review + fix loop** — Stress-test the per-phase round-trip and artifact-based continuity before introducing parallelism (completed 2026-05-28)
 - [ ] **Phase 6: Wave executor + final summary + resume hardening + publication polish** — Lift the single-phase path into wave-parallel execution with mechanical write-scope disjointness, ship-ready polish
 
 ## Phase Details
@@ -130,7 +130,16 @@ Plans:
   4. Each engineer attempt persists a `PHASE-XX-attempt-N.md` artifact (numbered ascending) capturing decisions, key choices, and files touched — these artifacts are deterministically consumed by the next fix iteration and remain human-inspectable.
   5. A reference small-task `TASK.md` (≤100 LOC, single-phase plan) completes the full single-phase pipeline (research → plan → 1 engineer → 1 review → optional fix) with no manual intervention beyond researcher Q&A, and no contract-violation crashes in the orchestrator.
 
-**Plans**: TBD
+**Plans**: 3 plans (2 waves)
+
+**Wave 1** *(parallel-safe)*
+
+- [x] 05-01-engineer-and-review-wrapper-PLAN.md — engineer.md + codex-review-phase.sh (ZAP-40, ZAP-43) — Wave 1
+- [x] 05-02-smoke-fixture-PLAN.md — smoke-small-task fixture + procedure README (supporting ZAP-44/45) — Wave 1
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [x] 05-03-SKILL-stage7-PLAN.md — SKILL.md Stage 7 single-phase round-trip + fix loop (ZAP-44, ZAP-45) — Wave 2
 
 ### Phase 6: Wave executor + final summary + resume hardening + publication polish
 
@@ -155,7 +164,7 @@ Plans:
 | 2. Plugin packaging | 2/2 | Complete   | 2026-05-28 |
 | 3. Inter-agent contracts | 3/3 | Complete   | 2026-05-28 |
 | 4. Orchestrator + research + plan | 3/3 | Complete   | 2026-05-28 |
-| 5. Engineer + single-phase + review/fix | 0/TBD | Not started | - |
+| 5. Engineer + single-phase + review/fix | 3/3 | Complete   | 2026-05-28 |
 | 6. Wave executor + summary + resume + polish | 0/TBD | Not started | - |
 
 ## Coverage Map

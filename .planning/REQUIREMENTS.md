@@ -54,12 +54,12 @@ Requirements for initial release (`oplya` marketplace + `zapili` plugin v1). Eac
 
 ### Implementation phase (ZAP-impl)
 
-- [ ] **ZAP-40**: Engineer subagent (`plugins/zapili/agents/engineer.md`) is invoked once per phase per wave; receives `TASK.md`, scoped CONTEXT excerpt, its `PHASE-XX.md`, and the formalized XML+JSON contract; returns an XML envelope with a JSON `<payload>{files_touched, decisions, change_summary}` block validated against `phase-changes.schema.json`
+- [x] **ZAP-40**: Engineer subagent (`plugins/zapili/agents/engineer.md`) is invoked once per phase per wave; receives `TASK.md`, scoped CONTEXT excerpt, its `PHASE-XX.md`, and the formalized XML+JSON contract; returns an XML envelope with a JSON `<payload>{files_touched, decisions, change_summary}` block validated against `phase-changes.schema.json`
 - [ ] **ZAP-41**: Orchestrator computes pairwise write-set intersection across all phases in a wave **before** spawning any engineer; aborts the wave with a clear error if any overlap detected (mechanical safety, never trusts LLM-claimed parallel-safety)
 - [ ] **ZAP-42**: Within a wave, all engineer agents are spawned in parallel (single assistant turn issuing N `Agent()` calls)
-- [ ] **ZAP-43**: After all engineers in a wave complete, per-phase codex review runs in parallel (single assistant turn issuing N `Bash(codex-review-phase.sh)` calls); each review receives `TASK.md`, the phase plan, and the engineer's change list; returns schema-validated HIGH/MEDIUM/LOW findings
-- [ ] **ZAP-44**: Per-phase fix loop — review findings are routed back to a fresh engineer spawn with the prior attempt's reasoning trace artifact (`PHASE-XX-attempt-N.md`) so continuity is by artifact, not by process identity
-- [ ] **ZAP-45**: Per-attempt reasoning trace persistence — engineer's decisions, key choices, and files touched are written to `PHASE-XX-attempt-N.md` after each attempt (numbered ascending), enabling the next fix-iteration to consume them
+- [x] **ZAP-43**: After all engineers in a wave complete, per-phase codex review runs in parallel (single assistant turn issuing N `Bash(codex-review-phase.sh)` calls); each review receives `TASK.md`, the phase plan, and the engineer's change list; returns schema-validated HIGH/MEDIUM/LOW findings
+- [x] **ZAP-44**: Per-phase fix loop — review findings are routed back to a fresh engineer spawn with the prior attempt's reasoning trace artifact (`PHASE-XX-attempt-N.md`) so continuity is by artifact, not by process identity
+- [x] **ZAP-45**: Per-attempt reasoning trace persistence — engineer's decisions, key choices, and files touched are written to `PHASE-XX-attempt-N.md` after each attempt (numbered ascending), enabling the next fix-iteration to consume them
 - [ ] **ZAP-46**: Per-wave fix loop converges when every phase in the wave has no HIGH/MEDIUM findings; hard iteration cap (≤3) per phase; on cap-reached, the wave halts with a clear error and persisted findings
 - [ ] **ZAP-47**: Waves execute strictly sequentially; next wave does not start until the prior wave's fix loop has fully converged
 
@@ -155,12 +155,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ZAP-33 | 4 | Complete |
 | ZAP-34 | 4 | Complete |
 | ZAP-35 | 4 | Complete |
-| ZAP-40 | 5 | Pending |
+| ZAP-40 | 5 | Complete |
 | ZAP-41 | 6 | Pending |
 | ZAP-42 | 6 | Pending |
-| ZAP-43 | 5 | Pending |
-| ZAP-44 | 5 | Pending |
-| ZAP-45 | 5 | Pending |
+| ZAP-43 | 5 | Complete |
+| ZAP-44 | 5 | Complete |
+| ZAP-45 | 5 | Complete |
 | ZAP-46 | 6 | Pending |
 | ZAP-47 | 6 | Pending |
 | ZAP-50 | 4 | Complete |
