@@ -22,7 +22,7 @@ tools: Read, Glob, Grep, Write
    - Phase-count rationale linked to `task-sizing.md`
    - Cross-wave dependency notes
    - Requirements traceability table (REQ-ID → phase-id)
-3. For every phase in PLAN.md, author one `PHASE-XX.md` file in the user's project root where XX is two-digit numbered ascending starting at 01. PHASE-XX.md MUST contain a machine-parseable block (place near the top, after the title):
+3. For every phase in PLAN.md, author one `PHASE-XX.md` file in the user's project root where XX is two-digit numbered ascending starting at 01. PHASE-XX.md MUST contain a machine-parseable block (place immediately after the title):
 
    ```
    <files>{"writes":["path1", ...], "reads":["path2", ...]}</files>
