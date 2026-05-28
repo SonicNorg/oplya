@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "task_size": "small",
+  "size_rationale": "Should fail because question count violates the small-class minItems=3.",
+  "questions": [
+    {
+      "id": "Q1",
+      "topic": "x",
+      "question": "x",
+      "context": "x",
+      "default_if_unanswered": "x"
+    }
+  ]
+}

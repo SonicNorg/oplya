@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_path": "TASK.md",
+  "current_stage": "wave_execute",
+  "current_wave": 1,
+  "current_phase": "03-01",
+  "iteration_counters": {
+    "research_validate": 1,
+    "plan_validate": 0,
+    "per_phase_fix": {
+      "03-01": 0
+    }
+  },
+  "issue_ids": {
+    "research_validate": ["ISS-abc123def456"],
+    "plan_validate": [],
+    "per_phase_review": {
+      "03-01": []
+    }
+  },
+  "started_at": "2026-05-28T08:00:00Z",
+  "updated_at": "2026-05-28T08:15:00Z"
+}

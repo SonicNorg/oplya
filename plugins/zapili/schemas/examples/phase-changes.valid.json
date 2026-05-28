@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "phase_id": "03-01",
+  "attempt": 1,
+  "files_touched": [
+    {
+      "path": "plugins/zapili/schemas/validation-findings.schema.json",
+      "operation": "create",
+      "summary": "Authored the codex review payload contract per CONTEXT D-05."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-1",
+      "title": "Use JSON Schema draft 2020-12",
+      "rationale": "Stable, ajv-supported, codex --output-schema understands it.",
+      "alternatives_considered": "draft-07 — older but more widely deployed; rejected because codex understands 2020-12 fine."
+    }
+  ],
+  "change_summary": "Added the four core schemas and self-test script."
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "BAD-ID-FORMAT",
+      "severity": "CRITICAL",
+      "category": "",
+      "kind": "unknown",
+      "summary": "Wrong severity enum, wrong id pattern, empty category — must fail.",
+      "remediation": "Fix the producer.",
+      "extra_field": "should be rejected by additionalProperties:false"
+    }
+  ],
+  "coverage": {
+    "files_reviewed": ["PLAN.md"],
+    "categories_checked": []
+  }
+}

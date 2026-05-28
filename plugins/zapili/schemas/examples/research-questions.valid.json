@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_size": "small",
+  "size_rationale": "Single endpoint addition; ≤100 LOC across 2 modules.",
+  "questions": [
+    {
+      "id": "Q1",
+      "topic": "auth provider",
+      "question": "Which JWT library should we depend on?",
+      "context": "src/auth/ currently uses jsonwebtoken@8.x.",
+      "default_if_unanswered": "Stay on jsonwebtoken@8.x."
+    },
+    {
+      "id": "Q2",
+      "topic": "token expiry",
+      "question": "What expiry window?",
+      "context": "Session cookie clients expect 24h sessions.",
+      "default_if_unanswered": "24h."
+    },
+    {
+      "id": "Q3",
+      "topic": "rollout",
+      "question": "Should JWT and session cookie coexist for one release?",
+      "context": "REQUIREMENTS.md says backward compatibility for ≥1 release.",
+      "default_if_unanswered": "Yes."
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oplya.dev/zapili/schemas/research-questions.schema.json",
+  "title": "Research Questions",
+  "description": "Researcher subagent output — task size classification and the question batch the orchestrator presents to the user.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task_size", "size_rationale", "questions"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "task_size":      { "enum": ["small", "medium", "large", "gigantic"] },
+    "size_rationale": { "type": "string", "minLength": 1 },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "topic", "question", "context", "default_if_unanswered"],
+        "properties": {
+          "id":                    { "type": "string", "pattern": "^Q[1-9][0-9]*$" },
+          "topic":                 { "type": "string", "minLength": 1 },
+          "question":              { "type": "string", "minLength": 1 },
+          "context":               { "type": "string", "minLength": 1 },
+          "default_if_unanswered": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  },
+  "oneOf": [
+    { "properties": { "task_size": { "const": "small" },    "questions": { "minItems": 3,  "maxItems": 4  } } },
+    { "properties": { "task_size": { "const": "medium" },   "questions": { "minItems": 5,  "maxItems": 8  } } },
+    { "properties": { "task_size": { "const": "large" },    "questions": { "minItems": 9,  "maxItems": 12 } } },
+    { "properties": { "task_size": { "const": "gigantic" }, "questions": { "minItems": 13, "maxItems": 20 } } }
+  ]
+}

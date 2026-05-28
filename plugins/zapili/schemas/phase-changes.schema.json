@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oplya.dev/zapili/schemas/phase-changes.schema.json",
+  "title": "Phase Changes",
+  "description": "Engineer subagent output — files touched plus decisions made during one phase attempt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "phase_id", "attempt", "files_touched", "decisions", "change_summary"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "phase_id":       { "type": "string", "pattern": "^[0-9]{2}-[0-9]{2}$" },
+    "attempt":        { "type": "integer", "minimum": 1, "maximum": 3 },
+    "files_touched": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "operation", "summary"],
+        "properties": {
+          "path":      { "type": "string", "minLength": 1 },
+          "operation": { "enum": ["create", "modify", "delete"] },
+          "summary":   { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "rationale", "alternatives_considered"],
+        "properties": {
+          "id":                      { "type": "string", "pattern": "^DEC-[1-9][0-9]*$" },
+          "title":                   { "type": "string", "minLength": 1 },
+          "rationale":               { "type": "string", "minLength": 1 },
+          "alternatives_considered": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "change_summary": { "type": "string", "minLength": 1 }
+  }
+}

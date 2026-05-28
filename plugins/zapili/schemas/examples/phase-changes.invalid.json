@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "phase_id": "bad-phase-id",
+  "attempt": 5,
+  "files_touched": [
+    {
+      "path": "x",
+      "operation": "rewrite",
+      "summary": "Should fail: operation enum and attempt range and phase_id pattern all violated."
+    }
+  ],
+  "decisions": [],
+  "change_summary": "broken"
+}

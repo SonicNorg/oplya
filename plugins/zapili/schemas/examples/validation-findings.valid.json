@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "ISS-abc123def456",
+      "severity": "HIGH",
+      "category": "parallel-safety",
+      "file": "plugins/foo/PHASE-XX-a.md",
+      "line_range": "42-58",
+      "kind": "write-scope-overlap",
+      "summary": "Phase XX-a and XX-b both declare src/auth.ts in their <files> writes block.",
+      "remediation": "Move src/auth.ts ownership to one phase; the other reads it.",
+      "prior_status": "new"
+    }
+  ],
+  "coverage": {
+    "files_reviewed": ["PLAN.md", "PHASE-XX-a.md", "PHASE-XX-b.md"],
+    "categories_checked": ["contradictions", "gaps", "ambiguity", "parallel-safety", "completeness"]
+  }
+}

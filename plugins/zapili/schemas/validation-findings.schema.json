@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oplya.dev/zapili/schemas/validation-findings.schema.json",
+  "title": "Validation Findings",
+  "description": "Codex review payload — exhaustive HIGH/MEDIUM/LOW findings with coverage and optional reclassification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "findings", "coverage"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "severity", "category", "kind", "summary", "remediation"],
+        "properties": {
+          "id":            { "type": "string", "pattern": "^ISS-[0-9a-f]{12}$" },
+          "severity":      { "enum": ["HIGH", "MEDIUM", "LOW"] },
+          "category":      { "type": "string", "minLength": 1 },
+          "file":          { "type": ["string", "null"] },
+          "line_range":    { "type": ["string", "null"] },
+          "kind":          { "type": "string", "minLength": 1 },
+          "summary":       { "type": "string", "minLength": 1 },
+          "remediation":   { "type": "string", "minLength": 1 },
+          "prior_status":  { "enum": ["new", "carried", "resolved", "reclassified", null] }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["files_reviewed", "categories_checked"],
+      "properties": {
+        "files_reviewed":     { "type": "array", "items": { "type": "string" } },
+        "categories_checked": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "reclassification": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "new_severity", "justification"],
+        "properties": {
+          "id":            { "type": "string", "pattern": "^ISS-[0-9a-f]{12}$" },
+          "new_severity":  { "enum": ["HIGH", "MEDIUM", "LOW", "RESOLVED"] },
+          "justification": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}
