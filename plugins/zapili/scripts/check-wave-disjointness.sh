@@ -85,7 +85,13 @@ phase_writes() {
 fail=0
 for i in "${!WAVE_NAMES[@]}"; do
   wname="${WAVE_NAMES[$i]}"
-  read -ra pids <<<"${WAVE_PHASES[$i]}"
+  # Dedup phase ids per wave — PLAN.md prose may mention a phase id more than
+  # once (e.g., in a Notes section) and the per-line grep above will capture
+  # each occurrence. Without dedup, the overlap loop below would treat the
+  # repeated id as two distinct phases writing the same files and emit a
+  # false-positive OVERLAP. Bash's `sort -u` is the simplest dedup primitive.
+  read -ra raw_pids <<<"${WAVE_PHASES[$i]}"
+  mapfile -t pids < <(printf '%s\n' "${raw_pids[@]}" | awk 'NF' | sort -u)
   declare -A seen=()
   for p in "${pids[@]}"; do
     [ -n "$p" ] || continue

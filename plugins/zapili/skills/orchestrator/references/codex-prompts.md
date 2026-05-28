@@ -138,10 +138,40 @@ rule, CALIB-01).
 Emit a single unified-diff patch applicable from the repo root via:
   git apply <patch>
 
-The patch's --- a/ and +++ b/ headers MUST use the artifact path EXACTLY as it
-appears in the <inputs> block. If no valid patch can address every HIGH
-finding, emit an empty <patch></patch> block — do NOT emit a partial or
-speculative patch.
+REQUIREMENTS for the patch (`git apply` will reject the patch otherwise — all
+three constraints below were calibrated against live codex-cli 0.133.0; omitting
+any of them reproduces a documented failure mode from the live LOG):
+
+1. The --- a/ and +++ b/ headers MUST use the artifact path EXACTLY as it
+   appears in the <inputs> block — no normalization, no leading `./`, no
+   absolute paths. Several `PHASE-XX.md` files can co-exist in the same repo;
+   path drift sends the patch at the wrong file.
+
+2. Include three lines of UNCHANGED CONTEXT around each change (the standard
+   `diff -u` format). Zero-context hunks (`@@ -3 +3 @@` without surrounding
+   context) are rejected by `git apply` even though looser tools like `patch`
+   accept them.
+
+3. Use the standard `@@ -OLD_START,OLD_COUNT +NEW_START,NEW_COUNT @@` hunk
+   header form with explicit comma-separated counts.
+
+Frame your work as positive requirements ("the patch MUST …") rather than
+negative warnings ("the patch will be REJECTED unless …"). Negative framing
+causes codex to abdicate with an empty <patch></patch> block under uncertainty.
+
+Worked example (a fictional 4-line file that adds a new line after the last):
+
+  --- a/example.md
+  +++ b/example.md
+  @@ -1,4 +1,5 @@
+   # title
+
+   ## section
+   first line
+  +second line
+
+If no valid patch can address every HIGH finding, emit an empty
+<patch></patch> block — do NOT emit a partial or speculative patch.
 </task>
 
 <output_contract>
@@ -178,8 +208,11 @@ Forbidden vocabulary: `key`, `main`, `top`, `important`.
 #### Single-attempt rule
 
 Self-fix is dispatched ONCE per validator cap-hit. If the post-fix re-validate
-still has HIGH findings, the workflow halts. Re-running `/zapili:zapili` resets
-the counter, giving the human a chance to inspect first.
+still has HIGH findings, the workflow halts so a human can inspect. Re-running
+`/zapili:zapili` does NOT reset the counter (Stage 0 preserves iteration counts
+from on-disk artifacts) — each re-run gets one additional self-fix attempt.
+Inspect the applied patch under `.zapili/codex-self-fix-attempt-*.patch` before
+re-running so you do not stack speculative patches on top of each other.
 
 ## Reclassification rules
 

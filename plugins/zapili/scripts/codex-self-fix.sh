@@ -21,7 +21,8 @@ set -euo pipefail
 #   4   `git apply --check` rejected the patch (malformed diff or context mismatch)
 #   64  usage error
 #
-# Stdout: in --dry-run mode, the patch content; otherwise the patch file path.
+# Stdout: the patch file path (both modes). Orchestrator captures this and
+# applies the SAME persisted patch — never re-invokes codex for the apply step.
 # Stderr: codex progress + this script's diagnostics.
 
 DRY_RUN=0
@@ -188,8 +189,12 @@ if ! git apply --check "$PATCH_FILE" 2>"$APPLY_CHECK_LOG"; then
 fi
 
 if [ "$DRY_RUN" -eq 1 ]; then
-  # Dry-run: print the patch to stdout for the orchestrator to inspect; do NOT apply.
-  cat "$PATCH_FILE"
+  # Dry-run: emit the patch FILE PATH on stdout (not content) so the orchestrator
+  # can `git apply` exactly the patch that was just validated by `git apply --check`.
+  # This is the load-bearing guarantee of ZAP-60: "validate then apply the SAME
+  # patch". Re-invoking the script for the apply would re-call codex (codex output
+  # is non-deterministic) and bump the attempt counter, breaking the guarantee.
+  printf '%s\n' "$PATCH_FILE"
   printf '[codex-self-fix] dry-run ok: patch persisted at %s\n' "$PATCH_FILE" >&2
   exit 0
 fi

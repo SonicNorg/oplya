@@ -249,20 +249,26 @@ source "${CLAUDE_PLUGIN_ROOT}/scripts/state.sh"
 cap=$(state_get '.fix_loop_cap // 4')
 latest_findings=".zapili/plan-validate-attempt-$((N-1)).json"
 
-# 1. Dry-run first — persists the patch but does NOT touch the tree.
-"${CLAUDE_PLUGIN_ROOT}/scripts/codex-self-fix.sh" --dry-run \
-  PLAN.md plan_validator "$latest_findings"
+# 1. ONE codex invocation in --dry-run mode. Persists the patch + validates via
+#    `git apply --check` but does NOT touch the tree. Stdout is the patch file path.
+#    The orchestrator applies THIS persisted patch — never re-invokes codex (whose
+#    output is non-deterministic) for the apply step. This is the "validate then
+#    apply the SAME patch" safety guarantee of ZAP-60.
+patch_file=$("${CLAUDE_PLUGIN_ROOT}/scripts/codex-self-fix.sh" --dry-run \
+  PLAN.md plan_validator "$latest_findings")
 self_fix_rc=$?
 
 case "$self_fix_rc" in
   0)
-    # Patch generated and git apply --check passed. Apply for real.
-    "${CLAUDE_PLUGIN_ROOT}/scripts/codex-self-fix.sh" \
-      PLAN.md plan_validator "$latest_findings"
+    # Patch generated and validated. Apply the SAME patch directly.
+    if ! git apply "$patch_file"; then
+      printf '## CODEX SELF-FIX EXHAUSTED — git apply failed after --check passed\n  Patch: %s\n' "$patch_file"
+      exit 4
+    fi
     ;;
   1)
     # Empty patch — codex couldn't produce a diff.
-    printf '## CODEX SELF-FIX EXHAUSTED — no diff produced\n  See .zapili/plan-validate-attempt-%d.json for unresolved findings.\n' "$((N-1))"
+    printf '## CODEX SELF-FIX EXHAUSTED — no diff produced\n  See %s for unresolved findings.\n' "$latest_findings"
     exit 1
     ;;
   2|4|*)
@@ -272,20 +278,23 @@ case "$self_fix_rc" in
 esac
 
 # 2. Re-run the plan validator on the patched artifact.
-"${CLAUDE_PLUGIN_ROOT}/scripts/codex-validate-plan.sh" PLAN.md 'PHASE-*.md'
+post_fix_findings=$("${CLAUDE_PLUGIN_ROOT}/scripts/codex-validate-plan.sh" PLAN.md 'PHASE-*.md')
 revalidate_rc=$?
 
 if [ "$revalidate_rc" -eq 0 ]; then
   : # clean — fall through to state_advance_stage "wave_execute"
 else
+  # Use ONLY the latest validator output for unresolved IDs — wildcard would
+  # mix already-resolved IDs from prior attempts with the still-open ones.
   unresolved=$(jq -r '.findings[] | select(.severity=="HIGH") | .id' \
-    .zapili/plan-validate-attempt-*.json | tail -n+1 | sort -u | paste -sd, -)
-  printf '## CODEX SELF-FIX EXHAUSTED — post-fix re-review still HIGH\n  Unresolved finding IDs: %s\n  Patch applied: .zapili/codex-self-fix-attempt-1.patch\n' "$unresolved"
+    "$post_fix_findings" | sort -u | paste -sd, -)
+  printf '## CODEX SELF-FIX EXHAUSTED — post-fix re-review still HIGH\n  Unresolved finding IDs: %s\n  Patch applied: %s\n  Re-review: %s\n' \
+    "$unresolved" "$patch_file" "$post_fix_findings"
   exit 1
 fi
 ```
 
-Single-attempt rule: one self-fix per cap-hit. If the post-fix re-validate still reports HIGH findings, the workflow halts so a human can inspect; re-running `/zapili:zapili` resets the counter.
+Single-attempt rule: one self-fix per cap-hit. If the post-fix re-validate still reports HIGH findings, the workflow halts so a human can inspect. Re-running `/zapili:zapili` does NOT reset the counter — Stage 0 preserves the iteration counter from on-disk artifacts; each re-run fires Stage 6.1 again (one additional self-fix attempt per re-run). Inspect the applied patch under `.zapili/codex-self-fix-attempt-*.patch` before re-running.
 
 `state_advance_stage "wave_execute"`.
 
@@ -377,19 +386,21 @@ phase_id="XX"            # the offending phase id
 latest_review=".zapili/phase-${phase_id}-review-attempt-$((N-1)).json"
 phase_artifact="PHASE-${phase_id}.md"
 
-# 1. Dry-run first.
-"${CLAUDE_PLUGIN_ROOT}/scripts/codex-self-fix.sh" --dry-run \
-  "$phase_artifact" phase_reviewer "$latest_review"
+# 1. ONE codex invocation in --dry-run mode. Stdout is the patch file path.
+#    Apply the SAME patch directly via git apply — never re-invoke codex.
+patch_file=$("${CLAUDE_PLUGIN_ROOT}/scripts/codex-self-fix.sh" --dry-run \
+  "$phase_artifact" phase_reviewer "$latest_review")
 self_fix_rc=$?
 
 case "$self_fix_rc" in
   0)
-    "${CLAUDE_PLUGIN_ROOT}/scripts/codex-self-fix.sh" \
-      "$phase_artifact" phase_reviewer "$latest_review"
+    if ! git apply "$patch_file"; then
+      printf '## CODEX SELF-FIX EXHAUSTED — git apply failed for phase %s\n  Patch: %s\n' "$phase_id" "$patch_file"
+      exit 4
+    fi
     ;;
   1)
-    printf '## CODEX SELF-FIX EXHAUSTED — no diff produced for phase %s\n' "$phase_id"
-    # Fall through to the wave's halt diagnostic above.
+    printf '## CODEX SELF-FIX EXHAUSTED — no diff produced for phase %s\n  See %s for unresolved findings.\n' "$phase_id" "$latest_review"
     exit 1
     ;;
   2|4|*)
@@ -401,17 +412,20 @@ esac
 # 2. Re-run the phase reviewer on the patched spec. Engineer-payload stays the same
 #    (the spec change must make the existing implementation acceptable, OR the
 #    spec change documents the gap as known-deferred and the reviewer must accept).
-"${CLAUDE_PLUGIN_ROOT}/scripts/codex-review-phase.sh" \
-  TASK.md "$phase_artifact" ".zapili/engineer-${phase_id}-attempt-$((N-1)).payload.json"
+post_fix_findings=$("${CLAUDE_PLUGIN_ROOT}/scripts/codex-review-phase.sh" \
+  TASK.md "$phase_artifact" ".zapili/engineer-${phase_id}-attempt-$((N-1)).payload.json")
 revalidate_rc=$?
 
 if [ "$revalidate_rc" -eq 0 ]; then
   # Mark this phase converged; let the wave's other phases finish their own convergence.
   : # continue
 else
+  # Use ONLY the latest review output for unresolved IDs — wildcard would mix
+  # already-resolved IDs from prior attempts with the still-open ones.
   unresolved=$(jq -r '.findings[] | select(.severity=="HIGH") | .id' \
-    .zapili/phase-${phase_id}-review-attempt-*.json | tail -n+1 | sort -u | paste -sd, -)
-  printf '## CODEX SELF-FIX EXHAUSTED — post-fix re-review still HIGH for phase %s\n  Unresolved finding IDs: %s\n  Patch applied: .zapili/codex-self-fix-attempt-*.patch\n' "$phase_id" "$unresolved"
+    "$post_fix_findings" | sort -u | paste -sd, -)
+  printf '## CODEX SELF-FIX EXHAUSTED — post-fix re-review still HIGH for phase %s\n  Unresolved finding IDs: %s\n  Patch applied: %s\n  Re-review: %s\n' \
+    "$phase_id" "$unresolved" "$patch_file" "$post_fix_findings"
   exit 1
 fi
 ```

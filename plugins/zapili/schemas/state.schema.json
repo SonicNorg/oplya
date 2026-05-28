@@ -12,16 +12,22 @@
     "current_stage":  { "enum": ["research", "research_validate", "plan", "plan_validate", "wave_execute", "wave_review", "wave_fix", "summarize", "complete"] },
     "current_wave":   { "type": ["integer", "null"], "minimum": 1 },
     "current_phase":  { "type": ["string", "null"], "pattern": "^[0-9]{2}-[0-9]{2}$" },
+    "fix_loop_cap": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Per-validator fix-loop iteration cap; when reached with persistent HIGH findings, orchestrator dispatches codex-self-fix fallback (ZAP-60). Default 4 if absent."
+    },
     "iteration_counters": {
       "type": "object",
       "additionalProperties": false,
       "required": ["research_validate", "plan_validate", "per_phase_fix"],
       "properties": {
-        "research_validate": { "type": "integer", "minimum": 0, "maximum": 3 },
-        "plan_validate":     { "type": "integer", "minimum": 0, "maximum": 3 },
+        "research_validate": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "plan_validate":     { "type": "integer", "minimum": 0, "maximum": 10 },
         "per_phase_fix": {
           "type": "object",
-          "additionalProperties": { "type": "integer", "minimum": 0, "maximum": 3 }
+          "additionalProperties": { "type": "integer", "minimum": 0, "maximum": 10 }
         }
       }
     },
