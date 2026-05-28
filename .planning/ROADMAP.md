@@ -16,7 +16,7 @@ A single command turns a `TASK.md` into a shipped change through a formalized, v
 - [x] **Phase 3: Inter-agent contracts — JSON Schemas + contract reference docs** — Schemas for every machine-parseable payload, XML envelope spec, task-sizing thresholds, exhaustive-review prompt scaffold + calibration corpus (completed 2026-05-28)
 - [x] **Phase 4: Orchestrator skill + research + plan + their codex validations** — Linear single-shot pipeline (research → research-validate → plan → plan-validate) with iteration caps, prior-issue anchoring, artifact-as-truth state model (completed 2026-05-28)
 - [x] **Phase 5: Engineer subagent + single-phase implementation + per-phase review + fix loop** — Stress-test the per-phase round-trip and artifact-based continuity before introducing parallelism (completed 2026-05-28)
-- [ ] **Phase 6: Wave executor + final summary + resume hardening + publication polish** — Lift the single-phase path into wave-parallel execution with mechanical write-scope disjointness, ship-ready polish
+- [x] **Phase 6: Wave executor + final summary + resume hardening + publication polish** — Lift the single-phase path into wave-parallel execution with mechanical write-scope disjointness, ship-ready polish (completed 2026-05-28)
 
 ## Phase Details
 
@@ -154,7 +154,17 @@ Plans:
   4. On workflow completion, a structured final summary lists every modified file aggregated across all waves and the key decisions (with justifications) drawn from each `PHASE-XX-attempt-N.md`, surfaced to the user as the closing message.
   5. The acceptance-criteria smoke tests (small task, large task with parallel waves, kill-9 resume) all pass on a fresh clone in a clean environment; README install instructions match verbatim; CHANGELOG, semver bump discipline, and reserved-name verification are documented and applied.
 
-**Plans**: TBD
+**Plans**: 4 plans (2 waves)
+
+**Wave 1** *(parallel-safe)*
+
+- [x] 06-01-scripts-PLAN.md — check-wave-disjointness.sh + derive-stage.sh + summarize.sh (ZAP-41, ZAP-53, ZAP-54) — Wave 1
+- [x] 06-02-chaos-and-stamps-PLAN.md — chaos rehearsal docs + chaos-rehearsal-LOG + reserved-name-check-LOG (ZAP-53 documented) — Wave 1
+- [x] 06-03-publication-polish-PLAN.md — CHANGELOG.md + README ## Status + plugin.json v1.0.0 — Wave 1
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [x] 06-04-SKILL-wave-and-summary-PLAN.md — SKILL.md Stage 0 + Stage 7 wave parallel + Stage 8 summary (ZAP-41, ZAP-42, ZAP-46, ZAP-47) — Wave 2
 
 ## Progress
 
@@ -165,7 +175,7 @@ Plans:
 | 3. Inter-agent contracts | 3/3 | Complete   | 2026-05-28 |
 | 4. Orchestrator + research + plan | 3/3 | Complete   | 2026-05-28 |
 | 5. Engineer + single-phase + review/fix | 3/3 | Complete   | 2026-05-28 |
-| 6. Wave executor + summary + resume + polish | 0/TBD | Not started | - |
+| 6. Wave executor + summary + resume + polish | 4/4 | Complete   | 2026-05-28 |
 
 ## Coverage Map
 

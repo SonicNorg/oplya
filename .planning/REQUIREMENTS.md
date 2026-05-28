@@ -55,21 +55,21 @@ Requirements for initial release (`oplya` marketplace + `zapili` plugin v1). Eac
 ### Implementation phase (ZAP-impl)
 
 - [x] **ZAP-40**: Engineer subagent (`plugins/zapili/agents/engineer.md`) is invoked once per phase per wave; receives `TASK.md`, scoped CONTEXT excerpt, its `PHASE-XX.md`, and the formalized XML+JSON contract; returns an XML envelope with a JSON `<payload>{files_touched, decisions, change_summary}` block validated against `phase-changes.schema.json`
-- [ ] **ZAP-41**: Orchestrator computes pairwise write-set intersection across all phases in a wave **before** spawning any engineer; aborts the wave with a clear error if any overlap detected (mechanical safety, never trusts LLM-claimed parallel-safety)
-- [ ] **ZAP-42**: Within a wave, all engineer agents are spawned in parallel (single assistant turn issuing N `Agent()` calls)
+- [x] **ZAP-41**: Orchestrator computes pairwise write-set intersection across all phases in a wave **before** spawning any engineer; aborts the wave with a clear error if any overlap detected (mechanical safety, never trusts LLM-claimed parallel-safety)
+- [x] **ZAP-42**: Within a wave, all engineer agents are spawned in parallel (single assistant turn issuing N `Agent()` calls)
 - [x] **ZAP-43**: After all engineers in a wave complete, per-phase codex review runs in parallel (single assistant turn issuing N `Bash(codex-review-phase.sh)` calls); each review receives `TASK.md`, the phase plan, and the engineer's change list; returns schema-validated HIGH/MEDIUM/LOW findings
 - [x] **ZAP-44**: Per-phase fix loop — review findings are routed back to a fresh engineer spawn with the prior attempt's reasoning trace artifact (`PHASE-XX-attempt-N.md`) so continuity is by artifact, not by process identity
 - [x] **ZAP-45**: Per-attempt reasoning trace persistence — engineer's decisions, key choices, and files touched are written to `PHASE-XX-attempt-N.md` after each attempt (numbered ascending), enabling the next fix-iteration to consume them
-- [ ] **ZAP-46**: Per-wave fix loop converges when every phase in the wave has no HIGH/MEDIUM findings; hard iteration cap (≤3) per phase; on cap-reached, the wave halts with a clear error and persisted findings
-- [ ] **ZAP-47**: Waves execute strictly sequentially; next wave does not start until the prior wave's fix loop has fully converged
+- [x] **ZAP-46**: Per-wave fix loop converges when every phase in the wave has no HIGH/MEDIUM findings; hard iteration cap (≤3) per phase; on cap-reached, the wave halts with a clear error and persisted findings
+- [x] **ZAP-47**: Waves execute strictly sequentially; next wave does not start until the prior wave's fix loop has fully converged
 
 ### State, resume, and final summary (ZAP-state)
 
 - [x] **ZAP-50**: On-disk artifacts in the user's project CWD are the source of truth for resume — `TASK.md`, `CONTEXT.md`, `PLAN.md`, `PHASE-XX.md`, `PHASE-XX-attempt-N.md`
 - [x] **ZAP-51**: `.zapili/state.json` (schema in `schemas/state.schema.json`) is a cache capturing current phase, current wave, iteration counters, and stable issue IDs; **single-writer rule** — only the orchestrator writes it
 - [x] **ZAP-52**: All artifact writes use temp-then-rename atomic pattern; each artifact embeds a completion sentinel (`<status>complete</status>` or equivalent) so half-written files are detectable
-- [ ] **ZAP-53**: Automatic resume — on `/zapili` re-invocation, the orchestrator derives current stage from artifact presence and completion sentinels; if `.zapili/state.json` disagrees with artifacts, artifacts win and `state.json` is rewritten
-- [ ] **ZAP-54**: Final summary on workflow completion — user receives a structured report listing all modified files (aggregated across all phases) and the key decisions (with justifications) made by implementation agents, drawn from each `PHASE-XX-attempt-N.md`
+- [x] **ZAP-53**: Automatic resume — on `/zapili` re-invocation, the orchestrator derives current stage from artifact presence and completion sentinels; if `.zapili/state.json` disagrees with artifacts, artifacts win and `state.json` is rewritten
+- [x] **ZAP-54**: Final summary on workflow completion — user receives a structured report listing all modified files (aggregated across all phases) and the key decisions (with justifications) made by implementation agents, drawn from each `PHASE-XX-attempt-N.md`
 
 ## v2 Requirements
 
@@ -156,18 +156,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ZAP-34 | 4 | Complete |
 | ZAP-35 | 4 | Complete |
 | ZAP-40 | 5 | Complete |
-| ZAP-41 | 6 | Pending |
-| ZAP-42 | 6 | Pending |
+| ZAP-41 | 6 | Complete |
+| ZAP-42 | 6 | Complete |
 | ZAP-43 | 5 | Complete |
 | ZAP-44 | 5 | Complete |
 | ZAP-45 | 5 | Complete |
-| ZAP-46 | 6 | Pending |
-| ZAP-47 | 6 | Pending |
+| ZAP-46 | 6 | Complete |
+| ZAP-47 | 6 | Complete |
 | ZAP-50 | 4 | Complete |
 | ZAP-51 | 4 | Complete |
 | ZAP-52 | 4 | Complete |
-| ZAP-53 | 6 | Pending |
-| ZAP-54 | 6 | Pending |
+| ZAP-53 | 6 | Complete |
+| ZAP-54 | 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 43 total
