@@ -158,7 +158,7 @@ Verified commits exist:
 
 ## Next Phase Readiness
 
-- Phase 1 only has one plan left (Plan 01-05, retrospective/handoff per ROADMAP). All static-skeleton requirements satisfied (manifests, READMEs, hygiene, validator); installable end-to-end via `/plugin marketplace add nepavel/oplya` + `/plugin install zapili@oplya`.
+- Phase 1 only has one plan left (Plan 01-05, retrospective/handoff per ROADMAP). All static-skeleton requirements satisfied (manifests, READMEs, hygiene, validator); installable end-to-end via `/plugin marketplace add SonicNorg/oplya` + `/plugin install zapili@oplya`.
 - Phase 2 will populate `plugins/zapili/hooks/` and `plugins/zapili/commands/`. The validator does not yet inspect those folders — D-12 keeps it strictly to manifest required-fields; Phase 2 will add a `claude plugin validate --strict` cross-check as documented in the top-level README.
 - No blockers; no concerns.
 

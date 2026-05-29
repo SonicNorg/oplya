@@ -13,15 +13,15 @@
 - **D-01:** MIT license. Single-paragraph LICENSE text with current year (2026) and copyright holder `Pavel <pavel.proger@gmail.com>`. No NOTICE file. No patent grant required.
 
 **Manifest metadata — `.claude-plugin/marketplace.json` (MKT-01)**
-- **D-02:** Required fields: `name: "oplya"`, `owner: { name: "Pavel", email: "pavel.proger@gmail.com", url: "https://github.com/nepavel" }`, `plugins: [...]`.
+- **D-02:** Required fields: `name: "oplya"`, `owner: { name: "Pavel", email: "pavel.proger@gmail.com", url: "https://github.com/SonicNorg" }`, `plugins: [...]`.
 - **D-03:** Polish fields: `displayName: "oplya"`, `description: "Personal plugin marketplace — multi-agent dev workflows"`, `category: "workflow"`, `$schema` link (planner: pin to the latest stable Claude Code marketplace-schema URL from the official docs at planning time).
 - **D-04:** `metadata.pluginRoot: "./plugins"` so each plugins[].source can be the short form `"./plugins/zapili"`.
 - **D-05:** `plugins[]` array contains exactly one entry for `zapili` in v1. No `version` field on the marketplace entry — commit-SHA versioning.
-- **D-06:** Repository slug for install instructions: `nepavel/oplya`.
+- **D-06:** Repository slug for install instructions: `SonicNorg/oplya`.
 
 **Manifest metadata — `plugins/zapili/.claude-plugin/plugin.json` (MKT-02, ZAP-03)**
 - **D-07:** Required field: `name: "zapili"`.
-- **D-08:** Polish fields: `displayName: "zapili"`, `description: "Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review"`, `category: "workflow"`, `keywords: ["workflow", "multi-agent", "codex", "planning", "parallel"]`, `author: { name: "Pavel", email: "pavel.proger@gmail.com", url: "https://github.com/nepavel" }`.
+- **D-08:** Polish fields: `displayName: "zapili"`, `description: "Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review"`, `category: "workflow"`, `keywords: ["workflow", "multi-agent", "codex", "planning", "parallel"]`, `author: { name: "Pavel", email: "pavel.proger@gmail.com", url: "https://github.com/SonicNorg" }`.
 - **D-09:** NO `version` field while iterating (commit-SHA versioning). Planner adds `"version": "1.0.0"` only at the eventual release commit (Phase 6 concern, not Phase 1).
 - **D-10:** NO `commands`, `agents`, `hooks`, `mcpServers` keys — Phase 1 ships zero components.
 
@@ -48,7 +48,7 @@
 - **D-24:** Component-directory paths in `plugin.json` are NOT pre-declared.
 
 **READMEs (MKT-03, ZAP-03)**
-- **D-25:** Top-level `README.md` (English): (1) what `oplya` is; (2) plugin index (one row for `zapili`); (3) install instructions verbatim — `/plugin marketplace add nepavel/oplya` then `/plugin install zapili@oplya`; (4) "Local development" section pointing at `scripts/validate-manifests.sh` and `scripts/install-hooks.sh`; (5) License line; (6) link to `plugins/zapili/README.md`.
+- **D-25:** Top-level `README.md` (English): (1) what `oplya` is; (2) plugin index (one row for `zapili`); (3) install instructions verbatim — `/plugin marketplace add SonicNorg/oplya` then `/plugin install zapili@oplya`; (4) "Local development" section pointing at `scripts/validate-manifests.sh` and `scripts/install-hooks.sh`; (5) License line; (6) link to `plugins/zapili/README.md`.
 - **D-26:** `plugins/zapili/README.md` (English): (1) what `zapili` does; (2) prerequisites — `codex` CLI installed AND authenticated; (3) "How to author a TASK.md" stub (one paragraph); (4) install cross-link to top-level README; (5) one-line note that slash command surface is not yet wired (Phase 2 replaces this line).
 - **D-27:** No badges, no screenshots, no TOC in v1 READMEs. Plain prose + fenced code blocks. Under ~80 lines each.
 
@@ -131,7 +131,7 @@ The four research streams (STACK / FEATURES / ARCHITECTURE / PITFALLS in `.plann
 |------------|-----------|----------|
 | Pure bash + `jq` validator (D-12) | `ajv-cli` (npm) with full JSON Schema | Stronger validation (every field type-checked against the spec) but introduces an `npm` dependency, conflicting with the "no language runtime" PROJECT constraint. Explicitly rejected in CONTEXT.md Deferred Ideas. |
 | Pure bash + `jq` validator | `claude plugin validate --strict` | The official validator is more thorough but is a runtime tool not guaranteed to be in CI environments and not required by the PROJECT for pre-commit. Document it as a supplementary check; do not depend on it. |
-| `nepavel/oplya` GitHub shorthand for `/plugin marketplace add` | Direct URL to raw `marketplace.json` | Relative-path `source` fields in `marketplace.json` only resolve when added via Git (GitHub shorthand or git URL). URL-based marketplace add breaks the `./plugins/zapili` source — see Pitfall "URL-based marketplace breaks relative paths" below. GitHub shorthand is the only correct path for this design. |
+| `SonicNorg/oplya` GitHub shorthand for `/plugin marketplace add` | Direct URL to raw `marketplace.json` | Relative-path `source` fields in `marketplace.json` only resolve when added via Git (GitHub shorthand or git URL). URL-based marketplace add breaks the `./plugins/zapili` source — see Pitfall "URL-based marketplace breaks relative paths" below. GitHub shorthand is the only correct path for this design. |
 
 **Installation:**
 ```bash
@@ -171,7 +171,7 @@ Phase 1 produces a static directory tree consumed by Claude Code's `/plugin mark
 ```
 User                                                 GitHub                  Claude Code
  │                                                     │                         │
- │ /plugin marketplace add nepavel/oplya               │                         │
+ │ /plugin marketplace add SonicNorg/oplya               │                         │
  ├────────────────────────────────────────────────────►│                         │
  │                                                     │ clone repo              │
  │                                                     ├────────────────────────►│
@@ -305,7 +305,7 @@ oplya/
 
 ### Pitfall 2: `marketplace.json` placed at repo root instead of `.claude-plugin/marketplace.json`
 
-**What goes wrong:** `/plugin marketplace add nepavel/oplya` fails with "marketplace not found" or "invalid marketplace".
+**What goes wrong:** `/plugin marketplace add SonicNorg/oplya` fails with "marketplace not found" or "invalid marketplace".
 **Why it happens:** Natural instinct from `package.json` / `Cargo.toml` is to put the catalog at repo root. The Claude Code spec requires `.claude-plugin/marketplace.json` — a hidden directory many editors hide by default.
 **How to avoid:** Pin the exact path in the README's "Repository layout" section; the project validator (D-12) checks the exact path `.claude-plugin/marketplace.json` exists and parses.
 **Warning signs:** `find .claude-plugin -name marketplace.json -maxdepth 2` returns nothing; fresh-clone smoke test of `/plugin marketplace add` fails.
@@ -330,8 +330,8 @@ oplya/
 
 **What goes wrong:** If a user adds the marketplace via a direct URL to the raw `marketplace.json` (instead of the GitHub `owner/repo` shorthand), relative `source` paths like `./plugins/zapili` cannot resolve.
 **Why it happens:** The marketplace's `source` paths are relative to the marketplace repo's git root; URL-based add fetches only the JSON file with no surrounding git context.
-**Impact for Phase 1:** None directly — D-06 mandates `nepavel/oplya` (GitHub shorthand) as the canonical install instruction in the README. But: the top-level README MUST NOT suggest a URL-based add as an alternative; users who try it will hit this exact failure.
-**How to avoid:** README install instructions specify GitHub shorthand only: `/plugin marketplace add nepavel/oplya`. Do not include a URL-based alternative in v1.
+**Impact for Phase 1:** None directly — D-06 mandates `SonicNorg/oplya` (GitHub shorthand) as the canonical install instruction in the README. But: the top-level README MUST NOT suggest a URL-based add as an alternative; users who try it will hit this exact failure.
+**How to avoid:** README install instructions specify GitHub shorthand only: `/plugin marketplace add SonicNorg/oplya`. Do not include a URL-based alternative in v1.
 **Source:** [VERIFIED: code.claude.com/docs/en/plugin-marketplaces § "Plugin sources" note]
 
 ### Pitfall 6: Reserved marketplace name collision
@@ -407,7 +407,7 @@ Verified patterns from official sources and from CLAUDE.md § "Technology Stack"
       "displayName": "zapili",
       "description": "Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review",
       "category": "workflow",
-      "repository": "https://github.com/nepavel/oplya"
+      "repository": "https://github.com/SonicNorg/oplya"
     }
   ]
 }
@@ -429,10 +429,10 @@ Notes:
   "author": {
     "name": "Pavel",
     "email": "pavel.proger@gmail.com",
-    "url": "https://github.com/nepavel"
+    "url": "https://github.com/SonicNorg"
   },
-  "homepage": "https://github.com/nepavel/oplya",
-  "repository": "https://github.com/nepavel/oplya",
+  "homepage": "https://github.com/SonicNorg/oplya",
+  "repository": "https://github.com/SonicNorg/oplya",
   "license": "MIT",
   "keywords": ["workflow", "multi-agent", "codex", "planning", "parallel"]
 }
@@ -682,7 +682,7 @@ A personal plugin marketplace for multi-agent dev workflows.
 ## Install
 
 ```bash
-/plugin marketplace add nepavel/oplya
+/plugin marketplace add SonicNorg/oplya
 /plugin install zapili@oplya
 ```
 
@@ -691,7 +691,7 @@ A personal plugin marketplace for multi-agent dev workflows.
 ## Local development
 
 ```bash
-git clone https://github.com/nepavel/oplya
+git clone https://github.com/SonicNorg/oplya
 cd oplya
 ./scripts/install-hooks.sh        # one-time: enables manifest validation on commit
 ./scripts/validate-manifests.sh   # run anytime to check manifests
@@ -814,7 +814,7 @@ See the [marketplace README](../../README.md#install).
 | MKT-07 | Validator exits 0 on good manifests, 1 on broken, reports ALL failures | smoke | `./scripts/validate-manifests.sh` (positive); deliberately break a field and re-run, count failure lines (negative) | ❌ Wave 0 |
 | MKT-08 | No cross-plugin file references; plugin tree contains only `.claude-plugin/plugin.json` + `README.md` | smoke | `find plugins/zapili -type f \| grep -vE '\\.claude-plugin/plugin\\.json\|README\\.md' && exit 1` (should produce no extra files) | ❌ Wave 0 |
 | ZAP-03 | Plugin README mentions codex CLI prerequisite | smoke | `grep -qi "codex" plugins/zapili/README.md` | ❌ Wave 0 |
-| (composite) | Fresh-clone install round-trip | manual | `/plugin marketplace add nepavel/oplya` then `/plugin install zapili@oplya` in a Claude Code session — verify both succeed without errors | ❌ Wave 0 |
+| (composite) | Fresh-clone install round-trip | manual | `/plugin marketplace add SonicNorg/oplya` then `/plugin install zapili@oplya` in a Claude Code session — verify both succeed without errors | ❌ Wave 0 |
 
 ### Sampling Rate
 - **Per task commit:** `./scripts/validate-manifests.sh` (runs automatically via the installed pre-commit hook when manifests are staged)

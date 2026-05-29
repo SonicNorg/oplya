@@ -15,13 +15,13 @@ must_haves:
   truths:
     - "Top-level README documents marketplace identity, install commands, plugin index, local-dev workflow, and license line in English"
     - "Plugin README documents what zapili does, the codex CLI prerequisite, TASK.md authoring stub, and the Phase 1 'slash command not yet wired' note"
-    - "Both READMEs use the exact install commands `/plugin marketplace add nepavel/oplya` and `/plugin install zapili@oplya`"
+    - "Both READMEs use the exact install commands `/plugin marketplace add SonicNorg/oplya` and `/plugin install zapili@oplya`"
     - "Neither README exceeds ~80 lines and neither contains badges/screenshots/TOC (D-27)"
     - "CONTEXT.md decisions implemented by this plan: D-25 (top-level README section list), D-26 (plugin README section list + codex prereq + TASK.md stub + Phase-1 status disclaimer)"
   artifacts:
     - path: "README.md"
       provides: "Top-level marketplace documentation surfaced on GitHub repo landing"
-      contains: "/plugin marketplace add nepavel/oplya"
+      contains: "/plugin marketplace add SonicNorg/oplya"
     - path: "plugins/zapili/README.md"
       provides: "Plugin-local documentation surfaced when inspecting the plugin tree"
       contains: "codex"
@@ -65,7 +65,7 @@ Output:
   <name>Task 1: Write top-level README.md</name>
   <files>README.md</files>
   <read_first>
-    - .planning/phases/01-marketplace-plugin-skeleton/01-CONTEXT.md (D-25 — section list; D-27 — formatting constraints; D-06 — `nepavel/oplya` slug)
+    - .planning/phases/01-marketplace-plugin-skeleton/01-CONTEXT.md (D-25 — section list; D-27 — formatting constraints; D-06 — `SonicNorg/oplya` slug)
     - .planning/phases/01-marketplace-plugin-skeleton/01-RESEARCH.md § "Code Examples" Example 9 (skeleton structure to follow)
     - .planning/phases/01-marketplace-plugin-skeleton/01-RESEARCH.md § "Common Pitfalls" Pitfall 5 (do NOT suggest URL-based marketplace add) and Pitfall 12 (install commands are valid as of THIS commit)
   </read_first>
@@ -75,8 +75,8 @@ Output:
     Required sections in order (D-25):
     1. H1 title `# oplya — Claude Code Plugin Marketplace` followed by a one-paragraph description using the user-approved framing `Personal plugin marketplace — multi-agent dev workflows` (D-03).
     2. `## Plugins` — a markdown table with one row for `zapili`. Description column uses the user-approved framing `Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review` (D-08). Plugin name links to `plugins/zapili/README.md`.
-    3. `## Install` — fenced code block with EXACTLY these two commands on separate lines: `/plugin marketplace add nepavel/oplya` then `/plugin install zapili@oplya`. Below the fence, a one-line callout that `zapili` requires the `codex` CLI and that the plugin README has full prerequisites. DO NOT mention URL-based marketplace add (RESEARCH Pitfall 5 — breaks relative source paths).
-    4. `## Local development` — fenced bash block with: `git clone https://github.com/nepavel/oplya`, `cd oplya`, `./scripts/install-hooks.sh` (with comment: `# one-time: enables manifest validation on commit`), `./scripts/validate-manifests.sh` (with comment: `# run anytime to check manifests`). Below, a one-line optional supplementary check: `If you have the claude CLI installed, you can also run` followed by a fenced one-liner `claude plugin validate . --strict` for deeper checks (per RESEARCH Open Question Q3 recommendation).
+    3. `## Install` — fenced code block with EXACTLY these two commands on separate lines: `/plugin marketplace add SonicNorg/oplya` then `/plugin install zapili@oplya`. Below the fence, a one-line callout that `zapili` requires the `codex` CLI and that the plugin README has full prerequisites. DO NOT mention URL-based marketplace add (RESEARCH Pitfall 5 — breaks relative source paths).
+    4. `## Local development` — fenced bash block with: `git clone https://github.com/SonicNorg/oplya`, `cd oplya`, `./scripts/install-hooks.sh` (with comment: `# one-time: enables manifest validation on commit`), `./scripts/validate-manifests.sh` (with comment: `# run anytime to check manifests`). Below, a one-line optional supplementary check: `If you have the claude CLI installed, you can also run` followed by a fenced one-liner `claude plugin validate . --strict` for deeper checks (per RESEARCH Open Question Q3 recommendation).
     5. `## License` — single line `MIT — see [LICENSE](LICENSE).`
 
     Language: English ONLY (project CLAUDE.md constraint). No emoji.
@@ -84,7 +84,7 @@ Output:
     Reference Plan 04's deliverables in the Local development section by their final paths (`scripts/install-hooks.sh`, `scripts/validate-manifests.sh`) — Plan 04 will deliver these; the README is the user-facing contract that Plan 04 must satisfy.
   </action>
   <verify>
-    <automated>test -f README.md &amp;&amp; grep -q "^# oplya" README.md &amp;&amp; grep -q "/plugin marketplace add nepavel/oplya" README.md &amp;&amp; grep -q "/plugin install zapili@oplya" README.md &amp;&amp; grep -qi "codex" README.md &amp;&amp; grep -q "scripts/validate-manifests.sh" README.md &amp;&amp; grep -q "scripts/install-hooks.sh" README.md &amp;&amp; grep -q "plugins/zapili/README.md" README.md &amp;&amp; grep -q "MIT" README.md &amp;&amp; test $(wc -l &lt; README.md) -le 80</automated>
+    <automated>test -f README.md &amp;&amp; grep -q "^# oplya" README.md &amp;&amp; grep -q "/plugin marketplace add SonicNorg/oplya" README.md &amp;&amp; grep -q "/plugin install zapili@oplya" README.md &amp;&amp; grep -qi "codex" README.md &amp;&amp; grep -q "scripts/validate-manifests.sh" README.md &amp;&amp; grep -q "scripts/install-hooks.sh" README.md &amp;&amp; grep -q "plugins/zapili/README.md" README.md &amp;&amp; grep -q "MIT" README.md &amp;&amp; test $(wc -l &lt; README.md) -le 80</automated>
   </verify>
   <acceptance_criteria>
     - `test -f README.md` exits 0 (VALIDATION map task 01-02-01: file exists).
@@ -151,8 +151,8 @@ Output:
 
 | Threat ID | Category | Component | Disposition | Mitigation Plan |
 |-----------|----------|-----------|-------------|-----------------|
-| T-02-01 | Information Disclosure | README install instructions exposing wrong slug | mitigate | Both READMEs are checked against the canonical `nepavel/oplya` slug (D-06) via `grep -q "/plugin marketplace add nepavel/oplya" README.md` and the cross-link `../../README.md` is checked in the plugin README. |
-| T-02-02 | Tampering | URL-based marketplace add suggestion would break relative `source` paths (RESEARCH Pitfall 5) | mitigate | Top-level README explicitly uses GitHub-shorthand `nepavel/oplya` only; no URL-based alternative is documented. |
+| T-02-01 | Information Disclosure | README install instructions exposing wrong slug | mitigate | Both READMEs are checked against the canonical `SonicNorg/oplya` slug (D-06) via `grep -q "/plugin marketplace add SonicNorg/oplya" README.md` and the cross-link `../../README.md` is checked in the plugin README. |
+| T-02-02 | Tampering | URL-based marketplace add suggestion would break relative `source` paths (RESEARCH Pitfall 5) | mitigate | Top-level README explicitly uses GitHub-shorthand `SonicNorg/oplya` only; no URL-based alternative is documented. |
 | T-02-03 | Repudiation | Status disclaimer about deferred slash command surface | mitigate | Plugin README's `## Status` block-quote sets expectations explicitly so users on the Phase-1 commit do not file false bug reports about a non-existent `/zapili:zapili` command. |
 | T-02-SC | Tampering | npm/pip/cargo installs | accept | No package-manager installs in this plan (Markdown files only); no `[ASSUMED]`/`[SUS]` packages to gate. |
 </threat_model>

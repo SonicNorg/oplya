@@ -64,7 +64,7 @@ Everything else (CI, linters, package registries) is **deliberately not used** i
 | **`claude --plugin-dir ./plugins/zapili`** | Load the local plugin without publishing | Primary dev loop. `/reload-plugins` picks up edits without restart. |
 | **`claude plugin validate ./plugins/zapili`** | Validates plugin + every component file | Run before commit; pre-commit-style discipline without a hook. |
 | **`claude plugin validate . --strict`** | Treats warnings (e.g. misspelled fields) as errors | Use at marketplace root before releasing. |
-| **GitHub (public repo)** | Marketplace host | `/plugin marketplace add nepavel/oplya` resolves via the GitHub `owner/repo` shorthand. |
+| **GitHub (public repo)** | Marketplace host | `/plugin marketplace add SonicNorg/oplya` resolves via the GitHub `owner/repo` shorthand. |
 
 ---
 
@@ -113,8 +113,8 @@ Notes:
     "name": "Pavel",
     "email": "pavel.proger@gmail.com"
   },
-  "homepage": "https://github.com/nepavel/oplya",
-  "repository": "https://github.com/nepavel/oplya",
+  "homepage": "https://github.com/SonicNorg/oplya",
+  "repository": "https://github.com/SonicNorg/oplya",
   "license": "MIT",
   "keywords": ["workflow", "multi-agent", "codex", "planning", "review"]
 }
@@ -427,7 +427,7 @@ Hook events available but **deliberately unused** for v1 (listed so a future rev
 
 ```bash
 # Add the marketplace
-/plugin marketplace add nepavel/oplya
+/plugin marketplace add SonicNorg/oplya
 
 # Install the workflow plugin
 /plugin install zapili@oplya
@@ -447,7 +447,7 @@ echo "Build feature X" > TASK.md
 
 For development on `oplya` itself:
 ```bash
-git clone https://github.com/nepavel/oplya
+git clone https://github.com/SonicNorg/oplya
 cd oplya
 claude --plugin-dir ./plugins/zapili    # load locally without publishing
 # Edit, then /reload-plugins inside the session

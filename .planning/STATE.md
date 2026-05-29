@@ -136,7 +136,7 @@ None.
 
 ### Next Action
 
-Execute Plan 01-05 (final plan of Phase 1 per ROADMAP — retrospective/handoff). All static-skeleton requirements satisfied; installable end-to-end via `/plugin marketplace add nepavel/oplya` + `/plugin install zapili@oplya`. Active `.git/hooks/pre-commit` will validate any future commit that touches a `.claude-plugin/*.json` manifest.
+Execute Plan 01-05 (final plan of Phase 1 per ROADMAP — retrospective/handoff). All static-skeleton requirements satisfied; installable end-to-end via `/plugin marketplace add SonicNorg/oplya` + `/plugin install zapili@oplya`. Active `.git/hooks/pre-commit` will validate any future commit that touches a `.claude-plugin/*.json` manifest.
 
 ### How to Resume
 

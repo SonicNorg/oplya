@@ -25,7 +25,7 @@
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| Pavel + email + GitHub URL | `owner: { name: "Pavel", email: "pavel.proger@gmail.com", url: "https://github.com/nepavel" }`. Most discoverable; email visible in public repo. | ✓ |
+| Pavel + email + GitHub URL | `owner: { name: "Pavel", email: "pavel.proger@gmail.com", url: "https://github.com/SonicNorg" }`. Most discoverable; email visible in public repo. | ✓ |
 | Pavel + GitHub URL only | Hide email from manifest. Lower spam surface. | |
 | GitHub handle only | Minimal; GitHub handle as canonical identity. | |
 
@@ -38,10 +38,10 @@
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| nepavel/oplya | Already used in CLAUDE.md tech-stack snippets. | ✓ |
+| SonicNorg/oplya | Already used in CLAUDE.md tech-stack snippets. | ✓ |
 | Other GitHub slug | Different owner / org / repo name. | |
 
-**User's choice:** nepavel/oplya.
+**User's choice:** SonicNorg/oplya.
 
 ---
 

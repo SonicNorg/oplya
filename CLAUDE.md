@@ -57,7 +57,7 @@ Everything else (marketplace polish, additional plugins, docs) can fail. The `za
 | **`claude --plugin-dir ./plugins/zapili`** | Load the local plugin without publishing | Primary dev loop. `/reload-plugins` picks up edits without restart. |
 | **`claude plugin validate ./plugins/zapili`** | Validates plugin + every component file | Run before commit; pre-commit-style discipline without a hook. |
 | **`claude plugin validate . --strict`** | Treats warnings (e.g. misspelled fields) as errors | Use at marketplace root before releasing. |
-| **GitHub (public repo)** | Marketplace host | `/plugin marketplace add nepavel/oplya` resolves via the GitHub `owner/repo` shorthand. |
+| **GitHub (public repo)** | Marketplace host | `/plugin marketplace add SonicNorg/oplya` resolves via the GitHub `owner/repo` shorthand. |
 ## Concrete File Examples
 ### `.claude-plugin/marketplace.json` (at `oplya` repo root)
 - `metadata.pluginRoot: "./plugins"` lets the `source` shrink to `"zapili"` (without `./plugins/`) for later plugins; kept explicit above for clarity.

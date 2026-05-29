@@ -8,7 +8,7 @@ model: claude-haiku-4-5
 Print the following text verbatim to the user. Do NOT paraphrase, summarize, or reformat — operators rely on the exact wording for muscle-memory recognition across sessions.
 
 ```
-zapili — multi-agent dev workflow plugin (v1.1.2)
+zapili — multi-agent dev workflow plugin (v1.1.3)
 
 ================================================================
 COMMANDS

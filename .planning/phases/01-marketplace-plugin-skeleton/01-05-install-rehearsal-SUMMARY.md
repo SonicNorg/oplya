@@ -44,7 +44,7 @@ completed: 2026-05-28
 
 # Phase 01 Plan 05: Install Rehearsal Summary
 
-**Phase 1's only live-runtime verification — `/plugin marketplace add nepavel/oplya` + `/plugin install zapili@oplya` confirmed to resolve end-to-end in a fresh Claude Code session; supplementary `claude plugin validate --strict` and pre-commit hook rejection both verified.**
+**Phase 1's only live-runtime verification — `/plugin marketplace add SonicNorg/oplya` + `/plugin install zapili@oplya` confirmed to resolve end-to-end in a fresh Claude Code session; supplementary `claude plugin validate --strict` and pre-commit hook rejection both verified.**
 
 ## Performance
 

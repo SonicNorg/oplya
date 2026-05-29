@@ -102,9 +102,9 @@ Why `autonomous: false`: this plan requires a human operator with an active Clau
     Perform the live rehearsal in a SEPARATE working directory — do NOT add the marketplace from the dev repo itself (the symlink/in-place behavior of `/plugin marketplace add` from inside its own checkout is a known footgun; use a fresh clone to mirror the user's first-time experience).
 
     **Step 1 — Fresh-clone smoke test (VALIDATION.md Manual-Only row 1):**
-    1. Open a terminal OUTSIDE the dev repo. Run: `git clone <path-to-dev-repo> /tmp/oplya-rehearsal && cd /tmp/oplya-rehearsal`. (If the repo is already pushed to `github.com/nepavel/oplya`, you may use `git clone https://github.com/nepavel/oplya /tmp/oplya-rehearsal` instead.)
+    1. Open a terminal OUTSIDE the dev repo. Run: `git clone <path-to-dev-repo> /tmp/oplya-rehearsal && cd /tmp/oplya-rehearsal`. (If the repo is already pushed to `github.com/SonicNorg/oplya`, you may use `git clone https://github.com/SonicNorg/oplya /tmp/oplya-rehearsal` instead.)
     2. Start a fresh Claude Code session in `/tmp/oplya-rehearsal`.
-    3. Inside the Claude Code session, run: `/plugin marketplace add .` (or `/plugin marketplace add nepavel/oplya` if testing the GitHub-shorthand path per README D-25). Expected: zero validation errors; `oplya` appears in `/plugin marketplace list`.
+    3. Inside the Claude Code session, run: `/plugin marketplace add .` (or `/plugin marketplace add SonicNorg/oplya` if testing the GitHub-shorthand path per README D-25). Expected: zero validation errors; `oplya` appears in `/plugin marketplace list`.
     4. Run: `/plugin install zapili@oplya`. Expected: "installed" confirmation; `zapili` appears in `/plugin list`.
     5. Run: `/plugin list` — confirm `zapili` is listed under the `oplya` marketplace.
     6. Phase 1 STOPS here. Do NOT attempt to invoke `/zapili:zapili` — Phase 2 wires the command surface.

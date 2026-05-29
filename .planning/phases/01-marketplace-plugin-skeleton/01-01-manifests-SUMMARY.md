@@ -11,7 +11,7 @@ requires:
 provides:
   - "Discoverable marketplace catalog at .claude-plugin/marketplace.json (name=oplya, owner={name,email}, metadata.pluginRoot=./plugins, one zapili entry)"
   - "Per-plugin manifest at plugins/zapili/.claude-plugin/plugin.json (name=zapili, zero component keys, no version, no category)"
-  - "Resolution path: /plugin marketplace add nepavel/oplya → /plugin install zapili@oplya can now locate both manifests"
+  - "Resolution path: /plugin marketplace add SonicNorg/oplya → /plugin install zapili@oplya can now locate both manifests"
   - "Authoritative install target referenced by Plans 02 (READMEs), 04 (validator scans these exact paths), 05 (live install rehearsal)"
 affects: ["01-02-documentation", "01-03-hygiene", "01-04-validator", "01-05-install-rehearsal", "02-session-hook-and-command", "03-schemas-and-contracts", "06-publication-polish"]
 
@@ -53,7 +53,7 @@ completed: 2026-05-28
 
 # Phase 1 Plan 1: Manifests Summary
 
-**Discoverable marketplace + plugin manifests at spec-mandated paths — `oplya` is registrable via `/plugin marketplace add nepavel/oplya` and `zapili` resolves via `metadata.pluginRoot`-anchored `./plugins/zapili` source, both with RESEARCH-driven drift fixes (no `owner.url`, no `category` on plugin.json) applied.**
+**Discoverable marketplace + plugin manifests at spec-mandated paths — `oplya` is registrable via `/plugin marketplace add SonicNorg/oplya` and `zapili` resolves via `metadata.pluginRoot`-anchored `./plugins/zapili` source, both with RESEARCH-driven drift fixes (no `owner.url`, no `category` on plugin.json) applied.**
 
 ## Performance
 
@@ -81,7 +81,7 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `.claude-plugin/marketplace.json` — Marketplace catalog (`name: "oplya"`); 1 plugin entry for `zapili` with source `./plugins/zapili`, category `workflow`, repository `https://github.com/nepavel/oplya`; pluginRoot `./plugins`; owner `{name: "Pavel", email: "pavel.proger@gmail.com"}` — no `url`.
+- `.claude-plugin/marketplace.json` — Marketplace catalog (`name: "oplya"`); 1 plugin entry for `zapili` with source `./plugins/zapili`, category `workflow`, repository `https://github.com/SonicNorg/oplya`; pluginRoot `./plugins`; owner `{name: "Pavel", email: "pavel.proger@gmail.com"}` — no `url`.
 - `plugins/zapili/.claude-plugin/plugin.json` — Plugin manifest (`name: "zapili"`); author with `url`; license MIT; 5 keywords; absent: `version`, `category`, `commands`, `agents`, `hooks`, `mcpServers`.
 
 ## Decisions Made
@@ -117,7 +117,7 @@ No NEW threat surface introduced beyond the plan's existing register. No Threat 
 
 ## Next Phase Readiness
 
-**Plan 01-02 (Documentation):** Both manifest files exist; READMEs can now confidently reference the install path `/plugin marketplace add nepavel/oplya` + `/plugin install zapili@oplya` and the repo layout (`.claude-plugin/marketplace.json`, `plugins/zapili/.claude-plugin/plugin.json`).
+**Plan 01-02 (Documentation):** Both manifest files exist; READMEs can now confidently reference the install path `/plugin marketplace add SonicNorg/oplya` + `/plugin install zapili@oplya` and the repo layout (`.claude-plugin/marketplace.json`, `plugins/zapili/.claude-plugin/plugin.json`).
 
 **Plan 01-03 (Hygiene):** `.gitattributes` should be added BEFORE any additional `.sh` files land (RESEARCH Pitfall 11) — the JSON files are not at CRLF risk now (verified LF), but future shell scripts in Plan 04 need the protection in place first.
 

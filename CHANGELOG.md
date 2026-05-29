@@ -8,6 +8,12 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 (Nothing yet — next changes land here. v1.2 candidate will collect deferred NITs.)
 
+## [1.1.3] - 2026-05-29
+
+### Changed
+
+- **GitHub handle: `nepavel` → `SonicNorg`** across every shipped artifact and every planning document. Aligns the repository's documented owner / install path with the actual GitHub identity (`SonicNorg`) that will host `oplya` as a public marketplace. Touched files: `marketplace.json` (owner.url), `plugin.json` (author.url + homepage + repository), top-level `README.md` (install command + clone URL), `CLAUDE.md` (project context), plus 14 `.planning/` files (research, audit, phase plans, summaries, STATE) for historical-record consistency. Local on-disk path `/home/norg/work/nepavel/oplya` is left untouched — that's a developer-machine path, not a GitHub reference. `/zapili:help` version string updated.
+
 ## [1.1.2] - 2026-05-29
 
 ### Added

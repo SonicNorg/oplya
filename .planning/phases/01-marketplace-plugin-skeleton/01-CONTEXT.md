@@ -6,7 +6,7 @@
 <domain>
 ## Phase Boundary
 
-A fresh clone of `oplya` installs end-to-end via `/plugin marketplace add nepavel/oplya` + `/plugin install zapili@oplya`, with valid manifests, hygiene files (LICENSE, .gitignore, .gitattributes), top-level + plugin-level READMEs, and a local pre-commit manifest validator. This phase delivers the static repository skeleton ONLY — no slash command behavior, no hook scripts, no agent logic. Plugin file `zapili` must be visible to Claude Code after install; making `/zapili:zapili` actually runnable is Phase 2's job.
+A fresh clone of `oplya` installs end-to-end via `/plugin marketplace add SonicNorg/oplya` + `/plugin install zapili@oplya`, with valid manifests, hygiene files (LICENSE, .gitignore, .gitattributes), top-level + plugin-level READMEs, and a local pre-commit manifest validator. This phase delivers the static repository skeleton ONLY — no slash command behavior, no hook scripts, no agent logic. Plugin file `zapili` must be visible to Claude Code after install; making `/zapili:zapili` actually runnable is Phase 2's job.
 
 **In scope:** repository layout; `.claude-plugin/marketplace.json`; `plugins/zapili/.claude-plugin/plugin.json`; top-level `README.md`; `plugins/zapili/README.md`; `LICENSE`; `.gitignore`; `.gitattributes`; `scripts/validate-manifests.sh`; `scripts/install-hooks.sh`; pre-commit hook template; documentation of pre-commit setup.
 
@@ -21,15 +21,15 @@ A fresh clone of `oplya` installs end-to-end via `/plugin marketplace add nepave
 - **D-01:** MIT license. Single-paragraph LICENSE text with current year (2026) and copyright holder `Pavel <pavel.proger@gmail.com>`. No NOTICE file. No patent grant required.
 
 ### Manifest metadata — `.claude-plugin/marketplace.json` (MKT-01)
-- **D-02:** Required fields: `name: "oplya"`, `owner: { name: "Pavel", email: "pavel.proger@gmail.com", url: "https://github.com/nepavel" }`, `plugins: [...]`.
+- **D-02:** Required fields: `name: "oplya"`, `owner: { name: "Pavel", email: "pavel.proger@gmail.com", url: "https://github.com/SonicNorg" }`, `plugins: [...]`.
 - **D-03:** Polish fields: `displayName: "oplya"`, `description: "Personal plugin marketplace — multi-agent dev workflows"`, `category: "workflow"`, `$schema` link (planner: pin to the latest stable Claude Code marketplace-schema URL from the official docs at planning time).
 - **D-04:** `metadata.pluginRoot: "./plugins"` so each plugins[].source can be the short form `"./plugins/zapili"`.
 - **D-05:** `plugins[]` array contains exactly one entry for `zapili` in v1. No `version` field on the marketplace entry — commit-SHA versioning.
-- **D-06:** Repository slug for install instructions: `nepavel/oplya`.
+- **D-06:** Repository slug for install instructions: `SonicNorg/oplya`.
 
 ### Manifest metadata — `plugins/zapili/.claude-plugin/plugin.json` (MKT-02, ZAP-03)
 - **D-07:** Required field: `name: "zapili"`.
-- **D-08:** Polish fields: `displayName: "zapili"`, `description: "Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review"`, `category: "workflow"`, `keywords: ["workflow", "multi-agent", "codex", "planning", "parallel"]`, `author: { name: "Pavel", email: "pavel.proger@gmail.com", url: "https://github.com/nepavel" }`.
+- **D-08:** Polish fields: `displayName: "zapili"`, `description: "Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review"`, `category: "workflow"`, `keywords: ["workflow", "multi-agent", "codex", "planning", "parallel"]`, `author: { name: "Pavel", email: "pavel.proger@gmail.com", url: "https://github.com/SonicNorg" }`.
 - **D-09:** NO `version` field while iterating (commit-SHA versioning — PROJECT.md decision). Planner adds `"version": "1.0.0"` only at the eventual release commit (Phase 6 concern, not Phase 1).
 - **D-10:** NO `commands`, `agents`, `hooks`, `mcpServers` keys — Phase 1 ships zero components. Default-folder auto-discovery is irrelevant when the folders themselves are absent.
 
@@ -56,7 +56,7 @@ A fresh clone of `oplya` installs end-to-end via `/plugin marketplace add nepave
 - **D-24:** Component-directory paths in `plugin.json` are NOT pre-declared (no `commands`, `agents`, `hooks`, `mcpServers` keys). When Phase 2+ adds the folders, default auto-discovery picks them up — no manifest edits required.
 
 ### READMEs (MKT-03, ZAP-03)
-- **D-25:** Top-level `README.md` (English) MUST include: (1) one-paragraph what `oplya` is; (2) plugin index (currently one row for `zapili` with its one-line description); (3) install instructions verbatim — `/plugin marketplace add nepavel/oplya` then `/plugin install zapili@oplya`; (4) "Local development" section pointing at `scripts/validate-manifests.sh` and `scripts/install-hooks.sh`; (5) License line ("MIT — see LICENSE"); (6) link to `plugins/zapili/README.md` for details.
+- **D-25:** Top-level `README.md` (English) MUST include: (1) one-paragraph what `oplya` is; (2) plugin index (currently one row for `zapili` with its one-line description); (3) install instructions verbatim — `/plugin marketplace add SonicNorg/oplya` then `/plugin install zapili@oplya`; (4) "Local development" section pointing at `scripts/validate-manifests.sh` and `scripts/install-hooks.sh`; (5) License line ("MIT — see LICENSE"); (6) link to `plugins/zapili/README.md` for details.
 - **D-26:** `plugins/zapili/README.md` (English) MUST include: (1) one-paragraph what `zapili` does (multi-agent workflow from `TASK.md` to shipped change); (2) prerequisites callout — `codex` CLI installed AND authenticated; (3) "How to author a TASK.md" stub (the actual schema lives in Phase 3, but a one-paragraph high-level explanation lands in Phase 1 so the README is self-contained for v1); (4) install instructions cross-link to the top-level README; (5) one-line note that the slash command surface is not yet wired (planner: this note ships only on the Phase-1 commit; Phase 2 replaces the line with the real command surface description).
 - **D-27:** No badges, no screenshots, no TOC in v1 READMEs. Plain prose + fenced code blocks for commands. Keep both READMEs under ~80 lines each.
 
@@ -116,7 +116,7 @@ The planner has freedom to choose:
 <specifics>
 ## Specific Ideas
 
-- Repository slug `nepavel/oplya` is the canonical install identifier — bake this string into both READMEs and into commit-message references.
+- Repository slug `SonicNorg/oplya` is the canonical install identifier — bake this string into both READMEs and into commit-message references.
 - Owner identity uses the user's real email (`pavel.proger@gmail.com`) in the manifest — user explicitly opted in to the most-discoverable variant despite the email being visible in a public repo.
 - README pitch for the marketplace leans on "personal plugin marketplace — multi-agent dev workflows" framing (user-approved wording from D-03).
 - README pitch for `zapili` leans on "Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review" framing (user-approved wording from D-08).

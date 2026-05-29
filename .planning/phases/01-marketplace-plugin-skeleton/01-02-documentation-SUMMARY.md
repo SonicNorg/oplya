@@ -9,7 +9,7 @@ requires:
     plan: 01
     provides: "Manifests exist at .claude-plugin/marketplace.json and plugins/zapili/.claude-plugin/plugin.json so the README can confidently document the install path"
   - phase: 00-bootstrap
-    provides: "CONTEXT.md locked decisions D-25 (top-level README section list), D-26 (plugin README section list + codex prereq + TASK.md stub + Phase-1 status disclaimer), D-27 (formatting constraints), D-06 (nepavel/oplya slug)"
+    provides: "CONTEXT.md locked decisions D-25 (top-level README section list), D-26 (plugin README section list + codex prereq + TASK.md stub + Phase-1 status disclaimer), D-27 (formatting constraints), D-06 (SonicNorg/oplya slug)"
 provides:
   - "Top-level README.md surfaced on GitHub repo landing — describes marketplace identity, plugin index, install commands, local-dev workflow, license"
   - "plugins/zapili/README.md surfaced when inspecting the plugin tree — describes what zapili does, codex prerequisite, TASK.md authoring stub, Phase-1 status disclaimer, install cross-link"
@@ -50,7 +50,7 @@ completed: 2026-05-28
 
 # Phase 1 Plan 2: Documentation Summary
 
-**English-only top-level and plugin READMEs ship per D-25/D-26 — `oplya` is now self-documenting for first-time visitors, the install path `/plugin marketplace add nepavel/oplya` + `/plugin install zapili@oplya` is published in both files, the `codex` CLI prerequisite is surfaced on the plugin README, and the Phase-1 "slash command not yet wired" disclaimer sets correct user expectations.**
+**English-only top-level and plugin READMEs ship per D-25/D-26 — `oplya` is now self-documenting for first-time visitors, the install path `/plugin marketplace add SonicNorg/oplya` + `/plugin install zapili@oplya` is published in both files, the `codex` CLI prerequisite is surfaced on the plugin README, and the Phase-1 "slash command not yet wired" disclaimer sets correct user expectations.**
 
 ## Performance
 
@@ -85,7 +85,7 @@ Each task was committed atomically:
 **Top-level README (D-25):**
 - [x] (1) H1 `# oplya — Claude Code Plugin Marketplace` + one-paragraph description with the user-approved framing
 - [x] (2) `## Plugins` table with one row for `zapili`, description matches D-08 wording, plugin name links to `plugins/zapili/README.md`
-- [x] (3) `## Install` fenced block with EXACTLY `/plugin marketplace add nepavel/oplya` then `/plugin install zapili@oplya` + codex callout (no URL-based marketplace add per RESEARCH Pitfall 5)
+- [x] (3) `## Install` fenced block with EXACTLY `/plugin marketplace add SonicNorg/oplya` then `/plugin install zapili@oplya` + codex callout (no URL-based marketplace add per RESEARCH Pitfall 5)
 - [x] (4) `## Local development` fenced bash block with `git clone`, `cd`, `./scripts/install-hooks.sh`, `./scripts/validate-manifests.sh` + optional `claude plugin validate . --strict` supplementary check
 - [x] (5) `## License` single line `MIT — see [LICENSE](LICENSE).`
 - [x] (6) Cross-link from the Plugins table cell to `plugins/zapili/README.md`
@@ -125,8 +125,8 @@ None — no external service configuration required by this plan. Documentation 
 
 Reviewed both new files against the plan's `<threat_model>` register:
 
-- **T-02-01 (Information Disclosure — wrong slug)** — mitigated. `grep -q "/plugin marketplace add nepavel/oplya" README.md` and `grep -q "../../README.md" plugins/zapili/README.md` both pass. The canonical slug `nepavel/oplya` is the only marketplace identifier used.
-- **T-02-02 (Tampering — URL-based marketplace add suggestion)** — mitigated. Top-level README documents only the GitHub-shorthand form `/plugin marketplace add nepavel/oplya`; no URL-based alternative present (would break relative `source` paths per RESEARCH Pitfall 5).
+- **T-02-01 (Information Disclosure — wrong slug)** — mitigated. `grep -q "/plugin marketplace add SonicNorg/oplya" README.md` and `grep -q "../../README.md" plugins/zapili/README.md` both pass. The canonical slug `SonicNorg/oplya` is the only marketplace identifier used.
+- **T-02-02 (Tampering — URL-based marketplace add suggestion)** — mitigated. Top-level README documents only the GitHub-shorthand form `/plugin marketplace add SonicNorg/oplya`; no URL-based alternative present (would break relative `source` paths per RESEARCH Pitfall 5).
 - **T-02-03 (Repudiation — deferred slash command surface)** — mitigated. Plugin README's `## Status` block-quote explicitly states "The slash command surface is not yet wired in this release" — `grep -qi "not yet wired"` passes. Users on the Phase-1 commit will not file false bug reports about a missing `/zapili:zapili` command.
 - **T-02-SC (Supply chain — package installs)** — N/A. No package-manager installs in this plan; Markdown files only.
 
@@ -138,7 +138,7 @@ No NEW threat surface introduced beyond the plan's existing register. No Threat 
 
 **Plan 01-04 (Validator + install-hooks installer):** The top-level README's Local development section now documents the EXACT paths `scripts/install-hooks.sh` and `scripts/validate-manifests.sh` — Plan 04 MUST deliver these scripts at exactly these paths. The README also documents the optional `claude plugin validate . --strict` supplementary check; Plan 04 does not need to implement this — it is a user-facing recommendation only.
 
-**Plan 01-05 (Install rehearsal):** Top-level README's Install section publishes the canonical commands `/plugin marketplace add nepavel/oplya` and `/plugin install zapili@oplya`. The rehearsal must execute these EXACT strings against the Phase-1 commit on `main`.
+**Plan 01-05 (Install rehearsal):** Top-level README's Install section publishes the canonical commands `/plugin marketplace add SonicNorg/oplya` and `/plugin install zapili@oplya`. The rehearsal must execute these EXACT strings against the Phase-1 commit on `main`.
 
 **Phase 2 (SessionStart hook + slash command):** Plugin README's `## Status` block-quote is the line Phase 2 must replace. The replacement should describe the real `/zapili:zapili` orchestrator surface and remove the "not yet wired" disclaimer entirely. Reference: D-26 explicitly notes "this note ships only on the Phase-1 commit; Phase 2 replaces the line with the real command surface description."
 

@@ -11,7 +11,7 @@ Personal plugin marketplace — multi-agent dev workflows. `oplya` is a public, 
 ## Install
 
 ```bash
-/plugin marketplace add nepavel/oplya
+/plugin marketplace add SonicNorg/oplya
 /plugin install zapili@oplya
 ```
 
@@ -20,7 +20,7 @@ Personal plugin marketplace — multi-agent dev workflows. `oplya` is a public, 
 ## Local development
 
 ```bash
-git clone https://github.com/nepavel/oplya
+git clone https://github.com/SonicNorg/oplya
 cd oplya
 ./scripts/install-hooks.sh        # one-time: enables manifest validation on commit
 ./scripts/validate-manifests.sh   # run anytime to check manifests

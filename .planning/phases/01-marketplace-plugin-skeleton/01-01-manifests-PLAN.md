@@ -20,7 +20,7 @@ must_haves:
     - "Neither manifest contains owner.url (marketplace) nor category (plugin) per RESEARCH drift fixes"
     - "Plugin manifest omits the version field (commit-SHA versioning per D-09)"
     - "Source path for the zapili plugin entry is ./plugins/zapili (explicit form, no ../)"
-    - "CONTEXT.md decisions implemented by this plan: D-02, D-03, D-04, D-05, D-06 (marketplace.json identity + nepavel/oplya slug + pluginRoot + single zapili entry); D-07, D-08, D-10 (plugin.json name + metadata + zero component keys); D-23, D-24 (Phase-1 skeleton minimalism — no commands/agents/hooks shipped)"
+    - "CONTEXT.md decisions implemented by this plan: D-02, D-03, D-04, D-05, D-06 (marketplace.json identity + SonicNorg/oplya slug + pluginRoot + single zapili entry); D-07, D-08, D-10 (plugin.json name + metadata + zero component keys); D-23, D-24 (Phase-1 skeleton minimalism — no commands/agents/hooks shipped)"
   artifacts:
     - path: ".claude-plugin/marketplace.json"
       provides: "Marketplace catalog discovered by /plugin marketplace add"
@@ -79,12 +79,12 @@ Output:
     - `description`: `"Personal plugin marketplace — multi-agent dev workflows"` (D-03)
     - `owner`: object with `name: "Pavel"` and `email: "pavel.proger@gmail.com"` ONLY. DROP `owner.url` per RESEARCH Pitfall 1 — the documented marketplace owner schema is `{name, email}` only; `url` triggers `--strict` warnings and is absent from the canonical reference repo. The GitHub URL belongs on the plugin entry's `repository` field (below) and on `author.url` in plugin.json.
     - `metadata.pluginRoot`: `"./plugins"` (D-04 — enables short-form `source` and clarity).
-    - `plugins`: array with exactly ONE entry (D-05) for zapili containing: `name: "zapili"`, `source: "./plugins/zapili"` (explicit form per D-04 — never `../`, must start with `./`), `displayName: "zapili"` (D-03 / D-08), `description: "Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review"`, `category: "workflow"` (category lives HERE per RESEARCH Example 1, NOT in plugin.json), `repository: "https://github.com/nepavel/oplya"` (officially supported on plugin entries, carries the GitHub link that was originally proposed for owner.url; D-06 — slug `nepavel/oplya`).
+    - `plugins`: array with exactly ONE entry (D-05) for zapili containing: `name: "zapili"`, `source: "./plugins/zapili"` (explicit form per D-04 — never `../`, must start with `./`), `displayName: "zapili"` (D-03 / D-08), `description: "Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review"`, `category: "workflow"` (category lives HERE per RESEARCH Example 1, NOT in plugin.json), `repository: "https://github.com/SonicNorg/oplya"` (officially supported on plugin entries, carries the GitHub link that was originally proposed for owner.url; D-06 — slug `SonicNorg/oplya`).
 
     Do NOT include: `version` on the plugin entry (D-05 — commit-SHA versioning); any keys with `null`; trailing commas; comments.
   </action>
   <verify>
-    <automated>jq -e . .claude-plugin/marketplace.json &gt;/dev/null &amp;&amp; jq -e '.name == "oplya"' .claude-plugin/marketplace.json &gt;/dev/null &amp;&amp; jq -e '.owner.name == "Pavel" and .owner.email == "pavel.proger@gmail.com" and (.owner | has("url") | not)' .claude-plugin/marketplace.json &gt;/dev/null &amp;&amp; jq -e '.metadata.pluginRoot == "./plugins"' .claude-plugin/marketplace.json &gt;/dev/null &amp;&amp; jq -e '.plugins | type == "array" and length == 1' .claude-plugin/marketplace.json &gt;/dev/null &amp;&amp; jq -e '.plugins[0] | .name == "zapili" and .source == "./plugins/zapili" and .category == "workflow" and .repository == "https://github.com/nepavel/oplya"' .claude-plugin/marketplace.json &gt;/dev/null</automated>
+    <automated>jq -e . .claude-plugin/marketplace.json &gt;/dev/null &amp;&amp; jq -e '.name == "oplya"' .claude-plugin/marketplace.json &gt;/dev/null &amp;&amp; jq -e '.owner.name == "Pavel" and .owner.email == "pavel.proger@gmail.com" and (.owner | has("url") | not)' .claude-plugin/marketplace.json &gt;/dev/null &amp;&amp; jq -e '.metadata.pluginRoot == "./plugins"' .claude-plugin/marketplace.json &gt;/dev/null &amp;&amp; jq -e '.plugins | type == "array" and length == 1' .claude-plugin/marketplace.json &gt;/dev/null &amp;&amp; jq -e '.plugins[0] | .name == "zapili" and .source == "./plugins/zapili" and .category == "workflow" and .repository == "https://github.com/SonicNorg/oplya"' .claude-plugin/marketplace.json &gt;/dev/null</automated>
   </verify>
   <acceptance_criteria>
     - `test -f .claude-plugin/marketplace.json` exits 0.
@@ -115,9 +115,9 @@ Output:
     - `name`: `"zapili"` (D-07 — only strictly required field per spec)
     - `displayName`: `"zapili"` (D-08)
     - `description`: `"Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review"` (D-08)
-    - `author`: object with `name: "Pavel"`, `email: "pavel.proger@gmail.com"`, `url: "https://github.com/nepavel"` (D-08 — `author.url` IS officially supported on plugin.json, unlike `owner.url` on marketplace.json).
-    - `homepage`: `"https://github.com/nepavel/oplya"`
-    - `repository`: `"https://github.com/nepavel/oplya"`
+    - `author`: object with `name: "Pavel"`, `email: "pavel.proger@gmail.com"`, `url: "https://github.com/SonicNorg"` (D-08 — `author.url` IS officially supported on plugin.json, unlike `owner.url` on marketplace.json).
+    - `homepage`: `"https://github.com/SonicNorg/oplya"`
+    - `repository`: `"https://github.com/SonicNorg/oplya"`
     - `license`: `"MIT"` (matches LICENSE delivered by Plan 03)
     - `keywords`: array `["workflow", "multi-agent", "codex", "planning", "parallel"]` (D-08)
 
@@ -127,7 +127,7 @@ Output:
     - `commands`, `agents`, `hooks`, `mcpServers` — D-10 / D-23 / D-24: Phase 1 ships zero components (skeleton minimalism); default-folder auto-discovery picks them up in Phase 2+ without manifest edits.
   </action>
   <verify>
-    <automated>jq -e . plugins/zapili/.claude-plugin/plugin.json &gt;/dev/null &amp;&amp; jq -e '.name == "zapili" and (has("version") | not) and (has("category") | not) and (has("commands") | not) and (has("agents") | not) and (has("hooks") | not) and (has("mcpServers") | not)' plugins/zapili/.claude-plugin/plugin.json &gt;/dev/null &amp;&amp; jq -e '.author.name == "Pavel" and .author.email == "pavel.proger@gmail.com" and .author.url == "https://github.com/nepavel"' plugins/zapili/.claude-plugin/plugin.json &gt;/dev/null &amp;&amp; jq -e '.keywords | type == "array" and length == 5' plugins/zapili/.claude-plugin/plugin.json &gt;/dev/null &amp;&amp; jq -e '.license == "MIT"' plugins/zapili/.claude-plugin/plugin.json &gt;/dev/null</automated>
+    <automated>jq -e . plugins/zapili/.claude-plugin/plugin.json &gt;/dev/null &amp;&amp; jq -e '.name == "zapili" and (has("version") | not) and (has("category") | not) and (has("commands") | not) and (has("agents") | not) and (has("hooks") | not) and (has("mcpServers") | not)' plugins/zapili/.claude-plugin/plugin.json &gt;/dev/null &amp;&amp; jq -e '.author.name == "Pavel" and .author.email == "pavel.proger@gmail.com" and .author.url == "https://github.com/SonicNorg"' plugins/zapili/.claude-plugin/plugin.json &gt;/dev/null &amp;&amp; jq -e '.keywords | type == "array" and length == 5' plugins/zapili/.claude-plugin/plugin.json &gt;/dev/null &amp;&amp; jq -e '.license == "MIT"' plugins/zapili/.claude-plugin/plugin.json &gt;/dev/null</automated>
   </verify>
   <acceptance_criteria>
     - `test -f plugins/zapili/.claude-plugin/plugin.json` exits 0.
