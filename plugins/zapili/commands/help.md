@@ -8,13 +8,14 @@ model: claude-haiku-4-5
 Print the following text verbatim to the user. Do NOT paraphrase, summarize, or reformat — operators rely on the exact wording for muscle-memory recognition across sessions.
 
 ```
-zapili — multi-agent dev workflow plugin (v1.1.1)
+zapili — multi-agent dev workflow plugin (v1.1.2)
 
 ================================================================
 COMMANDS
 ================================================================
 
   /zapili:zapili [--resume]   Run the full workflow on TASK.md
+  /zapili:status              Read-only snapshot of .zapili/state.json
   /zapili:help                This help screen
 
 

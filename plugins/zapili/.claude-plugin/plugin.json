@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "zapili",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "displayName": "zapili",
   "description": "Multi-agent dev workflow: research → plan → wave-parallel implementation with codex review",
   "author": {

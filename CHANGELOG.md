@@ -8,6 +8,13 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 (Nothing yet — next changes land here. v1.2 candidate will collect deferred NITs.)
 
+## [1.1.2] - 2026-05-29
+
+### Added
+
+- **`/zapili:status` slash command** (`plugins/zapili/commands/status.md`) — read-only snapshot of `.zapili/state.json` for the project CWD. Renders the current workflow stage with a human-readable meaning, active wave + phase position, iteration counters per validator (with `cap` from `fix_loop_cap`), and any open finding ids carried across the current iteration. Prints a fallback message when no `.zapili/` directory exists. Frontmatter pins `claude-haiku-4-5` (cheap model — the command is pure read + tabular print) and restricts `allowed-tools` to `Bash(test:*)` + `Read` so the read-only contract is enforced at the tool layer. Honors ZAP-50 (orchestrator is the single writer to `state.json`) — this command MUST NOT write.
+- **`/zapili:help` updated** to list the new `/zapili:status` command in its command index. Version string bumped from `v1.1.1` to `v1.1.2`.
+
 ## [1.1.1] - 2026-05-29
 
 ### Added
