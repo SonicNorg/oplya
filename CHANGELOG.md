@@ -6,7 +6,13 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 ## [Unreleased]
 
-(Nothing yet — next changes land here. v1.1.1 candidate will collect deferred NITs.)
+(Nothing yet — next changes land here. v1.2 candidate will collect deferred NITs.)
+
+## [1.1.1] - 2026-05-29
+
+### Added
+
+- **`/zapili:help` slash command** (`plugins/zapili/commands/help.md`) — usage index covering: command list, where TASK.md must live (project CWD), how to author a useful TASK.md (WHAT/WHY/STACK/CONSTRAINTS), prerequisites (codex CLI + auth, jq, perl), workflow stage breakdown, `.zapili/` state directory contents, crash-resume semantics, halt-diagnostic interpretation, and what zapili explicitly does NOT touch (global Claude Code config, git remote, paths outside CWD). Pinned to `claude-haiku-4-5` per the command's frontmatter — the help screen is a static print and does not warrant a heavier model. Auto-discovered by Claude Code from `commands/`; no `plugin.json` changes needed thanks to the v1.0 D-10/D-23/D-24 decision to leave the `commands` key unset.
 
 ## [1.1.0] - 2026-05-29
 
