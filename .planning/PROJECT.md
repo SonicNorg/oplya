@@ -1,5 +1,25 @@
 # oplya — Claude Code Plugin Marketplace
 
+## Current State
+
+- **Shipped:** `oplya` v1.1.0 (plugin tag `v1.1`, 2026-05-29).
+- **Plugin version:** `plugins/zapili/.claude-plugin/plugin.json` = `1.1.0`.
+- **Phases shipped:** 8 (v1.0 = 1–6 marketplace + plugin foundation; v1.1 = 7–8 review-follow-ups + codex self-fix fallback).
+- **Requirements complete:** 49/49 (43 v1 + 6 v1.1).
+- **Milestone archives:** [`milestones/v1.1-ROADMAP.md`](milestones/v1.1-ROADMAP.md), [`milestones/v1.1-REQUIREMENTS.md`](milestones/v1.1-REQUIREMENTS.md).
+- **Maintainer-owned release activities** (inherited from v1.0): live install rehearsal post-push, live smoke-test round-trip, live chaos rehearsal — pending.
+
+## Next Milestone Goals
+
+No v1.2 scope locked yet. Candidate areas surfaced by v1.0/v1.1 review backlog (not blocking, not yet planned):
+
+- **Polish carry-over** (v1.2.0 candidate): NIT-2 stale `f2/PLAN.md` comment; P2-6 `state.schema.json` `current_phase` pattern relaxation; P2-7 audit Gaps section consistency; misc cosmetic items from the three v1.0/v1.1 review rounds.
+- **Release engineering** (separate milestone candidate): CI gate that enforces `plugin.json` version bump on every change to `plugins/zapili/*`; auto-bump command in `gsd-sdk`; reserved-name re-check automation; signed releases.
+- **TOOL-** hardening: path-safety + manifest semantics checks in `validate-manifests.sh` (bad-invalid-source.json fixture already exists but is INFORMATIONAL today).
+- **Additional plugins**: marketplace currently ships exactly one plugin (`zapili`). Adding a second plugin would exercise the multi-plugin layout for the first time and validate the marketplace's `metadata.pluginRoot` mechanism end-to-end.
+
+Run `/gsd-new-milestone` to start v1.2 scoping.
+
 ## What This Is
 
 A public Git-based marketplace (`oplya`) hosting personal Claude Code plugins for sharing with the team. The first plugin, `zapili`, packages a rigorous, multi-agent **development workflow** (research → validation → planning → validation → wave-based parallel implementation → review) driven entirely from a `TASK.md` in the working directory.

@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: hardening + codex self-fix
-status: in_progress
-stopped_at: Phase 8 closed (codex self-fix fallback live-validated); v1.1 milestone complete — awaiting audit
-last_updated: "2026-05-28T18:00:00.000Z"
-last_activity: 2026-05-28
+status: complete
+stopped_at: v1.1 milestone shipped + archived (git tag v1.1, 2026-05-29). Awaiting next milestone definition.
+last_updated: "2026-05-29T09:00:00.000Z"
+last_activity: 2026-05-29
 progress:
   total_phases: 8
   completed_phases: 8
@@ -32,15 +32,17 @@ progress:
 
 ## Current Position
 
-Milestone: v1.1 (hardening + codex self-fix) — IN PROGRESS
-Phase: 07 (review-followups-cleanup) — NOT YET PLANNED
+Milestone: v1.1 (hardening + codex self-fix) — ✅ COMPLETE (archived 2026-05-29, git tag `v1.1`)
+Next: run `/gsd-new-milestone` when ready to start v1.2.
 
-- **Milestone:** v1.1
-- **Phase:** 7 — Review follow-ups cleanup
-- **Status:** Ready to discuss/plan (run `/gsd-plan-phase 7`)
-- **Last Activity:** 2026-05-28
-- **Progress:** [███████░░░] 75% (6 of 8 phases complete; 2 v1.1 phases not yet planned)
-- **Phases 1–6 complete (v1.0.0 shipped, audit gaps_found accepted, 4 blockers + 1 calibration finding fixed post-audit)**
+- **Milestone:** v1.1 — SHIPPED
+- **Plugin version:** 1.1.0
+- **Phases:** 8/8 complete (v1.0 = 1–6 shipped 2026-05-28; v1.1 = 7–8 shipped 2026-05-29)
+- **Plans:** 26/26 complete
+- **Requirements:** 49/49 complete (43 v1 + 6 v1.1)
+- **Last Activity:** 2026-05-29 (v1.1 archive)
+- **Progress:** [██████████] 100%
+- **Archive:** [`.planning/milestones/v1.1-ROADMAP.md`](milestones/v1.1-ROADMAP.md) + [`.planning/milestones/v1.1-REQUIREMENTS.md`](milestones/v1.1-REQUIREMENTS.md)
 
 ## Phase Map
 
@@ -59,6 +61,7 @@ Phase: 07 (review-followups-cleanup) — NOT YET PLANNED
 
 - 2026-05-28: v1.0 milestone closed at 6/6 phases complete; v1.0.0 published.
 - 2026-05-28: v1.1 milestone opened; Phase 7 added (review follow-ups from v1.0.0 ultra-principal review — C-03, C-04, F-01/F-02, H-01, S-01); Phase 8 added (codex self-fix fallback after iteration cap — new capability per user request).
+- 2026-05-29: v1.1 milestone shipped + archived. Plugin version 1.0.0 → 1.1.0. 49/49 cumulative requirements complete. Git tag `v1.1`.
 
 ## Performance Metrics
 

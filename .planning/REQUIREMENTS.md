@@ -234,22 +234,13 @@ A requirement is "Complete" only when ALL of:
 - LICENSE present; semver bump policy documented in top-level README
 - Reference task fixtures in `plugins/zapili/tests/fixtures/` produce the expected exhaustive-coverage output from codex (ZAP-15 calibration confirmed)
 
-## v1.1 Requirements
+## v1.1 Requirements — SHIPPED ✅
 
-Hardening and capability extension for `oplya` v1.1 (added 2026-05-28 from the v1.0.0 ultra-principal review + new codex self-fix capability). Maps to Phases 7 and 8.
+Archived: [`.planning/milestones/v1.1-REQUIREMENTS.md`](milestones/v1.1-REQUIREMENTS.md) (6/6 complete: ZAP-55, ZAP-56, ZAP-57, ZAP-58, ZAP-59, ZAP-60).
 
-### Review follow-ups cleanup (ZAP-followups) — Phase 7
-
-- [x] **ZAP-55**: `plugins/zapili/agents/planner.md` declares an optional `<file role="prior-findings">` input in its `<inputs>` block; the `<task>` section explicitly instructs the planner how to address each prior HIGH/MEDIUM finding by ID on a fix iteration, cite each finding ID in the revision's `flagged_gaps` for traceability, and avoid removing phases to hide gaps (mirrors `engineer.md`'s existing prior-findings handling). Closes review finding C-03.
-- [x] **ZAP-56**: Orchestrator Stage 5 (post-planner) parses `flagged_gaps` from the planner payload; if non-empty, surfaces each gap to the user via `AskUserQuestion` (one question per gap, or batched), appends the user's answers to `CONTEXT.md` under a new `## Gap Resolutions` section, and only then advances to `plan_validate`. Empty `flagged_gaps` array continues silently. Closes review finding C-04.
-- [x] **ZAP-57**: `plugins/zapili/tests/fixtures/README.md` calibration loop documents the correct per-role wrapper invocation (`codex-validate-research.sh <task> <context>`, `codex-validate-plan.sh <plan> <phase_glob>`, `codex-review-phase.sh <task> <phase> <engineer_payload>`); fixture `f3-plan-ambiguity/` includes a minimal `PLAN.md` referencing its `PHASE-XX.md`; fixtures `f4-phase-missing-tests/` and `f5-phase-style-drift/` each include a minimal `TASK.md` setting context for the engineer payload. Every fixture in `tests/fixtures/f1..f5` and `smoke-small-task` runnable end-to-end via the documented loop. Closes review findings F-01 and F-02.
-- [x] **ZAP-58**: `plugins/zapili/scripts/check-codex.sh` uses `set -euo pipefail` (currently `set -uo pipefail` — missing `-e`); existing `if ! ... ; fi` and `|| true` guards continue to work under `-e`; SessionStart hook still exits 0 on missing/unauthenticated codex (advisory contract per ZAP-02 preserved). CLAUDE.md hook discipline and Phase 2 D-15 honored. Closes review finding H-01.
-- [x] **ZAP-59**: `plugins/zapili/scripts/check-wave-disjointness.sh` regex pattern accepts both production naming (`PHASE-01`, `PHASE-02`) and fixture/test naming (`PHASE-XX-a`, `PHASE-XX-b`, `PHASE-XX.YY`); the f2 fixture's PHASE files are detected, intra-wave write-set intersection is computed, and the seeded overlap surfaces as `kind: "write-scope-overlap"`. Closes review finding S-01.
-
-### Codex self-fix fallback (ZAP-self-fix) — Phase 8
-
-- [x] **ZAP-60**: After the codex review fix-loop (Stage 4 `plan_validate` or Stage 6 `phase_review`) hits its iteration cap (default 4, configurable via `.zapili/state.json` `.fix_loop_cap`) with at least one persistent HIGH finding, the orchestrator dispatches `plugins/zapili/scripts/codex-self-fix.sh <artifact> <validator_role> <prior_findings_json>` instead of halting. The fixer composes a "fixer-role" prompt (documented as a fourth role in `references/codex-prompts.md`) instructing codex to emit a unified-diff patch wrapped in `<response><patch>...</patch></response>`; the orchestrator dry-runs the patch via `git apply --check`, persists it under `.zapili/codex-self-fix-attempt-N.patch`, then applies it via `git apply`; the original validator re-runs against the patched artifact. Termination: (a) post-fix re-review clean → continue workflow; (b) codex emits an empty patch → halt with `## CODEX SELF-FIX EXHAUSTED — no diff produced`; (c) post-fix re-review still has HIGH → halt with the unresolved finding IDs + patch path. A new fixture `tests/fixtures/f6-fix-loop-exhausted/` exercises this path end-to-end (engineer cannot resolve in 4 attempts; codex self-fix resolves on attempt 5). SHA-256 ID derivation (CALIB-01) applies if the fixer references prior IDs.
+Hardening + codex self-fix fallback for `oplya` v1.1.0 (shipped 2026-05-29, git tag `v1.1`).
 
 ---
 *Requirements defined: 2026-05-27*
-*Last updated: 2026-05-28 — v1.1 requirements (ZAP-55..60) added after ultra-principal review + new codex self-fix capability*
+*v1.1 requirements added: 2026-05-28 — 6 IDs (ZAP-55..60) after v1.0 ultra-principal review + new codex self-fix capability*
+*v1.1 requirements archived: 2026-05-29*
