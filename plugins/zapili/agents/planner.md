@@ -24,6 +24,7 @@ tools: Read, Glob, Grep, Write
    - Phase-count rationale linked to `task-sizing.md`
    - Cross-wave dependency notes
    - Requirements traceability table (REQ-ID → phase-id)
+   - Definition-of-Done traceability table (phase-id → DoD-NN): every phase MUST map to at least one `DoD-NN` from the `## Definition of Done` section in TASK.md, and every `DoD-NN` MUST be covered by at least one phase
 4. For every phase in PLAN.md, author one `PHASE-XX.md` file in the user's project root where XX is two-digit numbered ascending starting at 01. PHASE-XX.md MUST contain a machine-parseable block (place immediately after the title):
 
    ```
@@ -35,6 +36,7 @@ tools: Read, Glob, Grep, Write
 6. Wave grouping: phases within a wave MUST have pairwise-disjoint `writes` sets. The orchestrator verifies this mechanically; the planner pre-screens it.
 7. Do NOT author engineer instructions inside PLAN.md — PHASE-XX.md is the contract surface for engineer subagents. PLAN.md is the wave-level overview.
 8. Cite every CONTEXT.md decision ID (D-NN) at least once across the plan files — undecided gaps are gaps and must be flagged in the response payload rather than silently filled.
+9. Every `DoD-NN` in TASK.md's `## Definition of Done` section MUST be covered by at least one phase; if a DoD item cannot be mapped to a phase, flag it in the response payload rather than dropping it.
 </task>
 
 <output_contract>

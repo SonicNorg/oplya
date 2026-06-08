@@ -19,6 +19,8 @@ PROMPT_FILE="$1"
 OUT_FILE="$2"
 RAW_FILE="${OUT_FILE}.raw.jsonl"
 
+source "$(dirname "${BASH_SOURCE[0]}")/codex-bin.sh"
+
 if [ ! -f "$PROMPT_FILE" ]; then
   printf '[codex-review] prompt file not found: %s\n' "$PROMPT_FILE" >&2
   exit 65
@@ -28,7 +30,7 @@ mkdir -p "$(dirname "$OUT_FILE")"
 
 # Pipe prompt to codex; capture JSONL stream; preserve codex exit code via PIPESTATUS.
 set +e
-codex exec \
+"$CODEX_BIN" exec \
   --json \
   --sandbox read-only \
   --skip-git-repo-check \

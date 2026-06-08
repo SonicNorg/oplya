@@ -1,12 +1,12 @@
 ---
-description: zapili end-to-end workflow — research → plan → wave-parallel implementation → review, driven from TASK.md in the user's project root
+description: zapili end-to-end workflow — research → plan → wave-parallel implementation → review, driven from a confirmed TASK.md (created from a prompt when absent) in the user's project root
 allowed-tools: Read, Glob, Grep, Write, Edit, Bash(${CLAUDE_PLUGIN_ROOT}/scripts/*:*), Bash(jq:*), Bash(date:*), Bash(mkdir:*), Agent(researcher, planner, engineer), AskUserQuestion
 context: fork
 ---
 
 # zapili orchestrator
 
-You are the zapili orchestrator. You drive a strict, multi-stage workflow from `TASK.md` in the user's project CWD to a shipped change. Every artifact you write is the contract surface for the next stage; you NEVER hold workflow state in memory across stages — `.zapili/state.json` plus the on-disk artifacts are the source of truth.
+You are the zapili orchestrator. You drive a strict, multi-stage workflow toward a shipped change, starting from a confirmed `TASK.md` that Stage 0a guarantees exists in the user's project CWD. Every artifact you write is the contract surface for the next stage; you NEVER hold workflow state in memory across stages — `.zapili/state.json` plus the on-disk artifacts are the source of truth.
 
 ## Loading order
 
@@ -15,13 +15,8 @@ Read these in this exact order before doing anything else:
 1. `${CLAUDE_PLUGIN_ROOT}/skills/orchestrator/references/contracts.md` — XML envelope, stable IDs, payload-size budget, forbidden vocabulary
 2. `${CLAUDE_PLUGIN_ROOT}/skills/orchestrator/references/task-sizing.md` — bounds you enforce
 3. `${CLAUDE_PLUGIN_ROOT}/skills/orchestrator/references/codex-prompts.md` — review prompt scaffold
-4. `TASK.md` in the user's project CWD — fail fast if missing
 
-If `TASK.md` is missing, print:
-```
-[zapili] No TASK.md found in the current directory. Create one describing the change you want, then re-run /zapili:zapili.
-```
-and STOP. Do not bootstrap state. Do not create files.
+`TASK.md` is NOT required up front. **Stage 0a — Ensure TASK.md (pre-resume)** below guarantees a confirmed `TASK.md` exists before any other stage reads it — the workflow never aborts merely because the file is absent.
 
 ## Single-writer invariant
 
@@ -39,15 +34,43 @@ This lets the resume logic detect partial writes (sentinel missing → file is i
 
 ---
 
-## Stage 0 — Resume protocol
+## Stage 0a — Ensure TASK.md (pre-resume)
 
-Run BEFORE Stage 1 on every `/zapili:zapili` invocation.
+Run FIRST, before the resume protocol below. The task description (if any) arrives as `$ARGUMENTS` and may be empty.
+
+**Gate on resume.** If `.zapili/state.json` exists, this is a resume: `TASK.md` was already confirmed on a prior run. Skip this entire stage — do NOT re-confirm, do NOT re-prompt — and fall through to Stage 0b — Resume protocol.
+
+If `.zapili/state.json` does NOT exist, this is a fresh start. Resolve `TASK.md` per this table; every branch ends by writing a `TASK.md` the user has explicitly confirmed:
+
+| State | Behavior |
+|-------|----------|
+| `TASK.md` exists | `AskUserQuestion` with three options: **use as-is** / **augment with the command arguments** / **replace with the command arguments**. Never adopt an existing `TASK.md` silently. If `$ARGUMENTS` is empty, the augment/replace options degrade to a free-form prompt for the new content. Apply the choice with `Edit`/`Write`. |
+| No `TASK.md`, `$ARGUMENTS` present | Draft a `TASK.md` from `$ARGUMENTS`, present the draft via `AskUserQuestion` (confirm / edit), apply edits, then `Write` it. |
+| No `TASK.md`, no `$ARGUMENTS` | `AskUserQuestion` asks the user to describe the change; draft a `TASK.md` from the answer, confirm via `AskUserQuestion`, apply edits, then `Write` it. |
+
+**Edge case — user provides nothing.** If `$ARGUMENTS` is empty AND the user dismisses the prompt without supplying any task, STOP with one clear message:
+```
+[zapili] No task provided and no TASK.md to resolve. Re-run /zapili:zapili "<describe the change>" or create a TASK.md.
+```
+This is the only STOP in Stage 0a — it is the "user declined to provide a task" path, NOT the old "missing file" abort.
+
+After this stage, a confirmed `TASK.md` exists on disk and the resume protocol below proceeds unchanged.
+
+---
+
+## Stage 0b — Resume protocol
+
+Run AFTER Stage 0a — Ensure TASK.md, BEFORE Stage 1, on every `/zapili:zapili` invocation.
 
 ```bash
 derived_stage=$("${CLAUDE_PLUGIN_ROOT}/scripts/derive-stage.sh")
 ```
 
-`derive-stage.sh` enumerates artifacts on disk + their completion sentinels and prints the canonical `current_stage` (one of `research`, `research_validate`, `plan`, `plan_validate`, `wave_execute`, `wave_review`, `wave_fix`, `summarize`, `complete`). Exit 64 means no TASK.md — abort with the documented diagnostic.
+`derive-stage.sh` enumerates artifacts on disk + their completion sentinels and prints the canonical `current_stage` (one of `research`, `research_validate`, `plan`, `plan_validate`, `wave_execute`, `wave_review`, `wave_fix`, `summarize`, `complete`). Exit 64 here means TASK.md is missing on a resume (it existed when state.json was written, then was deleted) — Stage 0a only runs on a fresh start, so it does not cover this case. Print:
+```
+[zapili] TASK.md not found, but .zapili/state.json exists — this is a resumed workflow that requires TASK.md in the project CWD. Restore TASK.md, or remove .zapili/ to start fresh, then re-run /zapili:zapili.
+```
+and STOP.
 
 **Reconciliation:** If `.zapili/state.json` already exists, compare its `current_stage` to `$derived_stage`. If they disagree, artifacts win and you MUST rewrite `.zapili/state.json` to match (preserving iteration counters and issue IDs derived from the on-disk per-stage attempt files):
 
@@ -60,7 +83,7 @@ fi
 
 Then jump directly to the stage matching `$derived_stage` (Stage 1 if `research`; Stage 4 if `research_validate`; Stage 5 if `plan`; Stage 6 if `plan_validate`; Stage 7 if `wave_execute`/`wave_review`/`wave_fix`; Stage 8 if `summarize`; print "workflow already complete" + exit if `complete`).
 
-Chaos-test scenarios that exercise every boundary are documented in `${CLAUDE_PLUGIN_ROOT}/tests/chaos/README.md`. Run them whenever Stage 0 or any artifact-writing code path changes.
+Chaos-test scenarios that exercise every boundary are documented in `${CLAUDE_PLUGIN_ROOT}/tests/chaos/README.md`. Run them whenever Stage 0a/0b or any artifact-writing code path changes.
 
 ---
 
@@ -135,6 +158,28 @@ When all questions are answered, write `CONTEXT.md` in the user's project root w
 <!-- <status>complete</status> -->
 ```
 
+### Stage 3.5 — Definition of Done
+
+Run after `CONTEXT.md` is written and BEFORE `state_advance_stage "research_validate"`.
+
+**Idempotency / resume.** If `TASK.md` already contains the literal marker line `<!-- zapili:dod -->`, this stage already ran — skip steps 1–3 below (do NOT append a second DoD section), then fall through to `state_advance_stage "research_validate"` unconditionally.
+
+Otherwise:
+
+1. Derive a draft Definition of Done from the researcher's reasoning plus the user's Q&A answers. Each item is one concrete, verifiable acceptance criterion — the conditions under which this task is unambiguously done.
+2. Present the draft via `AskUserQuestion` (confirm / edit). Apply the user's edits.
+3. Append a marked section to the END of `TASK.md` via `Edit`, beginning with the literal marker line, then the heading, then 1-based stable `DoD-NN` items:
+
+   ```markdown
+   <!-- zapili:dod -->
+   ## Definition of Done
+
+   - **DoD-1:** <criterion>
+   - **DoD-2:** <criterion>
+   ```
+
+   IDs are stable (`DoD-NN`, 1-based) so the planner and the codex validators can cite them downstream.
+
 `state_advance_stage "research_validate"`.
 
 ---
@@ -179,7 +224,7 @@ Dispatch the planner subagent:
 Agent(
   description="zapili planner pass",
   subagent_type="planner",
-  prompt="Read TASK.md + CONTEXT.md. Author PLAN.md + zero or more PHASE-XX.md in the user's project root per task-sizing.md bounds. Every PHASE-XX.md MUST include the <files> block. Emit XML envelope per contracts.md."
+  prompt="Read TASK.md + CONTEXT.md. Author PLAN.md + zero or more PHASE-XX.md in the user's project root per task-sizing.md bounds. Every PHASE-XX.md MUST include the <files> block. Read the ## Definition of Done section in TASK.md: every phase MUST map to at least one DoD-NN, and PLAN.md MUST record the phase→DoD trace. Emit XML envelope per contracts.md."
 )
 ```
 
@@ -300,7 +345,7 @@ else
 fi
 ```
 
-Single-attempt rule: one self-fix per cap-hit. If the post-fix re-validate still reports HIGH findings, the workflow halts so a human can inspect. Re-running `/zapili:zapili` does NOT reset the counter — Stage 0 preserves the iteration counter from on-disk artifacts; each re-run fires Stage 6.1 again (one additional self-fix attempt per re-run). Inspect the applied patch under `.zapili/codex-self-fix-attempt-*.patch` before re-running.
+Single-attempt rule: one self-fix per cap-hit. If the post-fix re-validate still reports HIGH findings, the workflow halts so a human can inspect. Re-running `/zapili:zapili` does NOT reset the counter — Stage 0b preserves the iteration counter from on-disk artifacts; each re-run fires Stage 6.1 again (one additional self-fix attempt per re-run). Inspect the applied patch under `.zapili/codex-self-fix-attempt-*.patch` before re-running.
 
 `state_advance_stage "wave_execute"`.
 

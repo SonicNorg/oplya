@@ -152,9 +152,10 @@ Review `PLAN.md` + every `PHASE-XX.md` + the canonical references for:
 3. `ambiguity` — Tasks admit multiple incompatible implementations
 4. `parallel-safety` — Pairwise write-set intersection across phases in a wave is non-empty (cross-check every wave)
 5. `completeness` — All listed requirements have at least one task that satisfies them
-6. `architectural-fit` — Plan violates the project's stack or established patterns
-7. `dry-kiss` — Plan duplicates code/effort or introduces gratuitous abstraction
-8. `professionalism` — Tone, naming, comment density, security awareness all meet professional bar
+6. `dod-coverage` — Every `DoD-NN` in TASK.md's `## Definition of Done` section is covered by at least one phase; an uncovered `DoD-NN` is a finding
+7. `architectural-fit` — Plan violates the project's stack or established patterns
+8. `dry-kiss` — Plan duplicates code/effort or introduces gratuitous abstraction
+9. `professionalism` — Tone, naming, comment density, security awareness all meet professional bar
 
 ### phase_reviewer
 
@@ -162,10 +163,11 @@ Review the engineer payload + `PHASE-XX.md` + the touched files for:
 
 1. `plan-contradiction` — Engineer's changes contradict the phase plan
 2. `missing-tasks` — Phase tasks the engineer did not complete
-3. `code-quality` — Style violations, readability issues, dead code
-4. `edge-cases` — Boundary conditions or error paths not handled
-5. `security` — Newly-introduced threats not covered by the phase plan's threat model
-6. `professionalism` — Same bar as plan_validator
+3. `dod-conformance` — The phase's changes satisfy every `DoD-NN` the phase claims to cover (per the phase→DoD trace in PLAN.md); an unmet claimed `DoD-NN` is a finding
+4. `code-quality` — Style violations, readability issues, dead code
+5. `edge-cases` — Boundary conditions or error paths not handled
+6. `security` — Newly-introduced threats not covered by the phase plan's threat model
+7. `professionalism` — Same bar as plan_validator
 
 ### fixer
 

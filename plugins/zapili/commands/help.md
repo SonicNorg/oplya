@@ -14,22 +14,31 @@ zapili — multi-agent dev workflow plugin (v1.1.3)
 COMMANDS
 ================================================================
 
-  /zapili:zapili [--resume]   Run the full workflow on TASK.md
-  /zapili:status              Read-only snapshot of .zapili/state.json
-  /zapili:help                This help screen
+  /zapili:zapili [task | --resume]   Run the full workflow (TASK.md optional)
+  /zapili:status                     Read-only snapshot of .zapili/state.json
+  /zapili:help                       This help screen
 
 
 ================================================================
 WHERE TO WRITE YOUR TASK
 ================================================================
 
-Drop a TASK.md file in the directory from which you opened the current
-Claude Code session (the "project CWD"). zapili reads it from there —
-not from your home directory, not from the plugin's install location,
-not from any global config.
+A TASK.md is OPTIONAL. You can provide the task three ways:
 
-If TASK.md is missing when /zapili:zapili runs, the orchestrator fails
-fast with a clear diagnostic and does NOT bootstrap any state.
+  1. Inline:  /zapili:zapili "describe the change you want"
+  2. A TASK.md file in the directory from which you opened the
+     current Claude Code session (the "project CWD").
+  3. Neither — the orchestrator prompts you to describe the change.
+
+zapili reads TASK.md from the project CWD — not from your home
+directory, not from the plugin's install location, not from any
+global config.
+
+Every path ends with a confirmed TASK.md on disk. If one already
+exists, zapili asks whether to use it as-is, augment it with your
+inline task, or replace it — it never adopts an existing TASK.md
+silently. After the first Q&A, zapili captures a confirmed
+Definition of Done and appends it to TASK.md.
 
 
 ================================================================
@@ -71,6 +80,8 @@ PREREQUISITES
     abort before any work runs. (The SessionStart hook also emits an
     advisory warning if codex is missing — it never blocks Claude Code,
     only nudges you.)
+    When $CLAUDE_INSTANCE=work, zapili uses the `codex-work` binary
+    instead of `codex` for every invocation and pre-flight check.
 
   - jq >= 1.6 (manifest validation + JSONL parsing). Pre-installed on
     most macOS/Linux dev machines.
@@ -135,11 +146,13 @@ WHAT TO DO IF /zapili:zapili HALTS
 
   Possible halt reasons + where to look:
 
-    "TASK.md not found"
-        → create TASK.md in your project CWD; re-run.
+    "No task provided and no TASK.md to resolve"
+        → re-run with an inline task: /zapili:zapili "..." — or
+          create a TASK.md in your project CWD; re-run.
 
-    "codex CLI not found / not authenticated"
-        → install codex and run `codex login`; re-run.
+    "codex (or codex-work) CLI not found / not authenticated"
+        → install the binary the preflight names (codex, or codex-work
+          when $CLAUDE_INSTANCE=work) and run `<binary> login`; re-run.
 
     "## CODEX SELF-FIX EXHAUSTED — no diff produced"
         → codex couldn't produce a patch for the persistent findings.
