@@ -6,7 +6,20 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 ## [Unreleased]
 
-(Nothing yet — next changes land here. v1.2 candidate will collect deferred NITs.)
+(Nothing yet — next changes land here.)
+
+## [1.2.0] - 2026-06-08
+
+### Added
+
+- **Optional `TASK.md` — inline task + auto-bootstrap.** `/zapili:zapili` now accepts a free-form task description as command arguments (`/zapili:zapili "<describe the change>"`), forwarded to the orchestrator via `Skill(args=…)`. A new orchestrator **Stage 0a — Ensure TASK.md (pre-resume)** resolves `TASK.md` on a fresh start: if it exists, the user explicitly chooses to use-as-is / augment / replace (never adopted silently); if absent, a draft is built from the arguments (or an interactive prompt) and confirmed before writing. `TASK.md` remains strictly mandatory to proceed — only the "missing at start" case now bootstraps a confirmed file instead of aborting; resume still hard-requires `TASK.md` via `derive-stage.sh` exit 64.
+- **Definition of Done in `TASK.md`.** New **Stage 3.5 — Definition of Done** derives a draft DoD from the researcher's reasoning plus the first Q&A answers, confirms it with the user, and appends a marker-guarded (`<!-- zapili:dod -->`), stable-ID (`DoD-NN`) `## Definition of Done` section to `TASK.md`. Idempotent on resume. Consumed downstream by the planner (every phase traces to ≥1 `DoD-NN` in `PLAN.md`) and by codex review — `plan_validator` checks DoD coverage, `phase_reviewer` checks DoD conformance.
+- **`codex-work` binary selection.** New `plugins/zapili/scripts/codex-bin.sh` resolver selects `codex-work` when `$CLAUDE_INSTANCE=work`, otherwise `codex`. Sourced by `codex-review.sh` (the single `codex exec` point — every other wrapper inherits the switch), `preflight-codex.sh`, and the `check-codex.sh` SessionStart hook. The hook's `source` is guarded (`|| CODEX_BIN="codex"`) so a missing resolver can never trigger a non-zero exit, preserving the ZAP-02 never-brick-the-session invariant; pre-flight and remediation messages name the resolved binary.
+
+### Changed
+
+- **Project instructions migrated `CLAUDE.md` → `AGENTS.md`** (more universal across agent CLIs). `CLAUDE.md` is now a thin pointer (`@AGENTS.md`); the full project context, stack, and conventions live in `AGENTS.md`.
+- **`README.md` / `/zapili:help`** updated for optional `TASK.md` (three resolution paths + inline task argument), the Definition of Done step, and the `$CLAUDE_INSTANCE=work` → `codex-work` prerequisite. `/zapili:help` version string bumped to `v1.2.0`.
 
 ## [1.1.3] - 2026-05-29
 
