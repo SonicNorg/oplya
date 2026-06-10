@@ -8,7 +8,11 @@ set -euo pipefail
 # codex to revise <artifact_path> to address every HIGH (and MEDIUM) finding
 # in <prior_findings_json>. Codex emits a unified-diff patch wrapped in
 #   <response><patch>...</patch></response>
-# which this wrapper extracts and persists to .zapili/codex-self-fix-attempt-N.patch.
+# which this wrapper extracts and persists to
+# .zapili/codex-self-fix-<role>-attempt-N.patch. Attempt files are SCOPED by the
+# <validator_role> slug so a plan escalation and a phase escalation keep
+# independent per-cap-hit counters (a shared global counter would let one
+# escalation's count bleed into the other and break the self_fix_cap bound).
 #
 # Dry-run mode (--dry-run as the FIRST arg) prints the patch to stdout and
 # verifies it via `git apply --check` but does NOT modify the working tree.
@@ -19,6 +23,7 @@ set -euo pipefail
 #   1   codex emitted an empty patch (orchestrator halts with "no diff produced")
 #   2   codex invocation failed
 #   4   `git apply --check` rejected the patch (malformed diff or context mismatch)
+#   8   self-fix cap exhausted (round N > self_fix_cap) — codex NOT invoked
 #   64  usage error
 #
 # Stdout: the patch file path (both modes). Orchestrator captures this and
@@ -61,13 +66,30 @@ case "$VALIDATOR_ROLE" in
     ;;
 esac
 
+# Derive a filesystem-safe slug from the role so attempt files are per-role.
+# Underscore is kept (filesystem-safe) so the slug equals the role name for the
+# three known roles (plan_validator / phase_reviewer / research_validator).
+ROLE_SLUG=$(printf '%s' "$VALIDATOR_ROLE" | tr -c 'A-Za-z0-9_' '-')
+BASE="$STATE_DIR/codex-self-fix-$ROLE_SLUG"
+
 N=1
-while [ -f "$STATE_DIR/codex-self-fix-attempt-$N.patch" ]; do
+while [ -f "$BASE-attempt-$N.patch" ]; do
   N=$((N + 1))
 done
-PATCH_FILE="$STATE_DIR/codex-self-fix-attempt-$N.patch"
-PROMPT_FILE="$STATE_DIR/codex-self-fix-attempt-$N.prompt.txt"
-RAW_OUT_FILE="$STATE_DIR/codex-self-fix-attempt-$N.raw"
+
+# Enforce self_fix_cap (exit 8) BEFORE invoking codex. Reading state.json is
+# allowed; only WRITING it is the orchestrator's exclusive right. Fall back to 2.
+self_fix_cap=$(jq -r '.self_fix_cap // 2' "$STATE_DIR/state.json" 2>/dev/null || echo 2)
+case "$self_fix_cap" in (*[!0-9]*|'') self_fix_cap=2 ;; esac
+if [ "$N" -gt "$self_fix_cap" ]; then
+  printf '[codex-self-fix] self-fix exhausted: round N=%d > self_fix_cap=%d for role %s\n' \
+    "$N" "$self_fix_cap" "$VALIDATOR_ROLE" >&2
+  exit 8
+fi
+
+PATCH_FILE="$BASE-attempt-$N.patch"
+PROMPT_FILE="$BASE-attempt-$N.prompt.txt"
+RAW_OUT_FILE="$BASE-attempt-$N.raw"
 
 # Extract HIGH + MEDIUM findings as a structured block for the fixer prompt.
 # Each finding line contains id, severity, kind, file, line_range, and remediation
@@ -182,7 +204,7 @@ fi
 printf '%s\n' "$PATCH_BODY" >"$PATCH_FILE"
 
 # Verify the patch is applicable BEFORE touching the tree (defensive even in dry-run).
-APPLY_CHECK_LOG="$STATE_DIR/codex-self-fix-attempt-$N.apply-check.log"
+APPLY_CHECK_LOG="$BASE-attempt-$N.apply-check.log"
 if ! git apply --check "$PATCH_FILE" 2>"$APPLY_CHECK_LOG"; then
   printf '[codex-self-fix] git apply --check rejected patch (attempt %d); see %s\n' "$N" "$APPLY_CHECK_LOG" >&2
   exit 4

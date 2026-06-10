@@ -101,11 +101,14 @@ HOW IT WORKS (high-level)
     Stage 2  Researcher subagent reads TASK.md, classifies size, asks
              you 3–20 questions
     Stage 3  Q&A loop — answers go into CONTEXT.md
-    Stage 4  Codex research-validate loop (up to 4 iterations);
-             on cap-hit with persistent HIGH findings, codex-self-fix
-             fallback dispatches a fixer pass that patches CONTEXT.md
+    Stage 4  Codex research-validate loop (cap enforced by the script,
+             default 4; stalls also short-circuit); on cap/stall the
+             open findings are surfaced and the workflow HALTS for your
+             decision — research needs human intent, no codex self-fix
     Stage 5  Planner subagent emits PLAN.md + PHASE-XX.md per phase
-    Stage 6  Codex plan-validate loop (same cap + self-fix mechanics)
+    Stage 6  Codex plan-validate loop (same cap; on cap/stall a bounded
+             codex-self-fix → Claude-review loop runs, up to self_fix_cap
+             rounds, default 2, before halting)
     Stage 7  Wave-parallel engineer fan-out — phases inside one wave
              run in parallel iff their write-scopes are pairwise
              disjoint (orchestrator verifies mechanically); per-phase
@@ -127,8 +130,8 @@ STATE, CRASH-RESUME, AND THE .zapili/ DIRECTORY
     .zapili/research-validate-attempt-N.json — codex findings per attempt
     .zapili/plan-validate-attempt-N.json     — same, per plan iteration
     .zapili/phase-XX-review-attempt-N.json   — per-phase review output
-    .zapili/codex-self-fix-attempt-N.patch   — codex-generated patches
-    .zapili/codex-self-fix-attempt-N.raw     — raw codex JSONL streams
+    .zapili/codex-self-fix-<role>-attempt-N.patch — codex-generated patches
+    .zapili/codex-self-fix-<role>-attempt-N.raw   — raw codex JSONL streams
 
   If your session crashes, laptop sleeps, or you hit Ctrl-C mid-run,
   just re-run /zapili:zapili (no flags needed — `--resume` is the
@@ -160,9 +163,11 @@ WHAT TO DO IF /zapili:zapili HALTS
           finding IDs, fix manually, re-run.
 
     "## CODEX SELF-FIX EXHAUSTED — post-fix re-review still HIGH"
-        → codex's patch landed but the issue persists. Inspect the
-          named patch file under .zapili/codex-self-fix-attempt-N.patch
-          to see what was attempted, fix manually, re-run.
+    "## CODEX SELF-FIX EXHAUSTED — self_fix_cap reached"
+        → codex's bounded self-fix loop ran out of rounds and the issue
+          persists. Inspect the named patch files under
+          .zapili/codex-self-fix-<role>-attempt-N.patch to see what was
+          attempted, fix manually, re-run.
 
     "## OVERLAP in Wave N: ..." from check-wave-disjointness
         → planner produced phases that write the same files in one

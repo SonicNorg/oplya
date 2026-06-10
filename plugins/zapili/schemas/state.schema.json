@@ -18,6 +18,12 @@
       "maximum": 10,
       "description": "Per-validator fix-loop iteration cap; when reached with persistent HIGH findings, orchestrator dispatches codex-self-fix fallback (ZAP-60). Default 4 if absent."
     },
+    "self_fix_cap": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Per-cap-hit codex self-fix round cap for plan/phase escalation; bounds the codex-self-fix → Claude-review loop. Default 2 if absent."
+    },
     "iteration_counters": {
       "type": "object",
       "additionalProperties": false,

@@ -51,6 +51,8 @@ state_bootstrap() {
   cat >"${STATE_FILE}.tmp" <<EOF
 {
   "schema_version": ${ZAPILI_STATE_VERSION},
+  "fix_loop_cap": 4,
+  "self_fix_cap": 2,
   "task_path": "${task_path}",
   "current_stage": "research",
   "current_wave": null,

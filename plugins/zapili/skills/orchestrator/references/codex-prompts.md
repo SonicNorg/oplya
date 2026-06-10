@@ -2,7 +2,9 @@
 
 > Source of truth for every codex review invocation in zapili — research_validate, plan_validate, phase_review. The scaffold guarantees **exhaustive HIGH/MEDIUM/LOW coverage** and produces a payload that conforms to `validation-findings.schema.json`.
 
-## Exhaustiveness contract (the load-bearing instruction)
+## Exhaustiveness contract (load-bearing for attempt N=1; see "Attempts N≥2" for regression reviews)
+
+This contract governs the FIRST validator pass (attempt N=1). Attempts N≥2 are regression reviews that intentionally narrow scope — see the regression note below; do NOT apply the exhaustiveness framing to a regression pass.
 
 Without an explicit anti-targeting instruction, codex defaults to a narrow targeted review — it picks the most salient issue, emits ~3 findings, and stops. This wastes every iteration of the fix-loop on partial coverage and is the single most expensive failure mode of the whole pipeline. The scaffold below was calibrated to defeat that default; the instructions are not advisory.
 
@@ -36,6 +38,10 @@ External P0/P1/P2/P3 schemes map onto zapili's three-level scale as follows. Use
 | P1       | HIGH            | Correctness defect that ships if not fixed — wrong behavior under documented scenarios |
 | P2       | MEDIUM          | Latent risk, missing edge-case handling, weak test, ambiguity that will cause future bugs |
 | P3       | LOW             | Stylistic or nit-level; tone, naming, comment density. Also `kind: "no-findings"` confirmations. |
+
+**HIGH is reserved** for issues that make the downstream artifact objectively wrong, unbuildable, or unsafe: a contradiction that breaks the plan, a hallucinated reference to something that does not exist, or missing context without which a required decision is impossible. Anything that is merely "could be clearer / more complete / could be improved" is at MOST MEDIUM — it does not block the loop the way a HIGH does. Over-classifying improvement notes as HIGH is the single most common cause of a non-converging fix-loop.
+
+**Attempts N≥2 are REGRESSION reviews, not fresh audits.** On a retry the validator scripts emit a `<regression>` block instead of the exhaustive block: verify whether each prior finding is now resolved and inspect ONLY the regions changed since the previous attempt for NEW blocking issues — do not re-audit the whole artifact and do not introduce findings unrelated to the prior set or the changed regions. User-confirmed decisions are authoritative: the CONTEXT.md `<decisions>` and the TASK.md `## Definition of Done` items are settled and MUST NOT be re-raised as ambiguity / scope / missing-context findings.
 
 LOW with `kind: "no-findings"` is the explicit "I checked this category and found nothing" entry — required for every listed `<category>` that produces no real finding, so the orchestrator can mechanically verify exhaustive coverage from the schema-shaped output.
 
@@ -171,12 +177,15 @@ Review the engineer payload + `PHASE-XX.md` + the touched files for:
 
 ### fixer
 
-The fixer is the LAST-RESORT codex role dispatched after the engineer (or
-planner) fix-loop exhausts its iteration cap (default 4) with persistent HIGH
-findings. Unlike the three validator roles above, the fixer does NOT emit
-findings — it emits a **unified-diff patch** that revises the offending
-artifact (`PHASE-XX.md`, `PLAN.md`, or `CONTEXT.md`) to address every prior
-HIGH (and MEDIUM) finding.
+The fixer is the codex role dispatched after the planner or per-phase fix-loop
+hits its iteration cap (`fix_loop_cap`, default 4 — enforced by the validator
+script via exit 6) or stalls (exit 7) with persistent HIGH/MEDIUM findings.
+Unlike the three validator roles above, the fixer does NOT emit findings — it
+emits a **unified-diff patch** that revises the offending artifact
+(`PHASE-XX.md` or `PLAN.md`) to address every prior HIGH (and MEDIUM) finding.
+It runs inside the bounded self-fix loop (up to `self_fix_cap` rounds, default 2;
+see "Bounded self-fix loop" below). The research role does NOT use the fixer — a
+research cap/stall halts to the user.
 
 The wrapper that drives this role is `plugins/zapili/scripts/codex-self-fix.sh`
 (ZAP-60). See that script's header for the exit-code contract.
@@ -261,19 +270,30 @@ Forbidden vocabulary: `key`, `main`, `top`, `important`.
 
 | Condition | Wrapper exit | Orchestrator response |
 |-----------|--------------|------------------------|
-| Patch generated, dry-run + apply both clean, post-fix re-validate clean | 0 | Continue workflow |
-| Patch generated, applied, post-fix re-validate still HIGH | 0 (from script) | Halt with `## CODEX SELF-FIX EXHAUSTED` + finding IDs + patch path |
+| Patch generated, dry-run + apply clean, Claude post-fix review clean | 0 | Advance the stage |
+| Patch generated + applied, Claude post-fix review still HIGH, rounds remain | 0 (from script) | Run another self-fix round against Claude's residual findings |
+| Patch generated + applied, Claude post-fix review still HIGH, `self_fix_cap` exhausted | 8 (next call) | Halt with `## CODEX SELF-FIX EXHAUSTED` + finding IDs + patch paths |
 | Codex emitted an empty `<patch></patch>` block | 1 | Halt with `## CODEX SELF-FIX EXHAUSTED — no diff produced` |
 | Codex invocation failed | 2 | Halt with codex-side diagnostic |
 | `git apply --check` rejected the patch | 4 | Halt with patch path + `git apply --check` stderr |
 
-#### Single-attempt rule
+#### Bounded self-fix loop (supersedes the former single-attempt rule)
 
-Self-fix is dispatched ONCE per validator cap-hit. If the post-fix re-validate
-still has HIGH findings, the workflow halts so a human can inspect. Re-running
-`/zapili:zapili` does NOT reset the counter (Stage 0 preserves iteration counts
-from on-disk artifacts) — each re-run gets one additional self-fix attempt.
-Inspect the applied patch under `.zapili/codex-self-fix-attempt-*.patch` before
+On a plan or phase cap-hit (validator exit 6) or stall (exit 7), the orchestrator
+runs a BOUNDED `codex-self-fix → Claude-review` loop, up to `state.json
+.self_fix_cap` (default 2) rounds. Each round: codex emits a patch, the
+orchestrator applies the SAME validated patch, then **Claude (not codex)** reviews
+the patched artifact. Codex never grades its own fix. If Claude judges the artifact
+clean the stage advances; if it is still blocking and rounds remain, another round
+runs against Claude's residual findings; once `self_fix_cap` rounds are exhausted
+(`codex-self-fix.sh` returns exit 8) the workflow halts for a human.
+
+The round counter is per-role and scoped on disk
+(`.zapili/codex-self-fix-<role>-attempt-N.patch`), so a plan escalation and a
+phase escalation keep independent counters. Re-running `/zapili:zapili` does NOT
+reset the counter (Stage 0b preserves it from on-disk artifacts). For the
+research role there is NO self-fix — a research cap/stall HALTS to the user, who
+must supply the missing intent (Stage 4). Inspect the applied patches before
 re-running so you do not stack speculative patches on top of each other.
 
 ## Reclassification rules
