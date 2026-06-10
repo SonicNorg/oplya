@@ -8,6 +8,19 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 (Nothing yet — next changes land here.)
 
+## [1.3.0] - 2026-06-11
+
+### Fixed
+
+- **Runaway review loop — the iteration cap is now deterministic.** The review-loop cap (`fix_loop_cap`, default 4) used to live only in orchestrator prose with the attempt number `N` tracked in the LLM's working memory; the validator scripts auto-incremented `N` solely to name output files and never read or enforced the cap. A non-converging codex could loop far past the cap (observed: 20 research-validate iterations against cap 4, amplified by the v1.2.0 Definition-of-Done section adding `ambiguity`/`missing-context` surface). All three validator scripts (`codex-validate-research.sh`, `codex-validate-plan.sh`, `codex-review-phase.sh`) now read `fix_loop_cap` from `state.json` and **exit 6 before invoking codex** when the next attempt would exceed it — termination no longer depends on the model counting.
+
+### Added
+
+- **Stall detection (exit 7) + MEDIUM-only acceptance (exit 9).** From attempt N≥2 each validator compares the severe (HIGH+MEDIUM) finding count to the prior attempt; a non-strict-decrease means the loop is not converging. With HIGH still open it exits 7 (escalate — an "early cap"); when only MEDIUMs remain (0 HIGH) it exits 9, accepting the stuck-but-non-blocking MEDIUMs and letting the orchestrator proceed.
+- **Exhaustive-once, then regression review.** Attempt 1 is the full exhaustive audit; attempts N≥2 compose a regression prompt (verify the carried-forward findings + inspect only the changed regions; treat user-confirmed `CONTEXT.md` decisions and the TASK.md Definition of Done as authoritative). This front-loads thoroughness while guaranteeing convergence.
+- **Bounded codex-self-fix → Claude-review escalation.** On cap/stall-with-HIGH, `research` HALTs to the user (its findings need human intent — codex must not invent decisions); `plan`/`phase` run a bounded loop of `codex-self-fix` → **Claude (not codex) reviews the patched artifact** → repeat up to `self_fix_cap` (default 2) rounds, else halt for a human. `state_bootstrap` now persists `fix_loop_cap` and `self_fix_cap`; `state.schema.json` gains `self_fix_cap`; `codex-self-fix.sh` scopes its patch/raw files per role (independent per-cap-hit counters) and enforces `self_fix_cap` (exit 8).
+- **Tightened HIGH severity rubric** in `codex-prompts.md` (HIGH reserved for objectively wrong/unbuildable/unsafe; "could be clearer/more complete" is at most MEDIUM), plus four hermetic offline regression tests under `tests/` (cap enforcement for research + phase, stall, MEDIUM-only acceptance).
+
 ## [1.2.0] - 2026-06-08
 
 ### Added
