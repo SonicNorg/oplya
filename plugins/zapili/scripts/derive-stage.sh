@@ -20,8 +20,19 @@ set -euo pipefail
 #   SUMMARY.md exists with sentinel  → complete
 #   else                             → summarize
 
+# An unmatched glob must expand to zero words, never to its literal pattern.
+shopt -s nullglob
+
 has_sentinel() {
   grep -qF '<!-- <status>complete</status> -->' "$1" 2>/dev/null
+}
+
+# Print the highest-numbered path among the arguments; print nothing when there are none.
+# Callers pass a glob directly — nullglob turns a no-match into zero arguments. `sort -V`
+# is required: plain glob order is lexicographic, under which attempt-10 precedes attempt-2.
+latest_attempt() {
+  [ "$#" -gt 0 ] || return 0
+  printf '%s\n' "$@" | sort -V | tail -n1
 }
 
 # 1. TASK.md required.
@@ -34,7 +45,7 @@ if [ ! -f CONTEXT.md ] || ! has_sentinel CONTEXT.md; then
 fi
 
 # 3. Research-validate clean?
-latest_rv=$(ls -1 .zapili/research-validate-attempt-*.json 2>/dev/null | sort -V | tail -n1)
+latest_rv=$(latest_attempt .zapili/research-validate-attempt-*.json)
 if [ -z "$latest_rv" ]; then
   printf 'research_validate\n'
   exit 0
@@ -52,7 +63,7 @@ if [ ! -f PLAN.md ] || ! has_sentinel PLAN.md; then
 fi
 
 # 5. Plan-validate clean?
-latest_pv=$(ls -1 .zapili/plan-validate-attempt-*.json 2>/dev/null | sort -V | tail -n1)
+latest_pv=$(latest_attempt .zapili/plan-validate-attempt-*.json)
 if [ -z "$latest_pv" ]; then
   printf 'plan_validate\n'
   exit 0
@@ -64,7 +75,6 @@ if [ "$severe" != "0" ]; then
 fi
 
 # 6. Any engineer attempt yet?
-shopt -s nullglob
 attempts=(PHASE-*-attempt-*.md)
 if [ "${#attempts[@]}" -eq 0 ]; then
   printf 'wave_execute\n'
@@ -82,7 +92,7 @@ fi
 phase_ids=$(printf '%s\n' "${attempts[@]}" | sed -E 's/^PHASE-([0-9]+(-[0-9]+)?)-attempt-[0-9]+\.md$/\1/' | sort -u)
 needs_fix=0
 for pid in $phase_ids; do
-  latest=$(ls -1 ".zapili/phase-$pid-review-attempt-"*.json 2>/dev/null | sort -V | tail -n1)
+  latest=$(latest_attempt ".zapili/phase-$pid-review-attempt-"*.json)
   [ -n "$latest" ] || { needs_fix=1; break; }
   s=$(jq '[.findings[]? | select(.severity=="HIGH" or .severity=="MEDIUM")] | length' "$latest" 2>/dev/null || echo 1)
   if [ "$s" != "0" ]; then needs_fix=1; break; fi

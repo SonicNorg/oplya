@@ -24,6 +24,7 @@ Use this procedure whenever you touch `skills/orchestrator/SKILL.md` Stage 0 (re
 | 9 | Mid-fix-loop: review found HIGH; killed before fresh engineer dispatched | `wave_fix` | Fresh engineer spawn with prior-attempt artifact + findings. |
 | 10 | After every phase review clean, before `summarize.sh` writes SUMMARY.md | `summarize` | summarize.sh re-runs and writes SUMMARY.md. |
 | 11 | After SUMMARY.md sentinel written | `complete` | Orchestrator prints "workflow already complete" and exits. |
+| 12 | Multi-phase wave, killed after phase 01's review is written but before phase 02's | `wave_fix` | The partially reviewed wave must not count as converged: a phase with zero reviews forces the fix loop. Covered offline by `tests/derive-stage.test.sh` case 9 (which also seeds a decoy `package.json` at the project root). |
 
 ## Pass criterion
 
