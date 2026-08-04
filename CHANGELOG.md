@@ -8,6 +8,14 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 (Nothing yet — next changes land here.)
 
+## [1.3.1] - 2026-08-04
+
+### Fixed
+
+- **`derive-stage.sh` died with a silent exit 2, bricking every resume once `CONTEXT.md` existed.** The script runs under `set -euo pipefail` and located the newest attempt file with `ls -1 <glob> 2>/dev/null | sort -V | tail -n1`. `shopt -s nullglob` was only enabled far below, so an unmatched glob reached `ls` as a literal pattern; `ls` exited 2, `pipefail` propagated it, and the failing command substitution inside an assignment tripped `set -e` — killing the script with exit 2 and, thanks to `2>/dev/null`, no output at all. Orchestrator Stage 0b (`derived_stage=$(…/derive-stage.sh)`) received an empty stage and could not resume. The window opened exactly when `CONTEXT.md` gained its completion sentinel, since the earlier `CONTEXT.md` branch had been returning first. Both affected sites (research-validate, plan-validate) now go through a `latest_attempt` helper and `nullglob` is enabled at the top of the script; `ls` is gone from the file.
+- **A phase with zero reviews could be silently declared converged, skipping `wave_fix`.** The same idiom at the per-phase review site sat *below* `shopt -s nullglob`, so the unmatched glob disappeared entirely and `ls -1` ran with no arguments — listing the **current directory** and exiting 0. The `[ -n "$latest" ]` guard could therefore never fire, and an arbitrary project file became the "review". When that file was JSON without a `.findings` key — `package.json`, `tsconfig.json` — `jq` reported 0 severe findings and an unreviewed phase passed as clean, sending the workflow to `summarize` with real work unreviewed. Reproduced and fixed; `tests/chaos/README.md` gains boundary #12 for the partially reviewed wave.
+- New hermetic regression test `plugins/zapili/tests/derive-stage.test.sh` — 12 cases covering every stage transition, version-ordered attempt selection (`attempt-10` beats `attempt-2`), the unreviewed-phase-with-decoy scenario, and a static guard against the `ls -1` idiom returning. Known gap pinned rather than papered over: under `nullglob` an unreadable `.zapili/` is indistinguishable from "no attempts yet"; it is left unguarded because the orchestrator's next call (`state.sh` → `jq` on `state.json`) fails loudly on the same condition.
+
 ## [1.3.0] - 2026-06-11
 
 ### Fixed
